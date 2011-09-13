@@ -1,4 +1,4 @@
-Team Name:
+Team Name: LIFDOFF
 Members:
 - Brian Shaginaw - 260368016 - Games Stream
 - Benson Perry - 260361134 - Pure CS Major
@@ -9,5 +9,11 @@ Project Category: In-House Course Game
 
 1 Paragraph Description:
 
-A two (minimum) player turn-based strategy game.  
-Each player has 2 components to manage - protecting their defensive unit (a spaceship?), and sending offensive units (asteroids, evil spaceships?) to destroy the other player's main unit.  Each player gains resources by destroying the units sent to attack them, and then uses these resources to buy attacking units to send at their opponent.  Players move their defensive unit multiple moves at a time which are all executed after both players have decided upon their moves.  When all opposing players have had their defensive unit destroyed by the offensive units, the last player remaining wins.
+A turn-based strategy game for multiple players (or a single player against AI). Each player has 2 components to manage - protecting their three defensive units (space ships?), and sending offensive units (asteroids, aliens?) to destroy the other player's three defensive units. Each player gains resources (xp and gold) at the start of each turn and by destroying the units sent to attack them. These resources are used to buy offensive units to send at their opponent. Each turn, players plans the next five moves (steps or shots) of their defensive units and may purchase offensive unites or upgrades to their defensive units. These moves are executed after all players have locked in their plan. When all opposing players have had their defensive unit destroyed, the remaining player wins.
+
+Welcome screen: dont need to prove
+Resource management: gold, xp, and upgrade tree
+Map generation: ?!
+Team management: preplan the moves of each defensive unit and decide when to deploy offensive units
+Networked: for multiplayer
+Databases: for saved games (single player only?)
