@@ -11,9 +11,9 @@ Project Category: In-House Course Game
 
 A turn-based strategy game for multiple players (or a single player against AI). Each player has 2 components to manage - protecting their three defensive units (space ships?), and sending offensive units (asteroids, aliens?) to destroy the other player's three defensive units. Each player gains resources (xp and gold) at the start of each turn and by destroying the units sent to attack them. These resources are used to buy offensive units to send at their opponent. Each turn, players plans the next five moves (steps or shots) of their defensive units and may purchase offensive unites or upgrades to their defensive units. These moves are executed after all players have locked in their plan. When all opposing players have had their defensive unit destroyed, the remaining player wins.
 
-Welcome screen: dont need to prove
-Resource management: gold, xp, and upgrade tree
-Map generation: ?!
-Team management: preplan the moves of each defensive unit and decide when to deploy offensive units
+Welcome screen: There will be a welcome screen.
+Resource management: Defensive units defeating attackers will earn their team gold and experience, which can be used to send attackers and purchase upgrades on the upgrade tree
+Map generation: At the beginning of a round the entire playing board will be generated, and will be identical for both boards. Certain types of terrain will be more beneficial to some units, or units with certain upgrades.
+Team management: Players must preplan the moves of each defensive unit and decide when to deploy offensive units.
 Networked: for multiplayer
 Databases: for saved games (single player only?)
