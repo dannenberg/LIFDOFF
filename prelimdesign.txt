@@ -1,0 +1,55 @@
+cover page
+  trival (someone make it in word)
+  maybe steal the LIFDOFF logo from SBAHJ
+
+Table of contents
+  apparently we need one... very trivial
+
+project overview
+  name idea duties 
+  client info (vybs)
+  project overview for real
+    explain what are game is and why it will be cool/successful
+
+Systems Diagram
+  i guess we can do a uml or menu diagram and just show the main menu and then how play flows
+
+formal phased project breakdown
+  break project into steps
+    break steps into activities
+  present as table (see week3day2)
+
+dated activity graph
+  take that activities from above and divid them where they can be paralized
+
+milestones and deliverables
+  table with event id title result date and dependencies
+  i guess this is different from steps and activities?
+  if not this pretty easy
+  deliverables are just bundles of miles stones that are presentable
+    i guess they could be steps and miles stones could be activities?
+
+resource requirements table
+  item id description unit cost quantity subtotal event id dependencies
+  no idea what this is for.. cuz we dont have any resources cept time maybe?
+    but there is not a chance in hell we will estimate that accurately
+  this may be more for external contracts?
+
+cost estimate (bullshit)
+  programmer hourly rate total hours subtotal dependencies
+  again we arent getting paid... no idea what this is for maybe just estimate man hours
+
+engineering methods
+  software process model (waterfall)
+  programming development (incremental)
+  team organization (dont remember what this means... scrum??)
+  process assessment rules (??)
+  change control moethods (code repo handling requirement changes)
+    not sure we have to deal with requirement changes
+    and repo is git so i guess we should list our gith ub stuff
+
+risk identification
+  we need to list somethings
+    i cant think of any aside from not being on top of shit
+      so maybe we should arrange biweekly meetings to combat slacking?
+
