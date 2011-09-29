@@ -12,15 +12,16 @@ project overview
     explain what are game is and why it will be cool/successful
 
 Systems Diagram
-  i guess we can do a uml or menu diagram and just show the main menu and then how play flows
+  Screenshot and UML Diagram
 
-formal phased project breakdown
+formal phased project breakdown ==== DONE ==================
   break project into steps
     break steps into activities
   present as table (see week3day2)
 
+
 dated activity graph
-  take that activities from above and divid them where they can be paralized
+  take that activities from above and divide them where they can be paralized
 
 milestones and deliverables
   table with event id title result date and dependencies
@@ -53,3 +54,11 @@ risk identification
     i cant think of any aside from not being on top of shit
       so maybe we should arrange biweekly meetings to combat slacking?
 
+
+
+
+QUESTIONS for VYBS
+
+1. What's the deal with airplane foood?
+2. What's the difference between milestones/deliverables and activities/steps
+3. Resource/cost estimate for in-house project?  What do?
