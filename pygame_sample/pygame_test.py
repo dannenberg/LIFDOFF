@@ -24,6 +24,7 @@ screen=pygame.display.set_mode(size)
 
 cx = 0
 cy = 0
+rot = 0
 
 pygame.display.set_caption("Orez's Stuff!")
 
@@ -113,7 +114,22 @@ while done==False:
     # This draws a triangle using the polygon command
     pygame.draw.polygon(screen,black,[[100,100],[0,200],[200,200]],5)
     
-    pygame.draw.polygon(screen,red,[[cx,cy],[cx+20,cy+10],[cx,cy+20]],5)
+    # create a new surface, upon which to draw the player
+    player = pygame.Surface((18,20))
+    # fill it an ugly pink, and make that pink be considered transparent
+    player.fill((255,0,255))
+    player.set_colorkey((255,0,255))
+    # this system is faster than alpha, but doesn't allow for fractional transparency
+    pygame.draw.polygon(player,red,[[0,0],[17.32,10],[0,20]],5)
+    
+    # spin the player-surface by the appropriate amount
+    player = pygame.transform.rotate(player, rot)
+    rot += 5
+    # put the player in the right coordinates (accounting for the transformed spin
+    loc = [cx-(player.get_width()-18)/2,cy-(player.get_height()-20)/2]
+    
+    # print the player-surface to the main surface
+    screen.blit(player,loc)
 
     # Go ahead and update the screen with what we've drawn.
     # This MUST happen after all the other drawing commands.
