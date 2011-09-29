@@ -1,0 +1,30 @@
+Step 1: Basic Game Functionality                              time (days)
+Activity 1.1 - Game grid / board                              3
+Activity 1.2 - Moveable defensive units                       2
+Activity 1.3 - Sendable offensive units                       2
+Activity 1.4 - Turn system for moving and sending units       5
+Activity 1.5 - Offensive/defensive interactions               5
+Activity 1.6 - Gaining/spending resources                     5
+
+Step 2: Multiplayer Functionality
+Activity 2.1 - One machine version of multiplayer             7
+Activity 2.2 - Win/loss conditions                            1
+Activity 2.3 - Game termination                               1
+Activity 2.4 - Basic menu                                     3
+Activity 2.4 - Basic AI                                       7
+
+Step 3: Networking
+Activity 3.1 - Set up host game                               5
+Activity 3.2 - Have players connect to host                   3
+Activity 3.3 - Sending moves to host                          3
+Activity 3.4 - Host sending moves to other players            1
+Activity 3.5 - Displaying results of move in GUI              5
+Activity 3.6 - Winning/losing conditions                      1
+Activity 3.7 - Game termination                               3
+
+Step 4: Features
+Activity 4.1 - Saving/loading, add to menu                    5
+Activity 4.2 - Map generation                                 7
+Activity 4.3 - Upgrades - more units, diversity               20
+Activity 4.4 - Balance with new units, upgrades               4
+Activity 4.5 - Improved graphics                              13
