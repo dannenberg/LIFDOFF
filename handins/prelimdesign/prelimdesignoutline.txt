@@ -5,7 +5,7 @@ cover page
 Table of contents
   apparently we need one... very trivial
 
-project overview
+project overview  === DONE ===================================
   name idea duties 
   client info (vybs)
   project overview for real
@@ -23,20 +23,20 @@ formal phased project breakdown ==== DONE ==================
 dated activity graph
   take that activities from above and divide them where they can be paralized
 
-milestones and deliverables
+milestones and deliverables == DONEEEEEEEEEEE =================
   table with event id title result date and dependencies
   i guess this is different from steps and activities?
   if not this pretty easy
   deliverables are just bundles of miles stones that are presentable
     i guess they could be steps and miles stones could be activities?
 
-resource requirements table
+resource requirements table === DONEEEEEEEEEEEEEEEE ================
   item id description unit cost quantity subtotal event id dependencies
   no idea what this is for.. cuz we dont have any resources cept time maybe?
     but there is not a chance in hell we will estimate that accurately
   this may be more for external contracts?
 
-cost estimate (bullshit)
+cost estimate (bullshit) === DONEEEEEEEEEEEEE ======================
   programmer hourly rate total hours subtotal dependencies
   again we arent getting paid... no idea what this is for maybe just estimate man hours
 
