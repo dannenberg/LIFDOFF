@@ -1,3 +1,28 @@
 Questions for Vybs:
 
-No crossed lines?  More than 1 deliverable?
+No crossed lines?
+More than 1 deliverable?
+MAKE SURE YOU KNOW HOW THE DATES WORK IN THE DATED ACTIVITY GRAPH
+
+===============
+VYBS'S FEEDBACK
+===============
+change process diagram to state
+dated activity:
+  move 6.5 around to many places
+  add milestones to parts not there
+  make sure higher blocks always happen first
+  can write on side: winter break, etc
+milestones:
+  remove deliverables
+  add milestones for empty points
+  adjust table size
+phase: remove weekends
+explain costs
+add costs
+change risks
+team management
+client hypothetical user
+add fluff
+pygame is a LIBRARY
+point out unit tests are done with pygame/python built-ins
