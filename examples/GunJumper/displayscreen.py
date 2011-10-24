@@ -13,25 +13,34 @@ class Screen:
     def click(self,mpos):
         result = self.clickbox[mpos]
         if result != None:
-            result["func"](self, (mpos[0]-result["left"],mpos[1]-result["top"]))
+            result["on"](self, (mpos[0]-result["left"],mpos[1]-result["top"]))
     
     def over(self,mpos):
+        self.overbox.out(mpos)(self)
         result = self.overbox[mpos]
         if result != None:
-            result["func"](self, (mpos[0]-result["left"],mpos[1]-result["top"]))
+            print str(mpos)+" "+str((mpos[0]-result["left"],mpos[1]-result["top"]))
+            result["on"](self, (mpos[0]-result["left"],mpos[1]-result["top"]))
 
 class MouseHitboxes:
     def __init__(self):
         self._data = []
         self._last = None
         
-    def append(self, rect, func):
-        k = {"left":rect[0],"top":rect[1],"width":rect[2],"height":rect[3],"right":rect[0]+rect[2],"bottom":rect[1]+rect[3],"func":func}
+    def append(self, rect, on, off=lambda x:None):
+        k = {"left":rect[0],"top":rect[1],"width":rect[2],"height":rect[3],"right":rect[0]+rect[2],"bottom":rect[1]+rect[3],"on":on,"off":off}
         for x in self._data:
             if  (x["left"] <= k["left"] < x["right"] or x["left"] < k["right"] <= x["right"] or k["left"] <= x["left"] < k["right"] or k["left"] < x["right"] <= k["right"])\
             and (x["top"] <= k["top"] < x["bottom"] or x["top"] < k["bottom"] <= x["bottom"] or k["top"] <= x["top"] < k["bottom"] or k["top"] < x["bottom"] <= k["bottom"]):
                 raise AttributeError("You have overlapping hitboxes!")
         self._data.append(k)
+        
+    def out(self, key):
+        if self._last != None:
+            x = self._data[self._last]
+            if not (x["left"]<=key[0]<x["right"] and x["top"]<=key[1]<x["bottom"]):
+                return x["off"]
+        return lambda x:None
         
     def __getitem__(self, key):
         if self._last != None:  # this SHOULD improve performance with many elements. if it turns out it doesn't, you can remove this block

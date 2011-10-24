@@ -14,15 +14,13 @@ color= {"water"     :(0x00,0x66,0x99),\
         "highlight" :(0xCC,0xCC,0x00),\
         "lines"     :(0x00,0x00,0x00),\
         "sky"       :(0xCC,0xFF,0xFF),\
-        "sand"      :(0xFF,0xCC,0x66)}
+        "sand"      :(0xFF,0xCC,0x66),\
+        "attackbut" :(0xCC,0xCC,0xCC)}
 
 pygame.display.set_caption("LIFDOFF")
 
 done=False
 clock = pygame.time.Clock()
-
-def limitByMultiple(x,y,s):
-    return ((x-y)//s)*s+y
 
 def mainscreenInit(self):
     buttonOffset = 3
@@ -70,6 +68,8 @@ def mainscreenDisplay(self, screen):
     pygame.draw.rect(self.myBoard,color["water"],(0,modifier,1050,330-modifier))
     pygame.draw.rect(self.enemyBoard,color["water"],(0,modifier,1050,330-modifier))
     
+    
+    pygame.draw.rect(self.boardSansButtons,color["attackbut"],(0,70,201,335))
     for x in xrange(0,201,67):  # attacker list
         pygame.draw.line(self.boardSansButtons,color["lines"],(x,70),(x,405),2)
     for x in xrange(70,410,67): # same but horiz
@@ -99,13 +99,19 @@ def mainscreenDisplay(self, screen):
 
 mainscreen = Screen(mainscreenInit, mainscreenDisplay)
 
+def limitByMultiple(x,y,s):
+    return ((x-y)//s)*s+y
+
+def mouseout(scr):
+    scr.highlightSquare = None
+
 def hold(scr, mpos):
     scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),0)
-mainscreen.overbox.append((200,69,1049,330),hold)
+mainscreen.overbox.append((200,69,1049,330),hold,mouseout)  # !?!?!?!?!?!
 
 def hold(scr, mpos):
     scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),1)
-mainscreen.overbox.append((200,409,1049,330),hold)
+mainscreen.overbox.append((200,409,1049,330),hold,mouseout)
 
 while not done:
     clock.tick(60)
