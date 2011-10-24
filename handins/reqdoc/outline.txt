@@ -1,0 +1,37 @@
+coverpage
+table of contents
+intro
+    purpose
+    scope
+    definitions
+    references
+    overview
+
+overall description
+    product perspective
+    product functions
+    user characteristics
+    constraints
+    assumptions/dependencies
+    apportioning of requirements
+    risks
+
+specific requirements
+    interface
+    functional
+    performance
+    database
+    design constraints
+    attributes
+    organization
+
+supporting information
+    no details on this... maybe in notes?
+
+"you will restrict yourself to the following software engingeering techinique and models"
+    use case model
+    concept model
+    environment model
+    operation model
+    screen mockups method****
+    entity relationship method (no db probably wont need)
