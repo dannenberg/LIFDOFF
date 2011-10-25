@@ -1,6 +1,7 @@
 coverpage
 table of contents
-intro
+
+intro   - benson
     purpose
     scope
     definitions
@@ -10,13 +11,13 @@ intro
 overall description
     product perspective
     product functions
-    user characteristics
-    constraints
+    user characteristics - benson - bullshit things for different types of gamers - hardcore, causal, competetive
+    constraints - benson
     assumptions/dependencies
     apportioning of requirements
-    risks
+    risks - benson
 
-specific requirements
+specific requirements - brian and dannenberg
     interface
     functional
     performance
