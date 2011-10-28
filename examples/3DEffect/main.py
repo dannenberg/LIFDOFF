@@ -43,13 +43,9 @@ def redraw():
     pygame.draw.circle(screen, black, (size[0]/2, size[1]/2), 10)   # Your character, always in the center of the screen.
     for x in walls: # Draw each wall and each wall's 'shadow'
         botsq = [(y[0]+px+size[0]/2,y[1]+py+size[1]/2) for i,y in enumerate(x) if i!=4] # The screen coordinates of the base squares, as defined in walls
-        """lefto = y[0]<0 and y[2]<0
-        righto = y[0]>size[0] and y[2]>size[0]
-        topo  = y[1]<0 and y[3]<0
-        boto  = y[1]>size[1] and y[3]>size[1]"""
-        #if False not in [y[0]<0 and y[2]<0 for y in botsq]:
-        #    continue  # slight performance boost: if base is entirely off-screen, don't print
-        topsq = [((y[0]-size[0]/2)*x[4], (y[1]-size[1]/2)*x[4]) for y in botsq]         # the projected tops of the squares:
+        if False not in [y[0]<0 or y[1]<0 or y[0]>size[0] or y[1]>size[1] for y in botsq]:
+            continue  # slight performance boost: if base is entirely off-screen, don't print
+        topsq = [((y[0]-size[0]/2)*x[4], (y[1]-size[1]/2)*x[4]) for y in botsq] # the projected tops of the squares:
         # essentially we're projecting a ray from the player to the corners of the base square to a distance of the height of the walls.
         sx1 = (botsq[0],botsq[2],topsq[2],topsq[0]) # draw a 'plane' from the opposite corners of the base to the cooresponding corners of the top.
         sx2 = (botsq[1],botsq[3],topsq[3],topsq[1]) # same, except the other opposite corners.
@@ -76,7 +72,7 @@ while not done:     # main loop
         tm = moving
         if tm&1 and tm&4:   # moving in two opposite directions in once, take em out
             tm &= ~(1|4)    # I recognize this check is done by just adding and subtracting step,
-        if tm&2 and tm&8:   # but  you would get the wrong speed (the diagonal speed)
+        if tm&2 and tm&8:   # but you would get the wrong speed (the diagonal speed)
             tm &= ~(2|8)
             
         tstep = step
