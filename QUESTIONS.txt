@@ -1,5 +1,14 @@
 Questions for Vybs:
 
+What's the deal with airline food? (WILL NEVER GET OLD)
+Is dat diagram clear + proper (server-client)
+R r use cases good e-nuff
+& lastly is our combo of use cases + client server diagram + screenshots sufficient for section 3 or did we miss something?????????????????????????????
++ then i guess i dont want to read benson's shitty writing and fix it all
+
+==============================
+==============================
+
 No crossed lines?
 More than 1 deliverable?
 MAKE SURE YOU KNOW HOW THE DATES WORK IN THE DATED ACTIVITY GRAPH
