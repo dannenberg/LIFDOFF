@@ -57,9 +57,9 @@ class MainScreen(Screen):
         self.waterLevel = (self.waterLevel+(math.pi/180))%(math.pi*2)
         modifier = int(math.sin(self.waterLevel)*self.waterRange)
         
-        font = pygame.font.Font(None, 200)
-        text = font.render("LOGO",True,Screen.color["black"])
-        whitetext = font.render("LOGO",True,Screen.color["white"])
+        font = pygame.font.Font(None, 170)
+        text = font.render("CONQUER THE SEAS",True,Screen.color["black"])
+        whitetext = font.render("CONQUER THE SEAS",True,Screen.color["white"])
         
         screen.fill(Screen.color["sky"])
         water = pygame.Surface((1280,700-modifier))

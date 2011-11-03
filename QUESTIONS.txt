@@ -1,12 +1,19 @@
 Questions for Vybs:
 
 What's the deal with airline food? (WILL NEVER GET OLD)
-Is dat diagram clear + proper (server-client)
-R r use cases good e-nuff
+Is the diagram clear + proper (server-client)
+Are our use cases good enough
 & lastly is our combo of use cases + client server diagram + screenshots sufficient for section 3 or did we miss something?????????????????????????????
 + then i guess i dont want to read benson's shitty writing and fix it all
 
+business rule: to some people mana means certain things. define it. (in gamerules sense)
+
+USE CASE DIAGRAM:
+ - from actor to bubble: good
+ - from bubble to bubble: need <<include>> or <<extends>> or whatever you make up, but define what that means.
+
 ==============================
+------------------------------
 ==============================
 
 No crossed lines?
