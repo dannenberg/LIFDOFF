@@ -24,7 +24,9 @@ class Screen:
     
     def click(self,mpos):
         result = self.clickbox[mpos]
+        print mpos
         if result != None:
+            print str(mpos)+" "+str((mpos[0]-result["left"],mpos[1]-result["top"]))
             result["on"](self, (mpos[0]-result["left"],mpos[1]-result["top"]))
     
     def over(self,mpos):
@@ -39,17 +41,29 @@ class MainScreen(Screen):
         Screen.__init__(self)
         self.waterLevel=0
         self.waterRange=16
-        self.selectbox = (0,0,0,0)
+        self.selectbox = [12.5,15,205,50]
+        self.gotobox = [12.5,15,205,50]
+        self.sel_momentum = 3
+        self.sel_speed = 0
         self.smallerfont = pygame.font.Font(None, 50)
         
         self.options = [(x,self.smallerfont.render(x,True,Screen.color["white"]).get_width()) for x in ["New Game","Load Game","Options","Credits","Exit"]]
         self.maxwid = sorted(self.options, None, lambda x:x[1])[-1][1]   # get the widest word
         
         def over(scr,mpos):
-            wait = (mpos[1]-25)//50
+            wait = (mpos[1]-13)//50
             if 0 <= wait < len(self.options):
-                self.selectbox = (12.5,(wait*50)+15,self.options[wait][1]+30,50)
-        self.overbox.append((30,200,300,300),over)
+                self.gotobox = [12.5,(wait*50)+15,self.options[wait][1]+30,50]
+                if self.selectbox == None:
+                    self.selectbox = self.gotobox[:]
+        def out(scr):
+            self.selectbox = None
+        self.overbox.append((30,200,300,300),over,out)
+        def clickexit(someone,mpos):
+            print "AHAHAHA"
+            #self.command = "exit"
+        self.clickbox.append((12.5,215+230,98,50),clickexit)
+        self.command = False
     
     def display(self, screen):
         Screen.display(self, screen)
@@ -70,13 +84,31 @@ class MainScreen(Screen):
         
         ####################################
         
+        
         textbox = pygame.Surface((self.maxwid+50,280),pygame.SRCALPHA)
         textbox.fill((0,0,0,128))
-        pygame.draw.rect(textbox, (0,0,0,192), self.selectbox)
+        
+        if self.selectbox != None:
+            direction = math.copysign(1,self.gotobox[1]-self.selectbox[1])
+            if self.selectbox[1] == self.gotobox[1]:
+                self.sel_speed = 0
+            else:
+                self.sel_speed += direction*self.sel_momentum
+                self.selectbox[1] += self.sel_speed
+                if direction < 0:
+                    self.selectbox[1] = max(self.selectbox[1],self.gotobox[1])
+                else:
+                    self.selectbox[1] = min(self.selectbox[1],self.gotobox[1])
+            if not (12.5<=self.selectbox[1]<=(len(self.options)-1)*50+12.5):
+                self.selectbox[1] = max(min((len(self.options)-1)*50+12.5,self.selectbox[1]),12.5)
+                self.sel_speed = 0
+            
+            pygame.draw.rect(textbox, (0,0,0,192), self.selectbox)
         for i,x in enumerate(self.options):
             text = self.smallerfont.render(x[0],True,Screen.color["white"])
             textbox.blit(text, (25,i*50+25))
         screen.blit(textbox, (30,200))
+        return self.command
 
 class GameScreen(Screen):
     def __init__(self):

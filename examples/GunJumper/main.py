@@ -47,8 +47,12 @@ while not done:
             done=True
         elif event.type == pygame.MOUSEMOTION:
             mainscreen.over(pygame.mouse.get_pos())
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mainscreen.click(pygame.mouse.get_pos())
     
-    mainscreen.display(screen)
+    command = mainscreen.display(screen)
+    if command == "exit":
+        done = True
     
     pygame.display.flip()
 
