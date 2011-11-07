@@ -3,10 +3,10 @@ import pygame
 import unittest
 import math
 
+class Screen:
 """Screen initializes colors, mouse over/clicked events, 
     and the display for launch
     nominally abstract"""
-class Screen:
     color= {"black"     :(0x00, 0x00, 0x00), 
             "white"     :(0xFF, 0xFF, 0xFF), 
             "water"     :(0x00, 0x66, 0x99), 
@@ -22,28 +22,28 @@ class Screen:
         self.clickbox = MouseHitboxes()
         self.overbox = MouseHitboxes()
 
-    """takes a screen draws screen state to screen"""
     def display(self, screen):
+    """takes a screen draws screen state to screen"""
         screen.fill(Screen.color["bg"])
     
-    """handles click events"""
     def click(self, mpos):
+    """handles click events"""
         result = self.clickbox[mpos]
         print mpos
         if result != None:
             print str(mpos) + " " + str((mpos[0] - result["left"], mpos[1] - result["top"]))
             result["on"](self, (mpos[0] - result["left"], mpos[1] - result["top"]))
     
-    """handles mouseover events"""
     def over(self, mpos):
+    """handles mouseover events"""
         self.overbox.out(mpos)(self)
         result = self.overbox[mpos]
         if result != None:
             #print str(mpos) + " " + str((mpos[0] - result["left"], mpos[1] - result["top"]))
             result["on"](self, (mpos[0] - result["left"], mpos[1] - result["top"]))
 
-""" Main menu screen """
 class MainScreen(Screen):
+""" Main menu screen """
     def __init__(self):
         Screen.__init__(self)
         self.waterLevel = 0 #defines the height of the water in the background
@@ -123,8 +123,8 @@ class MainScreen(Screen):
         screen.blit(textbox, (30, 200))
         return self.command
 
-"""in game screen"""
 class GameScreen(Screen):
+"""in game screen"""
     def __init__(self):
         Screen.__init__(self)
         
