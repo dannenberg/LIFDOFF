@@ -17,6 +17,9 @@ color= {"water"     :(0x00,0x66,0x99),\
         "sand"      :(0xFF,0xCC,0x66),\
         "attackbut" :(0xCC,0xCC,0xCC)}
 
+screens = {"game": GameScreen(),
+           "main": MainScreen()}
+
 pygame.display.set_caption("LIFDOFF")
 
 done=False
@@ -53,6 +56,11 @@ while not done:
     command = mainscreen.display(screen)
     if command == "exit":
         done = True
+    try:
+        if command.split()[0] == "transition":
+            mainscreen = screens[command.split()[1]]
+    except:
+        pass
     
     pygame.display.flip()
 
