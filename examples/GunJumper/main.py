@@ -17,7 +17,8 @@ color= {"water"     :(0x00,0x66,0x99),\
         "sand"      :(0xFF,0xCC,0x66),\
         "attackbut" :(0xCC,0xCC,0xCC)}
 
-screens = {"game": GameScreen(),
+screens = {"intro":IntroMovie(),
+           "game": GameScreen(),
            "main": MainScreen()}
 
 pygame.display.set_caption("LIFDOFF")
@@ -25,22 +26,7 @@ pygame.display.set_caption("LIFDOFF")
 done=False
 clock = pygame.time.Clock()
 
-mainscreen = MainScreen()
-gamescreen = GameScreen()
-
-def limitByMultiple(x,y,s):
-    return ((x-y)//s)*s+y
-
-def mouseout(scr):
-    scr.highlightSquare = None
-
-def hold(scr, mpos):
-    scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),0)
-gamescreen.overbox.append((200,69,1049,330),hold,mouseout)  # !?!?!?!?!?!
-
-def hold(scr, mpos):
-    scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),1)
-gamescreen.overbox.append((200,409,1049,330),hold,mouseout)
+mainscreen = IntroMovie()
 
 while not done:
     clock.tick(60)

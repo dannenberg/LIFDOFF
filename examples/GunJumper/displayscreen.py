@@ -43,6 +43,32 @@ class Screen:
             #print str(mpos) + " " + str((mpos[0] - result["left"], mpos[1] - result["top"]))
             result["on"](self, (mpos[0] - result["left"], mpos[1] - result["top"]))
 
+class IntroMovie(Screen):
+    def __init__(self):
+        Screen.__init__(self)
+        self.introtheme = pygame.mixer.music.load("sound/lifdoff.mp3")
+        self.logo = pygame.image.load("img/lifdofflogo.png")
+        self.overlay = pygame.Surface((1280,800),pygame.SRCALPHA)
+        self.overlay.fill((0xFF,0xFF,0xFF,192))
+        self.yloc = 500-62
+        self.playing = 0
+        
+    def display(self, scr):
+        Screen.display(self, scr)
+        if self.playing == 0:
+            self.playing = 1
+            pygame.mixer.music.play()
+        scr.fill(Screen.color["white"])
+        
+        self.overlay.fill((0xFF,0xFF,0xFF,int(2.55*abs((self.yloc+62-400)))))
+        
+        scr.blit(self.logo, (300,self.yloc))
+        scr.blit(self.overlay, (0,0))
+        self.yloc -= .75
+        if self.yloc < 300-62:
+            pygame.mixer.music.stop()
+            return "transition main"
+
 class MainScreen(Screen):
     """ Main menu screen """
     def __init__(self):
@@ -57,6 +83,7 @@ class MainScreen(Screen):
         
         self.options = ["New Game", "Load Game", "Options", "Credits", "Exit"] # menu options
         self.submenuoptions = None
+        self.submenu = 0
         self.maxwid = max([self.smallerfont.render(x, True, Screen.color["white"]).get_width() for x in self.options])
         
         def over(setbit):
@@ -75,8 +102,13 @@ class MainScreen(Screen):
         self.overbox.append((30, 200, self.maxwid+50, 280), over(True), out)
 
         def click_newgame(someone, mpos):
+            if self.submenu == 1:
+                return
+            if self.submenu != 0:
+                pass
+            self.submenu = 1
             self.submenuoptions = ["Single Player", "Join Multiplayer", "Host Multiplayer"]
-            self.submaxwid = max([self.smallerfont.render(x, True, Screen.color["white"]).get_width() for x in self.submenuoptions])
+            self.submaxwid = self.maxwidth(self.submenuoptions)
             self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
             
             def click_singleplayer(x,mpos):
@@ -84,10 +116,20 @@ class MainScreen(Screen):
             
             self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)
             
+        def click_options(someone, mpos):
+            if self.submenu == 2:
+                return
+            if self.submenu != 0:
+                pass
+            self.submenu = 2
+            self.submenuoptions = ["Multiplayer name:","[_____________]","AI Level: 1 2 3","SFX:  "+("-"*9)+"|","Music:"+("-"*9)+"|"]
+            self.submaxwid = self.maxwidth(self.submenuoptions)
+            self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
+            
         def click_exit(someone, mpos): #ideally this will close the game
             self.command = "exit"
         
-        for i,x in enumerate([click_newgame, lambda x,y:x, lambda x,y:x, lambda x,y:x, click_exit]):
+        for i,x in enumerate([click_newgame, lambda x,y:x, click_options, lambda x,y:x, click_exit]):
             self.clickbox.append((30, 215+50*i, self.maxwid, 45), x)
         self.command = False
     
@@ -149,6 +191,9 @@ class MainScreen(Screen):
         screen.blit(textbox, (30, 200))
         
         return self.command
+        
+    def maxwidth(self, optionlist):
+        return max([self.smallerfont.render(x, True, Screen.color["white"]).get_width() for x in optionlist])
 
 class GameScreen(Screen):
     """in game screen"""
@@ -188,6 +233,20 @@ class GameScreen(Screen):
         for x in xrange(0, 1079, self.squaresize):
             pygame.draw.line(self.gridlines, (0, 0, 0, 64), (x, 0), (x, 330), 2)   # v gridline
             pygame.draw.line(self.gridlines, (0, 0, 0, 64), (0, x), (1050, x), 2)  # h gridline
+            
+        def limitByMultiple(x,y,s):
+            return ((x-y)//s)*s+y
+        
+        def mouseout(scr):
+            scr.highlightSquare = None
+        
+        def hold(scr, mpos):
+            scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),0)
+        self.overbox.append((200,69,1049,330),hold,mouseout)  # !?!?!?!?!?!
+        
+        def hold(scr, mpos):
+            scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),1)
+        self.overbox.append((200,409,1049,330),hold,mouseout)
     
     def display(self, screen):
         Screen.display(self, screen)
