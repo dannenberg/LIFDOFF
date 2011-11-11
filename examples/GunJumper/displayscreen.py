@@ -46,7 +46,7 @@ class Screen:
 class IntroMovie(Screen):
     def __init__(self):
         Screen.__init__(self)
-        self.introtheme = pygame.mixer.music.load("sound/lifdoff.mp3")
+        self.introtheme = pygame.mixer.music.load("sound/lifdoff.ogg")
         self.logo = pygame.image.load("img/lifdofflogo.png")
         self.overlay = pygame.Surface((1280,800),pygame.SRCALPHA)
         self.overlay.fill((0xFF,0xFF,0xFF,192))
