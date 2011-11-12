@@ -1,7 +1,11 @@
 import pygame
 import random
 import math
-from displayscreen import *
+from screen import *
+from gamescreen import *
+from introscreen import *
+from mainscreen import *
+from creditsscreen import *
 
 pygame.init()
 
@@ -19,14 +23,15 @@ color= {"water"     :(0x00,0x66,0x99),\
 
 screens = {"intro":IntroMovie(),
            "game": GameScreen(),
-           "main": MainScreen()}
+           "main": MainScreen(),
+           "credits":CreditsScreen()}
 
 pygame.display.set_caption("LIFDOFF")
 
 done=False
 clock = pygame.time.Clock()
 
-mainscreen = IntroMovie()
+mainscreen = screens["main"]
 
 while not done:
     clock.tick(60)
