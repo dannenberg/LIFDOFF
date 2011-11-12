@@ -74,7 +74,7 @@ class TestMouseHitboxes(unittest.TestCase):
     
     #   +---+
     #   |   |
-    #  +-+-+|
+    # +-+-+ |
     # | | | |
     # | +-+-+ 
     # |   |
