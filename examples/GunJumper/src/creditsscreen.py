@@ -10,6 +10,10 @@ class CreditsScreen(Screen):
         self.waterLevel = 0 #defines the height of the water in the background
         self.waterRange = 16 #how much the water level fluctuates
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items
+        def go_back(someone, mpos):
+            self.command = "transition main"
+        self.clickbox.append((30,650,102,50), go_back)
+        self.command = ""
         
     def display(self, screen):
         Screen.display(self, screen) #calls super
@@ -31,7 +35,7 @@ class CreditsScreen(Screen):
         
         ####################################
         
-        textbox = pygame.Surface((1220, 530), pygame.SRCALPHA)
+        textbox = pygame.Surface((1220, 430), pygame.SRCALPHA)
         textbox.fill((0, 0, 0, 128))
         for i,x in enumerate(("-- Credits --\nMatt Dannenberg - Version Control\nBrian Shaginaw - Coding, in its entirety.\nBenson 'Team Leader' Perry - Fuckall"\
                              +"\nPyGame\nPython\nEgoraptor").split("\n")):
@@ -40,4 +44,12 @@ class CreditsScreen(Screen):
         
         screen.blit(textbox, (30, 200))
         
-        return ""
+        text = self.smallerfont.render("Back", True, Screen.color["white"])
+        backbox = pygame.Surface((text.get_width()+20,50), pygame.SRCALPHA)
+        backbox.fill((0,0,0,128))
+        backbox.blit(text, (10,10))
+        screen.blit(backbox, (30, 650))
+        
+        hold = self.command
+        self.command = ""
+        return hold

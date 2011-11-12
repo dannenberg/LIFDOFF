@@ -127,7 +127,9 @@ class MainScreen(Screen):
         
         screen.blit(textbox, (30, 200))
         
-        return self.command
+        hold = self.command
+        self.command = ""
+        return hold
         
     def maxwidth(self, optionlist):
         return max([self.smallerfont.render(x, True, Screen.color["white"]).get_width() for x in optionlist])
