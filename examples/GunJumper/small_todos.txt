@@ -1,0 +1,5 @@
+If you're bored and looking for something to add to this fix deez things.
+=============
+- Screen transitions are HI-LARIOUSLY bad. Fix dat.
+- Imports from different directories so that it's not a file-dump.
+- 
