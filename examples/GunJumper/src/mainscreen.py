@@ -55,6 +55,10 @@ class MainScreen(Screen):
                 return
             if self.submenu != 0:
                 self.overbox.remove((90+self.maxwid, 200))
+                try:
+                    self.clickbox.remove((90+self.maxwid, 200))
+                except:
+                    pass
             self.submenu = 2
             self.submenuoptions = ["Multiplayer name:","[_____________]","AI Level: 1 2 3","SFX:  "+("-"*9)+"|","Music:"+("-"*9)+"|"]
             self.submaxwid = self.maxwidth(self.submenuoptions)
