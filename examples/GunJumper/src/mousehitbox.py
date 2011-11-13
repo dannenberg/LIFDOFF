@@ -70,8 +70,9 @@ class TestMouseHitboxes(unittest.TestCase):
     #  +--+--+ |
     #     +----+
     def test_half_inside(self):
-        self.mh.append((0, 1, 2, 2), self.function)
-        self.assertRaises(AttributeError, self.mh.append((1, 0, 2, 4), self.function))
+        with self.assertRaises(AttributeError):
+            self.mh.append((0, 1, 2, 2), self.function)
+            self.mh.append((1, 0, 2, 4), self.function)
     
     #   +---+
     #   |   |
@@ -81,13 +82,15 @@ class TestMouseHitboxes(unittest.TestCase):
     # |   |
     # +---+
     def test_one_corner(self):
-        self.mh.append((0, 1, 2, 2), self.function)
-        self.assertRaises(AttributeError, self.mh.append((1, 0, 2, 2), self.function))
+        with self.assertRaises(AttributeError):
+            self.mh.append((0, 1, 2, 2), self.function)
+            self.mh.append((1, 0, 2, 2), self.function)
     
     # opposite of previous
     def test_different_corner(self):
-        self.mh.append((1, 0, 2, 2), self.function)
-        self.assertRaises(AttributeError, self.mh.append((0, 1, 2, 2), self.function))
+        with self.assertRaises(AttributeError):
+            self.mh.append((1, 0, 2, 2), self.function)
+            self.mh.append((0, 1, 2, 2), self.function)
     
     # +--------------+
     # |  +--------+  |
@@ -95,8 +98,9 @@ class TestMouseHitboxes(unittest.TestCase):
     # |  +--------+  |
     # +--------------+
     def test_one_in_other(self):
-        self.mh.append((0, 0, 3, 3), self.function)
-        self.assertRaises(AttributeError, self.mh.append((1, 1, 1, 1), self.function))
+        with self.assertRaises(AttributeError):
+            self.mh.append((0, 0, 3, 3), self.function)
+            self.mh.append((1, 1, 1, 1), self.function)
     
     #    +--+
     #    |  |
@@ -106,13 +110,15 @@ class TestMouseHitboxes(unittest.TestCase):
     #    |  |
     #    +--+
     def test_cross(self):
-        self.mh.append((1, 0, 1, 3), self.function)
-        self.assertRaises(AttributeError, self.mh.append((0, 1, 3, 1), self.function))
+        with self.assertRaises(AttributeError):
+            self.mh.append((1, 0, 1, 3), self.function)
+            self.mh.append((0, 1, 3, 1), self.function)
     
     # opposite of previous
     def test_other_cross(self):
-        self.mh.append((0, 1, 3, 1), self.function)
-        self.assertRaises(AttributeError, self.mh.append((1, 0, 1, 3), self.function))
+        with self.assertRaises(AttributeError):
+            self.mh.append((0, 1, 3, 1), self.function)
+            self.mh.append((1, 0, 1, 3), self.function)
     
     def test_separate1(self):
         self.mh.append((0, 0, 2, 2), self.function)
