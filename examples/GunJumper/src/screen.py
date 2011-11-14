@@ -14,7 +14,8 @@ class Screen:
             "lines"     :(0x00, 0x00, 0x00),
             "sky"       :(0xCC, 0xFF, 0xFF),
             "sand"      :(0xFF, 0xCC, 0x66),
-            "attackbut" :(0xCC, 0xCC, 0xCC)}
+            "attackbut" :(0xCC, 0xCC, 0xCC),
+            "shopbg"    :(0x99, 0xCC, 0xFF)}
     
     def __init__(self):
         self.size = (1280, 800)

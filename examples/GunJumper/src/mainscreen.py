@@ -18,7 +18,7 @@ class MainScreen(Screen):
         self.options = ["New Game", "Load Game", "Options", "Credits", "Exit"] # menu options
         self.submenuoptions = None
         self.submenu = 0
-        self.maxwid = max([self.smallerfont.render(x, True, Screen.color["white"]).get_width() for x in self.options])
+        self.maxwid = max([self.smallerfont.size(x)[0] for x in self.options])
         
         def over(setbit):
             def anon(scr, mpos): #picks new location for gotobox
@@ -136,4 +136,4 @@ class MainScreen(Screen):
         return hold
         
     def maxwidth(self, optionlist):
-        return max([self.smallerfont.render(x, True, Screen.color["white"]).get_width() for x in optionlist])
+        return max([self.smallerfont.size(x)[0] for x in optionlist])
