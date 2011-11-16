@@ -1,1 +1,4 @@
-examples/GunJumper/src/*.pyc
+*.pyc
+*~
+*.DS_Store
+*.swap
