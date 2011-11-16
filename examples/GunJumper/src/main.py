@@ -1,12 +1,12 @@
 import pygame
 import random
 import math
-from screen import *
-from gamescreen import *
-from introscreen import *
-from mainscreen import *
-from creditsscreen import *
-from shopscreen import *
+from screens.screen import *
+from screens.gamescreen import *
+from screens.introscreen import *
+from screens.mainscreen import *
+from screens.creditsscreen import *
+from screens.shopscreen import *
 
 pygame.init()
 
