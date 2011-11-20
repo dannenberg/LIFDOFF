@@ -24,7 +24,7 @@ pygame.display.set_caption("LIFDOFF")
 done=False
 clock = pygame.time.Clock()
 
-mainscreen = screens["shop"]
+mainscreen = screens["intro"]
 
 while not done:
     clock.tick(60)
