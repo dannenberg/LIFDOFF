@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <style>
+            .title
+            {
+                font-weight:bold;
+            }
+            tr
+            {
+                background-color:#EEEEFF;
+            }
+            th
+            {
+                background-color:#FFFFFF;
+            }
+        </style>
+        <script>
+            function highlight(task, dis, on)
+            {
+                dis.style.backgroundColor = (on?"lightgreen":"");
+                document.getElementById("task_"+task).style.backgroundColor = (on?"lightgreen":"#EEEEFF");
+            }
+            function factorial(n)
+            {
+                var i= n;
+                while(--i) n*= i;
+                return n;
+            }
+            
+            function goData()
+            {
+                var activities = {};
+                activities["START"] = null;
+                activities["1.1"] = {date:"11/02/11",prereqs:["START"],desc:"Draft Requirement Document introduction"};
+                activities["1.2"] = {date:"11/02/11",prereqs:["START"],desc:"Draft Requirement Document description"};
+                activities["1.3"] = {date:"11/02/11",prereqs:["START"],desc:"Draft Requirement Document requirements"};
+                activities["1.4"] = {date:"11/02/11",prereqs:["START"],desc:"Draft Requirement Document diagrams"};
+                activities["1.5"] = {date:"11/07/11",prereqs:["1.1","1.2","1.3","1.4"],desc:"Revise and repair  Requirement Document"};
+                activities["2.1"] = {date:"01/11/12",prereqs:["1.5"],desc:"Draft Design Document introduction"};
+                activities["2.2"] = {date:"01/13/12",prereqs:["1.5"],desc:"Draft Design Document architecture overview"};
+                activities["2.3"] = {date:"01/15/12",prereqs:["1.5"],desc:"Draft Design Document design (diagram heavy)"};
+                activities["D2"] = {date:"01/18/12",prereqs:["2.1","2.2","2.3"],desc:"Revise Design Document heavily, finish."};
+                activities["3.1"] = {date:"11/20/11", prereqs:["1.5"],desc:"Game grid/board"};
+                activities["3.2"] = {date:"12/28/11", prereqs:["3.1"],desc:"Moveable defensive units"};
+                activities["3.3"] = {date:"12/28/11", prereqs:["3.1"],desc:"Sending offensive units"};
+                activities["M1"] = {date:"12/30/11", prereqs:["3.2","3.3"], desc:"Board with automatic (offensive) and manual (defensive) movement"};
+                activities["3.4"] = {date:"01/06/12", prereqs:["M1"],desc:"Turn system for moving and sending"};
+                activities["3.5"] = {date:"01/09/12", prereqs:["M1"],desc:"Unit collisions/interactions"};
+                activities["6.5_1"] = {date:"01/08/12", prereqs:["M1"],desc:"Improved graphics"};
+                activities["3.6"] = {date:"01/07/12", prereqs:["3.1"],desc:"Gaining/spending resources"};
+                activities["D3"] = {date:"01/21/12", prereqs:["D2","3.4","3.5","6.5_1","3.6"], desc:"Client is show board layout with moveable offense and defense and collisions"};
+                activities["4.1"] = {date:"01/30/12", prereqs:["D3"],desc:"Single machine version of multiplayer"};
+                activities["4.2"] = {date:"01/26/12", prereqs:["D3"],desc:"Win/loss conditions"};
+                activities["4.3"] = {date:"02/03/12", prereqs:["4.2"],desc:"Win/loss conditions"};
+                activities["4.4"] = {date:"02/01/12", prereqs:["D3"],desc:"Basic menu"};
+                activities["4.5"] = {date:"02/05/12", prereqs:["D3"],desc:"Basic AI"};
+                activities["5.1"] = {date:"02/08/12", prereqs:["4.1","4.3","4.4","4.5"], desc:"Set up host game"};
+                activities["5.2"] = {date:"02/10/12", prereqs:["5.1"],desc:"Have players connect to host"};
+                activities["5.3"] = {date:"02/12/12", prereqs:["5.2"],desc:"Sending moves to host"};
+                activities["5.4"] = {date:"02/12/12", prereqs:["5.2"],desc:"Host sending moves to other players"};
+                activities["5.5"] = {date:"02/14/12", prereqs:["5.3","5.4"],desc:"Display results of move in GUI"};
+                activities["5.6"] = {date:"02/21/12", prereqs:["5.5"],desc:"Game termination/cleanup"};
+                activities["6.1"] = {date:"03/07/12", prereqs:["5.6"],desc:"Saving/loading (add to main menu)"};
+                activities["6.2"] = {date:"03/14/12", prereqs:["5.6"],desc:"Map generation"};
+                activities["6.3"] = {date:"03/14/12", prereqs:["5.6"],desc:"Upgrades - unit diversity"};
+                activities["6.4"] = {date:"04/09/12", prereqs:["6.2","6.3"],desc:"Balance with new units/upgrades"};
+                activities["6.5_2"] = {date:"04/09/12", prereqs:["6.3"],desc:"Improved graphics"};
+                activities["FINISH"] = {date:"04/09/12", prereqs:["6.1","6.4","6.5_2"]};
+                
+                var maxpreq = 0;
+                for(var x in activities)
+                    if(activities[x])
+                        maxpreq = Math.max(activities[x].prereqs.length, maxpreq);
+                var divver = factorial(maxpreq);
+                
+                var toR = "<tr><th>Name</th><th>Date due</th><th colspan='"+divver+"'>Prereqs</th><th>Description</th></tr>";
+                for(var x in activities)
+                {
+                    toR += "<tr onmouseout='this.style.backgroundColor=\"#EEEEFF\"' onmouseover='this.style.backgroundColor=\"#CCFFCC\"' id='task_"+x+"'><td class='title'><a target='"+x+"'>"+x.replace(/_.*/,"")+"</a></td>";
+                    if(activities[x])
+                    {
+                        toR += "</td><td>"+activities[x].date+"</td>";
+                        var ln = activities[x].prereqs.length;
+                        for(var y=0; y<ln; y++)
+                        {
+                            var ny = activities[x].prereqs[y];
+                            toR += "<td style='text-align:center;' colspan='"+(divver/ln)+"' onmouseover='highlight(\""+ny+"\",this, true)' onmouseout='highlight(\""+ny+"\", this, false)'>"+ny.replace(/_.*/,"")+"</td>";
+                        }
+                        if(!activities[x].desc)
+                            activities[x].desc = "&nbsp;";
+                        toR += "<td>"+activities[x].desc+"</td>";
+                    }
+                    else
+                        toR += "<td colspan='"+(divver+2)+"'>&nbsp;</td>";
+                    toR += "</tr>";
+                }
+                document.getElementById("data").innerHTML = toR;
+            }
+        </script>
+    </head>
+    <body onload="goData()">
+        <table id="data" cellspacing="5"></table>
+    </body>
+</html>
