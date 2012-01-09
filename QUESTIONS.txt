@@ -1,6 +1,6 @@
 Questions for Vybs:
 
-What's the deal with airline food? (WILL NEVER GET OLD)
+WHAT'S the deal with airline food? (WILL NEVER GET OLD)
 Is the diagram clear + proper (server-client)
 Are our use cases good enough
 & lastly is our combo of use cases + client server diagram + screenshots sufficient for section 3 or did we miss something?????????????????????????????
