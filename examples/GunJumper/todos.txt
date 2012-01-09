@@ -20,3 +20,17 @@ If you're bored and looking for something to add to this fix deez things.
 ====================
 - Perhaps we should make a "button" class that associates visuals and click/overboxes.
   - in that case MouseHitboxes should be a composite pattern, which could get a little ugly but doable.
+
+====================
+-- DESIGN CHOICES --
+====================
+Each Submit is split into Turns, so if you dump all your points into one defensive unit he moves once, then again, then again, once per turn, but at the end of the Submit he is where you put him. Offensive units are sent in at a turn depending on where you set them in the starting area, so:
+
+          012
+.............
+.............
+.............
+.............
+.............
+
+if you set it at column zero it comes from the right at time 0, 1 at 1, 2 at 2.
