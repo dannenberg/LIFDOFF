@@ -1,16 +1,15 @@
 import pygame
 class Unit:
-    def __init__(self):
-        pass
-        # self._cells = (x1,y1,x2,y2)
-        # self._tileset = # image
-        # self._spr_size = (x,y)
-        # self._spr_src = (x,y)
-        # self._spr_dest = 0,0
+    def __init__(self, (x, y), (w, h), imgsrc):
+        S = 25
+        self.addons = []
+        self._tileset = pygame.image.load(imgsrc)
+        self._size = (w, h)         # width/height
+        self._spr_size = (w*S, h*S) # 
+        self._loc = (x,y)
+        self._spr_dest = (x*S, y*S) # 
         
-    def spr_dest(self):
-        S = 25  # squaresize
-        return (z*S for z in self._spr_dest)
-        
-    def draw_sprite(self, dest):
-        pass
+    def draw_sprite(self, destsurface):
+        for x in self.addons:
+            x.draw_sprite(destsurface)
+        destsurface.blit(self._tileset, self._spr_dest)
