@@ -1,8 +1,9 @@
-import Unit
+from unit import Unit
 import pygame
 
 class Board:
     def __init__(self, w, h):
+        self.surface = pygame.Surface((w*30, h*30)) # TODO make a const for cell size
         self._w = w
         self._h = h
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size

@@ -1,5 +1,6 @@
 import pygame
 import math
+from board import Board
 from screen import Screen
 from mousehitbox import MouseHitboxes
 
@@ -14,8 +15,14 @@ class GameScreen(Screen):
         self.waterRange=self.squaresize/4
         self.MAINY= - 10
         
-        self.myBoard = pygame.Surface((1050, 330))
+        self.myBoard = Board(35, 11)
         self.enemyBoard = pygame.Surface((1050, 330))
+        def boardclick(scr, mpos):
+            curunit = self.myBoard.get_cell_content( (mpos[0]//30, mpos[1]//30))
+            if curunit != None:
+                curunit.on_click()
+
+        self.clickbox.append((201, 70, 1050, 330), boardclick)
         
         self.highlightSquare = None
         self.highlight = pygame.Surface((self.squaresize, self.squaresize)) # the size of your rect
@@ -61,11 +68,11 @@ class GameScreen(Screen):
         self.boardSansButtons.fill(Screen.color["bg"])
         
         pygame.draw.rect(self.enemyBoard, Screen.color["sky"], (0, 0, 1050, 330))
-        pygame.draw.rect(self.myBoard, Screen.color["sky"], (0, 0, 1050, 330))
+        pygame.draw.rect(self.myBoard.surface, Screen.color["sky"], (0, 0, 1050, 330))
         
         self.waterLevel = (self.waterLevel + (math.pi/180))%(math.pi * 2)
         modifier = int(self.squaresize * 2.5 + math.sin(self.waterLevel) * self.waterRange)
-        pygame.draw.rect(self.myBoard, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
+        pygame.draw.rect(self.myBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         pygame.draw.rect(self.enemyBoard, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         
         pygame.draw.rect(self.boardSansButtons, Screen.color["attackbut"], (0, 70, 201, 335))
@@ -76,12 +83,12 @@ class GameScreen(Screen):
         
         if self.highlightSquare != None:
             if not self.highlightSquare[1]:
-                self.myBoard.blit(self.highlight, self.highlightSquare[0])
+                self.myBoard.surface.blit(self.highlight, self.highlightSquare[0])
             else:
                 self.enemyBoard.blit(self.highlight, self.highlightSquare[0])
-        self.myBoard.blit(self.gridlines, (0, 0))
+        self.myBoard.surface.blit(self.gridlines, (0, 0))
         self.enemyBoard.blit(self.gridlines, (0, 0))
-        self.boardSansButtons.blit(self.myBoard, (201, 70))
+        self.boardSansButtons.blit(self.myBoard.surface, (201, 70))
         self.boardSansButtons.blit(self.enemyBoard, (201, 410))
         
         pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201,  70), ( 201, 740), 2)  # side line
