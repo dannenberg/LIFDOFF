@@ -8,9 +8,15 @@ class Unit:
         self._size = (w, h)         # width/height
         self._spr_size = (w*S, h*S) # width and height in pixels
         self._loc = (x,y)           # location on the board
-        self._spr_dest = (x*S, y*S) # pixel location on the board (from top left of board)
         
-    def draw_sprite(self, destsurface):
+    def draw_sprite(self, destsurface, loc = None):
+        if loc != None:             # determine correct relative positioning for addons and recursion
+            loc = tuple(map(sum,zip(self._loc, loc))) #sum the tuples
+        else:
+            loc = self._loc
         for x in self.addons:           # drawing subpieces
-            x.draw_sprite(destsurface)
-        destsurface.blit(self._tileset, self._spr_dest, (self._spr_src, self._spr_size))
+            x.draw_sprite(destsurface, loc)
+        destsurface.blit(self._tileset, [z*S for z in loc], (self._spr_src, self._spr_size))
+    
+    def update_position(self, pos):
+        self._loc = pos
