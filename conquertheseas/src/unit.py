@@ -34,3 +34,6 @@ class Unit:
         for x in self.addons:
             hold += x.get_cells()
         return hold
+
+    def on_click(self):
+        print "yay"
