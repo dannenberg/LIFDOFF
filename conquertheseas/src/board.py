@@ -9,16 +9,18 @@ class Board:
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
     
-    def draw_board(self, destsurface):
+    def draw_board(self):
         for x in self.units:
-            x.draw_sprite(destsurface)
+            x.draw_sprite(self.surface)
     
     def get_cell_content(self, (x, y)):
-        return self.cells[x+y*self._h]
+        return self.cells[x][y]
     
     def place_unit(self, unit):
         for (x, y) in unit.get_cells():
+            print "board.place_unit: adding "+str(x)+","+str(y)
             self.cells[x][y] = unit
+            print self.cells[x][y]
     
     def lift_unit(self, unit):
         for (x, y) in unit.get_cells():

@@ -1,6 +1,7 @@
 import pygame
 import math
 from board import Board
+from unit import Unit
 from screen import Screen
 from mousehitbox import MouseHitboxes
 
@@ -15,14 +16,20 @@ class GameScreen(Screen):
         self.waterRange=self.squaresize/4
         self.MAINY= - 10
         
+        self.enemyBoard = Board(35, 11)
         self.myBoard = Board(35, 11)
-        self.enemyBoard = pygame.Surface((1050, 330))
+        #self.myBoard = pygame.Surface((1050, 330))
         def boardclick(scr, mpos):
-            curunit = self.myBoard.get_cell_content( (mpos[0]//30, mpos[1]//30))
+            mpos = ((mpos[0])//30, (mpos[1]-1)//30)
+            curunit = self.myBoard.get_cell_content(mpos)
+            print "gamescreen.boardclick "+str(mpos)
             if curunit != None:
                 curunit.on_click()
+            else:
+                print "gamescreen.boardclick: add-pole!"
+                self.myBoard.add_unit(Unit(mpos, (1,1), "../img/tadpole.png"))
 
-        self.clickbox.append((201, 70, 1050, 330), boardclick)
+        self.clickbox.append((201, 402, 1050, 330), boardclick)
         
         self.highlightSquare = None
         self.highlight = pygame.Surface((self.squaresize, self.squaresize)) # the size of your rect
@@ -56,24 +63,24 @@ class GameScreen(Screen):
             scr.highlightSquare = None
         
         def hold(scr, mpos):
-            scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),0)
-        self.overbox.append((200,69,1049,330),hold,mouseout)
+            scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-1,0,scr.squaresize)+1),0)
+        self.overbox.append((200,62,1049,330),hold,mouseout)
         
         def hold(scr, mpos):
-            scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-scr.MAINY-1,0,scr.squaresize)+1),1)
-        self.overbox.append((200,409,1049,330),hold,mouseout)
+            scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-1,0,scr.squaresize)+1),1)
+        self.overbox.append((200,402,1049,330),hold,mouseout)
     
     def display(self, screen):
         Screen.display(self, screen)
         self.boardSansButtons.fill(Screen.color["bg"])
         
-        pygame.draw.rect(self.enemyBoard, Screen.color["sky"], (0, 0, 1050, 330))
         pygame.draw.rect(self.myBoard.surface, Screen.color["sky"], (0, 0, 1050, 330))
+        pygame.draw.rect(self.enemyBoard.surface, Screen.color["sky"], (0, 0, 1050, 330))
         
         self.waterLevel = (self.waterLevel + (math.pi/180))%(math.pi * 2)
         modifier = int(self.squaresize * 2.5 + math.sin(self.waterLevel) * self.waterRange)
+        pygame.draw.rect(self.enemyBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         pygame.draw.rect(self.myBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
-        pygame.draw.rect(self.enemyBoard, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         
         pygame.draw.rect(self.boardSansButtons, Screen.color["attackbut"], (0, 70, 201, 335))
         for x in xrange(0, 201, 67):  # attacker list
@@ -81,15 +88,17 @@ class GameScreen(Screen):
         for x in xrange(70, 410, 67): # same but horiz
             pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (0, x), (201, x), 2)
         
+        self.myBoard.draw_board()
+        
         if self.highlightSquare != None:
             if not self.highlightSquare[1]:
-                self.myBoard.surface.blit(self.highlight, self.highlightSquare[0])
+                self.enemyBoard.surface.blit(self.highlight, self.highlightSquare[0])
             else:
-                self.enemyBoard.blit(self.highlight, self.highlightSquare[0])
+                self.myBoard.surface.blit(self.highlight, self.highlightSquare[0])
+        self.enemyBoard.surface.blit(self.gridlines, (0, 0))
         self.myBoard.surface.blit(self.gridlines, (0, 0))
-        self.enemyBoard.blit(self.gridlines, (0, 0))
-        self.boardSansButtons.blit(self.myBoard.surface, (201, 70))
-        self.boardSansButtons.blit(self.enemyBoard, (201, 410))
+        self.boardSansButtons.blit(self.enemyBoard.surface, (201, 70))
+        self.boardSansButtons.blit(self.myBoard.surface, (201, 410))
         
         pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201,  70), ( 201, 740), 2)  # side line
         pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0,  70), (1250,  70), 2)  # top line
