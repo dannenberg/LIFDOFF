@@ -16,6 +16,8 @@ class GameScreen(Screen):
         self.waterRange=self.squaresize/4
         self.MAINY= - 10
         
+        self.enemies_img = pygame.image.load("../img/tadpole.png")
+        
         self.enemyBoard = Board(35, 11)
         self.myBoard = Board(35, 11)
         #self.myBoard = pygame.Surface((1050, 330))
@@ -28,8 +30,17 @@ class GameScreen(Screen):
             else:
                 print "gamescreen.boardclick: add-pole!"
                 self.myBoard.add_unit(Unit(mpos, (1,1), "../img/tadpole.png"))
-
         self.clickbox.append((201, 402, 1050, 330), boardclick)
+        
+        def action_button(scr, mpos):
+            self.myBoard.take_turn()
+        
+        #def eneclick(scr, mpos):
+        #    self.held = Unit(
+        
+        #self.clickbox.append((0,62, 67, 67), eneclick)
+        
+        self.clickbox.append((1, 740, 207, 60), action_button)
         
         self.highlightSquare = None
         self.highlight = pygame.Surface((self.squaresize, self.squaresize)) # the size of your rect
@@ -87,6 +98,7 @@ class GameScreen(Screen):
             pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (x, 70), (x, 405), 2)
         for x in xrange(70, 410, 67): # same but horiz
             pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (0, x), (201, x), 2)
+        self.boardSansButtons.blit(self.enemies_img, (22,87), ((0,0),(30,30)))
         
         self.myBoard.draw_board()
         
@@ -100,6 +112,7 @@ class GameScreen(Screen):
         self.boardSansButtons.blit(self.enemyBoard.surface, (201, 70))
         self.boardSansButtons.blit(self.myBoard.surface, (201, 410))
         
+        # Game Borders vvv
         pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201,  70), ( 201, 740), 2)  # side line
         pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0,  70), (1250,  70), 2)  # top line
         pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201, 400), (1250, 400), 2)  # center line t

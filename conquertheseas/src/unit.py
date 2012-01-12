@@ -1,6 +1,15 @@
 import pygame
+from action import Action
+
+class UnitFactory:
+    TADPOLE = 1
+    def __new__(idd, loc):
+        if idd == UnitFactory.TADPOLE:
+            Unit(loc, (1,1), "tadpole.png")
+
+
 class Unit:
-    def __init__(self, (x, y), (w, h), imgsrc, parent=None):
+    def __init__(self, (x,y), (w, h), imgsrc, parent=None):
         S = 30 # TODO move this to global or at least remove it from each unit
         self._parent = parent
         self.addons = []
@@ -9,6 +18,7 @@ class Unit:
         self._size = (w, h)         # width/height
         self._spr_size = (w*S, h*S) # width and height in pixels
         self._loc = (x,y)           # location on the board
+        self._actions = []
         
     def advance_sprite(self):
         x = self._spr_src[0]+30
@@ -29,7 +39,7 @@ class Unit:
         #print "unit.draw_sprite: drawin maself @ "+str([z*S for z in loc])+", from "+str(self._spr_src)+" "+str(self._spr_size)
         destsurface.blit(self._tileset, [z*S for z in loc], (self._spr_src, self._spr_size))
     
-    def update_position(self, pos):
+    def update_position(self, pos=None):
         self._loc = pos
         # TODO collisions
 
@@ -46,4 +56,7 @@ class Unit:
         return hold
 
     def on_click(self):
+        self._actions.append(Action(Action.MOVE, (self._loc[0]-1, self._loc[1])))   # TODO MAKE RELATIVE
+        self._actions.append(Action(Action.MOVE, (self._loc[0]-2, self._loc[1])))   # TODO MAKE RELATIVE
+        self._actions.append(Action(Action.MOVE, (self._loc[0]-3, self._loc[1])))   # TODO MAKE RELATIVE
         print "Unit.on_click: yay"
