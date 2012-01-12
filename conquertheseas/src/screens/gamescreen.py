@@ -49,6 +49,11 @@ class GameScreen(Screen):
         self.highlight.set_alpha(128) # alpha level
         self.highlight.fill(Screen.color["highlight"]) # this fills the entire surface
         
+        self.highlightPanelSquare = None
+        self.highlightPanel = pygame.Surface((65, 65)) # the size of your rect
+        self.highlightPanel.set_alpha(128) # alpha level
+        self.highlightPanel.fill(Screen.color["highlight"]) # this fills the entire surface
+
         mmbutton = pygame.image.load("../img/mainmenu.png")
         ubutton  = pygame.image.load("../img/upgrades.png")
         sbutton  = pygame.image.load("../img/shop.png")
@@ -74,11 +79,19 @@ class GameScreen(Screen):
         
         def mouseout(scr):
             scr.highlightSquare = None
+            scr.highlightPanelSquare = None
         
+        # offensive panel mouse over
+        def hold(scr, mpos):
+            scr.highlightPanelSquare = (limitByMultiple(mpos[0]-1,0,67)+2,limitByMultiple(mpos[1]-1,0,67)+62)
+        self.overbox.append((0,60,199,335),hold,mouseout)
+        
+        # enemy board mouse over
         def hold(scr, mpos):
             scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-1,0,scr.squaresize)+1),0)
         self.overbox.append((200,62,1049,330),hold,mouseout)
         
+        # player board mouse over
         def hold(scr, mpos):
             scr.highlightSquare = ((limitByMultiple(mpos[0]-1,0,scr.squaresize)+1,limitByMultiple(mpos[1]-1,0,scr.squaresize)+1),1)
         self.overbox.append((200,402,1049,330),hold,mouseout)
@@ -104,6 +117,11 @@ class GameScreen(Screen):
         
         self.myBoard.draw_board()
         
+        # panel highlight
+        if self.highlightPanelSquare != None:
+            self.boardSansButtons.blit(self.highlightPanel, self.highlightPanelSquare)
+
+        # board highlight
         if self.highlightSquare != None:
             if not self.highlightSquare[1]:
                 self.enemyBoard.surface.blit(self.highlight, self.highlightSquare[0])
