@@ -14,7 +14,6 @@ class GameScreen(Screen):
         self.squaresize=30
         self.waterLevel=0
         self.waterRange=self.squaresize/4
-        self.MAINY= - 10
         self.held = None
         
         self.enemies_img = pygame.image.load("../img/tadpole.png")
@@ -96,10 +95,10 @@ class GameScreen(Screen):
         pygame.draw.rect(self.enemyBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         pygame.draw.rect(self.myBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         
-        pygame.draw.rect(self.boardSansButtons, Screen.color["attackbut"], (0, 70, 201, 335))
+        pygame.draw.rect(self.boardSansButtons, Screen.color["attackbut"], (0, 60, 201, 335))
         for x in xrange(0, 201, 67):  # attacker list
-            pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (x, 70), (x, 405), 2)
-        for x in xrange(70, 410, 67): # same but horiz
+            pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (x, 60), (x, 395), 2)
+        for x in xrange(60, 400, 67): # same but horiz
             pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (0, x), (201, x), 2)
         self.boardSansButtons.blit(self.enemies_img, (22,87), ((0,0),(30,30)))
         
@@ -112,19 +111,19 @@ class GameScreen(Screen):
                 self.myBoard.surface.blit(self.highlight, self.highlightSquare[0])
         self.enemyBoard.surface.blit(self.gridlines, (0, 0))
         self.myBoard.surface.blit(self.gridlines, (0, 0))
-        self.boardSansButtons.blit(self.enemyBoard.surface, (201, 70))
-        self.boardSansButtons.blit(self.myBoard.surface, (201, 410))
+        self.boardSansButtons.blit(self.enemyBoard.surface, (201, 60))
+        self.boardSansButtons.blit(self.myBoard.surface, (201, 400))
         
         # Game Borders vvv
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201,  70), ( 201, 740), 2)  # side line
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0,  70), (1250,  70), 2)  # top line
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201, 400), (1250, 400), 2)  # center line t
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (1250, 400), (1250,  70), 2)  # right line t
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0, 405), ( 201, 405), 2)  # center line c
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201, 410), (1250, 410), 2)  # center line b
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (1250, 740), (1250, 410), 2)  # right line b
-        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0, 740), (1280, 740), 2)  # bottom line
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201,  60), ( 201, 730), 2)  # side line
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0,  60), (1250,  60), 2)  # top line
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201, 390), (1250, 390), 2)  # center line t
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (1250, 390), (1250,  60), 2)  # right line t
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0, 395), ( 201, 395), 2)  # center line c
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201, 400), (1250, 400), 2)  # center line b
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (1250, 730), (1250, 400), 2)  # right line b
+        pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (   0, 730), (1280, 730), 2)  # bottom line
         
-        screen.blit(self.boardSansButtons, (0, self.MAINY))
+        screen.blit(self.boardSansButtons, (0, 0))
         screen.blit(self.buttonBar, (0, 740))
 
