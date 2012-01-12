@@ -1,5 +1,6 @@
 import pygame
 import math
+from offense_panel import Offense_Panel
 from board import Board
 from unit import Unit,UnitFactory
 from screen import Screen
@@ -16,8 +17,9 @@ class GameScreen(Screen):
         self.waterRange=self.squaresize/4
         self.held = None
         
-        self.enemies_img = pygame.image.load("../img/tadpole.png")
-        
+        self.offense_panel = Offense_Panel(3, 5)
+        self.offense_panel.add_unit(UnitFactory.TADPOLE)
+
         self.enemyBoard = Board(35, 11)
         self.myBoard = Board(35, 11)
         #self.myBoard = pygame.Surface((1050, 330))
@@ -32,15 +34,17 @@ class GameScreen(Screen):
                     print "gamescreen.boardclick: add-pole!"
                     self.myBoard.add_unit(UnitFactory(self.held, mpos))
                     self.held = None
+                    self.offense_panel.selected = None
         self.clickbox.append((201, 402, 1050, 330), boardclick)
         
         def action_button(scr, mpos):
             self.myBoard.take_turn()
         
-        def eneclick(scr, mpos):
-            self.held = UnitFactory.TADPOLE
+        def offense_panel_click(scr, mpos):
+            mpos = (mpos[0]//67, mpos[1]//67)
+            self.held = self.offense_panel.on_click(mpos) 
         
-        self.clickbox.append((0,62, 67, 67), eneclick)
+        self.clickbox.append((0, 60, 199, 340), offense_panel_click)
         
         self.clickbox.append((1, 740, 207, 60), action_button)
         
@@ -83,7 +87,7 @@ class GameScreen(Screen):
         
         # offensive panel mouse over
         def hold(scr, mpos):
-            scr.highlightPanelSquare = (limitByMultiple(mpos[0]-1,0,67)+2,limitByMultiple(mpos[1]-1,0,67)+62)
+            scr.highlightPanelSquare = (limitByMultiple(mpos[0]-1,0,67)+2,limitByMultiple(mpos[1]-1,0,67)+2)
         self.overbox.append((0,60,199,335),hold,mouseout)
         
         # enemy board mouse over
@@ -108,18 +112,12 @@ class GameScreen(Screen):
         pygame.draw.rect(self.enemyBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         pygame.draw.rect(self.myBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         
-        pygame.draw.rect(self.boardSansButtons, Screen.color["attackbut"], (0, 60, 201, 335))
-        for x in xrange(0, 201, 67):  # attacker list
-            pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (x, 60), (x, 395), 2)
-        for x in xrange(60, 400, 67): # same but horiz
-            pygame.draw.line(self.boardSansButtons, Screen.color["lines"], (0, x), (201, x), 2)
-        self.boardSansButtons.blit(self.enemies_img, (22,87), ((0,0),(30,30)))
-        
         self.myBoard.draw_board()
+        self.offense_panel.draw_panel()
         
         # panel highlight
         if self.highlightPanelSquare != None:
-            self.boardSansButtons.blit(self.highlightPanel, self.highlightPanelSquare)
+            self.offense_panel.surface.blit(self.highlightPanel, self.highlightPanelSquare)
 
         # board highlight
         if self.highlightSquare != None:
@@ -131,6 +129,7 @@ class GameScreen(Screen):
         self.myBoard.surface.blit(self.gridlines, (0, 0))
         self.boardSansButtons.blit(self.enemyBoard.surface, (201, 60))
         self.boardSansButtons.blit(self.myBoard.surface, (201, 400))
+        self.boardSansButtons.blit(self.offense_panel.surface, (0, 60))
         
         # Game Borders vvv
         pygame.draw.line(self.boardSansButtons, Screen.color["lines"], ( 201,  60), ( 201, 730), 2)  # side line
