@@ -12,6 +12,10 @@ If you're bored and looking for something to add to this fix deez things.
 - Pause menu
 - Options in the main menu currently do nothing, and work similarly
   to the newgame submenu, for some reason. This is not expected behaviour.
+- Animation dictionary: associates strings to arrays of coordinates, which coorespond to tiles
+- Offensive select should work like a board, have click detection
+- Create a defensive unit larger than 1x1, plays properly
+- Move system
 
 ====================
 -- POSSIBLE FIXES --
