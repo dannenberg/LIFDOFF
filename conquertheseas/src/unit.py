@@ -1,12 +1,13 @@
 import pygame
 from action import Action
 
-class UnitFactory:
+class UnitFactory(object):
     TADPOLE = 1
-    def __new__(idd, loc):
+    def __new__(_, idd, loc):
         if idd == UnitFactory.TADPOLE:
-            Unit(loc, (1,1), "tadpole.png")
-
+            return Unit(loc, (1,1), "../img/tadpole.png")
+        else:
+            raise ValueError("Unknown unit id "+idd)
 
 class Unit:
     def __init__(self, (x,y), (w, h), imgsrc, parent=None):

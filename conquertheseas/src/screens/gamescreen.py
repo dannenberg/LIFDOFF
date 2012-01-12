@@ -1,7 +1,7 @@
 import pygame
 import math
 from board import Board
-from unit import Unit
+from unit import Unit,UnitFactory
 from screen import Screen
 from mousehitbox import MouseHitboxes
 
@@ -14,6 +14,7 @@ class GameScreen(Screen):
         self.squaresize=30
         self.waterLevel=0
         self.waterRange=self.squaresize/4
+        self.held = None
         
         self.enemies_img = pygame.image.load("../img/tadpole.png")
         
@@ -27,17 +28,19 @@ class GameScreen(Screen):
             if curunit != None:
                 curunit.on_click()
             else:
-                print "gamescreen.boardclick: add-pole!"
-                self.myBoard.add_unit(Unit(mpos, (1,1), "../img/tadpole.png"))
+                if self.held != None:
+                    print "gamescreen.boardclick: add-pole!"
+                    self.myBoard.add_unit(UnitFactory(self.held, mpos))
+                    self.held = None
         self.clickbox.append((201, 402, 1050, 330), boardclick)
         
         def action_button(scr, mpos):
             self.myBoard.take_turn()
         
-        #def eneclick(scr, mpos):
-        #    self.held = Unit(
+        def eneclick(scr, mpos):
+            self.held = UnitFactory.TADPOLE
         
-        #self.clickbox.append((0,62, 67, 67), eneclick)
+        self.clickbox.append((0,62, 67, 67), eneclick)
         
         self.clickbox.append((1, 740, 207, 60), action_button)
         
