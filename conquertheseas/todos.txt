@@ -3,8 +3,7 @@
 If you're bored and looking for something to add to this fix deez things.
 =================
 - Screen transitions are HI-LARIOUSLY bad. Fix dat.
-- Imports from different directories so that it's not a file-dump.
-- Fix the hitboxes on the clicks because they're ALMOST right?
+- Everything that says MAINY is poison.
 
 =================
 -- LARGE TODOS --
