@@ -1,7 +1,7 @@
 import pygame
 from mousehitbox import MouseHitboxes
 
-class Screen:
+class Screen(object):
     """Screen initializes colors, mouse over/clicked events,
     and the display for launch
     nominally abstract"""
@@ -16,6 +16,12 @@ class Screen:
             "sand"      :(0xFF, 0xCC, 0x66),
             "attackbut" :(0xCC, 0xCC, 0xCC),
             "shopbg"    :(0x99, 0xCC, 0xFF)}
+    
+    _instance = {}
+    def __new__(cls):   # Create Screen and all subclasses as Singletons
+        if cls not in Screen._instance: # first creation
+            Screen._instance[cls] = super(Screen, cls).__new__(cls)   # create a new one
+        return Screen._instance[cls]  # return the old one
     
     def __init__(self):
         self.size = (1280, 800)

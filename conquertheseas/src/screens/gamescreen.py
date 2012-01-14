@@ -22,7 +22,7 @@ class GameScreen(Screen):
 
         self.enemyBoard = Board(35, 11)
         self.myBoard = Board(35, 11)
-        #self.myBoard = pygame.Surface((1050, 330))
+        
         def boardclick(scr, mpos):
             mpos = ((mpos[0])//30, (mpos[1]-1)//30)
             curunit = self.myBoard.get_cell_content(mpos)
@@ -41,7 +41,7 @@ class GameScreen(Screen):
             self.myBoard.take_turn()
         
         def offense_panel_click(scr, mpos):
-            mpos = (mpos[0]//67, mpos[1]//67)
+            mpos = (mpos[0]//67, mpos[1]//67)   # TODO hilarious constants
             self.held = self.offense_panel.on_click(mpos) 
         
         self.clickbox.append((0, 60, 199, 340), offense_panel_click)
@@ -67,7 +67,7 @@ class GameScreen(Screen):
         self.buttonBar.fill(Screen.color["bg"])
         cblit = self.size[0] + buttonOffset
         for x in (mmbutton, ubutton, sbutton):
-            cblit  -= x.get_size()[0] + buttonOffset
+            cblit -= x.get_size()[0] + buttonOffset
             self.buttonBar.blit(x, (cblit, 0))
         self.buttonBar.blit(abutton, (0, 0))
         
