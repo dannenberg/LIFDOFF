@@ -3,9 +3,12 @@ from action import Action
 
 class UnitFactory(object):
     TADPOLE = 1
+    YELLOW_SUB = 2
     def __new__(_, idd, loc):
         if idd == UnitFactory.TADPOLE:
             return Unit(loc, (1,1), "../img/tadpole.png")
+        if idd == UnitFactory.YELLOW_SUB:
+            return Unit(loc, (2,2), "../img/yellow_sub.png")
         else:
             raise ValueError("Unknown unit id "+idd)
 
@@ -22,8 +25,8 @@ class Unit:
         self._actions = []
         
     def advance_sprite(self):
-        x = self._spr_src[0]+30
-        if x == 90:
+        x = self._spr_src[0]+self._spr_size[0]
+        if x == self._spr_size[0]*3:
             x = 0
         self._spr_src = (x, self._spr_src[1])
         

@@ -20,8 +20,14 @@ class Board:
     def place_unit(self, unit):
         for (x, y) in unit.get_cells():
             print "board.place_unit: adding "+str(x)+","+str(y)
+            if self.cells[x][y] != None:    # We're intersecting another unit: ABORT
+                for (xr, yr) in unit.get_cells():
+                    if self.cells[xr][yr] == unit:
+                        self.cells[xr][yr] = None
+                return False
             self.cells[x][y] = unit
             print self.cells[x][y]
+        return True
     
     def take_turn(self):
         again = True
@@ -56,8 +62,10 @@ class Board:
         self.place_unit(unit)
     
     def add_unit(self, unit):
-        self.units.append(unit)
-        self.place_unit(unit)
+        if self.place_unit(unit):
+            self.units.append(unit)
+            return True
+        return False
     
     def remove_unit(self, unit):
         self.units.remove(unit)
