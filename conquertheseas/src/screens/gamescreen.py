@@ -26,7 +26,7 @@ class GameScreen(Screen):
         
         def boardclick(scr, mpos):
             mpos = ((mpos[0])//30, (mpos[1]-1)//30)
-            curunit = self.myBoard.get_cell_content(mpos)
+            curunit = self.enemyBoard.get_cell_content(mpos)
             print "gamescreen.boardclick "+str(mpos)
             if curunit != None:
                 curunit.on_click()
@@ -38,7 +38,7 @@ class GameScreen(Screen):
                         return
                     self.held = None
                     self.offense_panel.selected = None
-        self.clickbox.append((201, 402, 1050, 330), boardclick)
+        self.clickbox.append((201, 60, 1050, 330), boardclick)
         
         def action_button(scr, mpos):
             self.myBoard.take_turn()
@@ -116,6 +116,7 @@ class GameScreen(Screen):
         pygame.draw.rect(self.myBoard.surface, Screen.color["water"], (0, modifier, 1050, 330 - modifier))
         
         self.myBoard.draw_board()
+        self.enemyBoard.draw_board()
         self.offense_panel.draw_panel()
         
         # panel highlight
