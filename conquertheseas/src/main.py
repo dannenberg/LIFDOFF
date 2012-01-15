@@ -43,7 +43,7 @@ while not done:
     try:
         if command.split()[0] == "transition":
             mainscreen = screens[command.split()[1]]()
-    except:
+    except (AttributeError, IndexError):
         pass
     
     pygame.display.flip()
