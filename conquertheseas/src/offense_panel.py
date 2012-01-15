@@ -1,10 +1,11 @@
 from unit import UnitFactory
 from screens.screen import Screen
+from constants import PANEL_SQUARE_SIZE, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT
 import pygame
 
 class OffensePanel:
     def __init__(self, w, h):
-        self.surface = pygame.Surface((w*67, h*67)) # TODO make a const for cell size
+        self.surface = pygame.Surface((w*PANEL_SQUARE_SIZE, h*PANEL_SQUARE_SIZE)) 
         self._w = w
         self._h = h
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # no units at start
@@ -29,13 +30,13 @@ class OffensePanel:
                     return
 
     def draw_panel(self):
-        pygame.draw.rect(self.surface, Screen.color["attackbut"], (0, 0, 201, 335))
-        for x in xrange(0, 201, 67):  # vert lines
-            pygame.draw.line(self.surface, Screen.color["lines"], (x, 0), (x, 395), 2)
-        for x in xrange(0, 400, 67):  # hori lines
-            pygame.draw.line(self.surface, Screen.color["lines"], (0, x), (201, x), 2)
+        pygame.draw.rect(self.surface, Screen.color["attackbut"], (0, 0, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT))
+        for x in xrange(0, OFFENSIVE_PANEL_WIDTH, PANEL_SQUARE_SIZE):  # vert lines
+            pygame.draw.line(self.surface, Screen.color["lines"], (x, 0), (x, OFFENSIVE_PANEL_HEIGHT), 2)
+        for y in xrange(0, OFFENSIVE_PANEL_HEIGHT, PANEL_SQUARE_SIZE):  # hori lines
+            pygame.draw.line(self.surface, Screen.color["lines"], (0, y), (OFFENSIVE_PANEL_WIDTH, y), 2)
         for i,x in enumerate(self.cells):
             for j,y in enumerate(x):
                 if y != None:
-                    self.surface.blit(self.tileset, (i*67, j*67), ((self.image_dict[y]*67, 0), (67, 67)))
+                    self.surface.blit(self.tileset, (i*PANEL_SQUARE_SIZE, j*PANEL_SQUARE_SIZE), ((self.image_dict[y]*PANEL_SQUARE_SIZE, 0), (PANEL_SQUARE_SIZE, PANEL_SQUARE_SIZE)))
 

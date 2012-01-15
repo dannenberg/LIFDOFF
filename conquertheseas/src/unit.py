@@ -1,5 +1,6 @@
 import pygame
 from action import Action
+from constants import SQUARE_SIZE
 
 class UnitFactory(object):
     TADPOLE = 1
@@ -14,13 +15,12 @@ class UnitFactory(object):
 
 class Unit:
     def __init__(self, (x,y), (w, h), imgsrc, parent=None):
-        S = 30 # TODO move this to global or at least remove it from each unit
         self._parent = parent
         self.addons = []
         self._tileset = pygame.image.load(imgsrc)
         self._spr_src = (0,0)     # topleft of source tile
         self._size = (w, h)         # width/height
-        self._spr_size = (w*S, h*S) # width and height in pixels
+        self._spr_size = (w*SQUARE_SIZE, h*SQUARE_SIZE) # width and height in pixels
         self._loc = (x,y)           # location on the board
         self._actions = []
         
@@ -31,7 +31,6 @@ class Unit:
         self._spr_src = (x, self._spr_src[1])
         
     def draw_sprite(self, destsurface, loc = None):
-        S = 30
         self.advance_sprite()
         if loc != None:             # determine correct relative positioning for addons and recursion
             loc = tuple(map(sum,zip(self._loc, loc))) #sum the tuples
@@ -40,8 +39,8 @@ class Unit:
         for x in self.addons:           # drawing subpieces
             x.draw_sprite(destsurface, loc)
             #print "unit.draw_sprite: subpieces!"
-        #print "unit.draw_sprite: drawin maself @ "+str([z*S for z in loc])+", from "+str(self._spr_src)+" "+str(self._spr_size)
-        destsurface.blit(self._tileset, [z*S for z in loc], (self._spr_src, self._spr_size))
+        #print "unit.draw_sprite: drawin maself @ "+str([z*SQUARE_SIZE for z in loc])+", from "+str(self._spr_src)+" "+str(self._spr_size)
+        destsurface.blit(self._tileset, [z*SQUARE_SIZE for z in loc], (self._spr_src, self._spr_size))
     
     def update_position(self, pos=None):
         self._loc = pos
