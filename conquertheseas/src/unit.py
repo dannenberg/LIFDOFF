@@ -10,8 +10,15 @@ class UnitFactory(object):
             return Unit(loc, (1,1), "../img/tadpole.png")
         if idd == UnitFactory.YELLOW_SUB:
             return Unit(loc, (2,2), "../img/yellow_sub.png")
-        else:
-            raise ValueError("Unknown unit id "+idd)
+        raise ValueError("Unknown unit id "+str(idd))
+    
+    @staticmethod
+    def get_shape_from_token(idd):
+        if idd == UnitFactory.TADPOLE:
+            return [(0,0)]
+        if idd == UnitFactory.YELLOW_SUB:
+            return [(x,y) for x in xrange(2) for y in xrange(2)]
+        raise ValueError("Unknown unit id "+str(idd))
 
 class Unit:
     def __init__(self, (x,y), (w, h), imgsrc, parent=None):
@@ -54,6 +61,12 @@ class Unit:
     def get_cells(self):
         coord = self.get_coord()
         hold = [(coord[0]+x, coord[1]+y) for x in xrange(self._size[0]) for y in xrange(self._size[1])]
+        for x in self.addons:
+            hold += x.get_cells()
+        return hold
+        
+    def get_shape(self):
+        hold = [(x, y) for x in xrange(self._size[0]) for y in xrange(self._size[1])]
         for x in self.addons:
             hold += x.get_cells()
         return hold

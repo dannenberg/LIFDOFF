@@ -3,7 +3,7 @@ import math
 from constants import *
 from offense_panel import OffensePanel
 from board import Board
-from unit import UnitFactory
+from unit import Unit,UnitFactory
 from screen import Screen
 from mousehitbox import MouseHitboxes
 
@@ -20,8 +20,6 @@ class GameScreen(Screen):
         self.offense_panel.add_unit(UnitFactory.TADPOLE)
         self.offense_panel.add_unit(UnitFactory.YELLOW_SUB)
         
-        self.highlight_locs = []
-
         self.enemy_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
         self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
         
@@ -30,17 +28,19 @@ class GameScreen(Screen):
             curunit = self.enemy_board.get_cell_content(mpos)
             print "gamescreen.boardclick "+str(mpos)
             if curunit != None: # clicked on a unit: do as he wants
-                movespd = 3
-                self.highlight_locs = [(x+curunit._loc[0],y+curunit._loc[1]) for x in xrange(-movespd,movespd+1) for y in xrange(-movespd,movespd+1) if abs(x)+abs(y) <= movespd]
+                movespd = 3 # TODO: Not constant
+                self.movement_locs = set((x+z[0],y+z[1]) for z in curunit.get_cells() for x in xrange(-movespd,movespd+1) for y in xrange(-movespd,movespd+1) if abs(x)+abs(y) <= movespd)
+                self.held = curunit
                 curunit.on_click()
             else:               # clicked on nothing
-                if self.held != None:   # not looking to place anyone
-                    print "gamescreen.boardclick: add-pole!"
-                    if not self.enemy_board.add_unit(UnitFactory(self.held, mpos)):
-                        print "gamescreen.boardclick: can't drop here!"
-                        return
-                    self.held = None
-                    self.offense_panel.selected = None
+                if self.held != None:   # looking to place
+                    if not isinstance(self.held, Unit):
+                        print "gamescreen.boardclick: add-pole!"
+                        if not self.enemy_board.add_unit(UnitFactory(self.held, mpos)):
+                            print "gamescreen.boardclick: can't drop here!"
+                            return
+                        self.held = None
+                        self.offense_panel.selected = None
         self.clickbox.append((ENEMY_BOARD_X, ENEMY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), boardclick)
         
         def action_button(scr, mpos):
@@ -54,17 +54,15 @@ class GameScreen(Screen):
         
         self.clickbox.append((1, 740, 207, 60), action_button)
         
-        self.highlight_square = None
-        
-        self.highlight = pygame.Surface((self.SQUARE_SIZE-2, self.SQUARE_SIZE-2)) # the size of your rect
-        
+        self.movement_locs = []
+        self.mouseover_highlight = []
+        self.highlit_board = 0
+        self.highlight = pygame.Surface((SQUARE_SIZE-2, SQUARE_SIZE-2)) # the size of your rect
         self.highlight.set_alpha(128) # alpha level
         self.highlight.fill(COLORS["highlight"]) # this fills the entire surface
         
         self.highlight_panel_square = None
-        
-        self.highlight_panel = pygame.Surface((self.PANEL_SQUARE_SIZE-2, self.PANEL_SQUARE_SIZE-2)) # the size of your rect
-        
+        self.highlight_panel = pygame.Surface((PANEL_SQUARE_SIZE-2, PANEL_SQUARE_SIZE-2)) # the size of your rect
         self.highlight_panel.set_alpha(128) # alpha level
         self.highlight_panel.fill(COLORS["highlight"]) # this fills the entire surface
         
@@ -92,23 +90,31 @@ class GameScreen(Screen):
             return ((x-y)//s)*s+y
         
         def mouseout(scr):
-            scr.highlight_square = None
+            scr.mouseover_highlight = []
             scr.highlight_panel_square = None
         
         # offensive panel mouse over
         def hold(scr, mpos):
-            scr.highlight_panel_square = (limit_by_multiple(mpos[0],0,PANEL_SQUARE_SIZE),limit_by_multiple(mpos[1],0,PANEL_SQUARE_SIZE))
+            scr.highlight_panel_square = (limit_by_multiple(mpos[0],0,PANEL_SQUARE_SIZE)+2,limit_by_multiple(mpos[1],0,PANEL_SQUARE_SIZE)+2)
         self.overbox.append((OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT),hold,mouseout)
         
         # enemy board mouse over
-        def hold(scr, mpos):
-            scr.highlight_square = ((limit_by_multiple(mpos[0],0,SQUARE_SIZE),limit_by_multiple(mpos[1],0,SQUARE_SIZE)),0)
-        self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),hold,mouseout)
-        
-        # player board mouse over
-        def hold(scr, mpos):
-            scr.highlight_square = ((limit_by_multiple(mpos[0],0,SQUARE_SIZE),limit_by_multiple(mpos[1],0,SQUARE_SIZE)),1)
-        self.overbox.append((200,402,BOARD_WIDTH,BOARD_HEIGHT),hold,mouseout)
+        def mouseover(player):
+            def hold(scr, mpos):
+                curunit = self.enemy_board.get_cell_content((mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE))
+                if not self.held:
+                    if not curunit: # no unit mouseover'd
+                        scr.mouseover_highlight = [(mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)]
+                    else:
+                        scr.mouseover_highlight = curunit.get_cells()
+                elif isinstance(self.held,Unit):
+                    scr.mouseover_highlight = [(loc[0]+mpos[0]//SQUARE_SIZE,loc[1]+mpos[1]//SQUARE_SIZE) for loc in self.held.get_shape()]
+                else:
+                    scr.mouseover_highlight = [(loc[0]+mpos[0]//SQUARE_SIZE,loc[1]+mpos[1]//SQUARE_SIZE) for loc in UnitFactory.get_shape_from_token(self.held)]
+                scr.highlit_board = player
+            return hold
+        self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(0),mouseout)
+        self.overbox.append((MY_BOARD_X, MY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(1),mouseout)
     
     def display(self, screen):
         Screen.display(self, screen)
@@ -126,19 +132,18 @@ class GameScreen(Screen):
         self.enemy_board.draw_board()
         self.offense_panel.draw_panel()
         
-        for x in self.highlight_locs:
-            self.enemy_board.surface.blit(self.highlight, (x[0]*self.SQUARE_SIZE+2, x[1]*self.SQUARE_SIZE+2))
+        for x in self.movement_locs:
+            self.enemy_board.surface.blit(self.highlight, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2))
         
         # panel highlight
         if self.highlight_panel_square != None:
             self.offense_panel.surface.blit(self.highlight_panel, self.highlight_panel_square)
 
         # board highlight
-        if self.highlight_square != None:
-            if not self.highlight_square[1]:
-                self.enemy_board.surface.blit(self.highlight, self.highlight_square[0])
-            else:
-                self.my_board.surface.blit(self.highlight, self.highlight_square[0])
+        curboard = self.my_board.surface if self.highlit_board else self.enemy_board.surface
+        for loc in self.mouseover_highlight:
+            curboard.blit(self.highlight, (loc[0]*SQUARE_SIZE+2,loc[1]*SQUARE_SIZE+2))
+        
         self.enemy_board.surface.blit(self.gridlines, (0, 0))
         self.my_board.surface.blit(self.gridlines, (0, 0))
         self.board_sans_buttons.blit(self.enemy_board.surface, (ENEMY_BOARD_X, ENEMY_BOARD_Y))
