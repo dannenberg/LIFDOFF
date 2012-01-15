@@ -6,6 +6,7 @@ class Screen(object):
     and the display for launch
     nominally abstract"""
     color= {"black"     :(0x00, 0x00, 0x00),
+            "gridline"  :(0x00, 0x00, 0x00, 64),
             "white"     :(0xFF, 0xFF, 0xFF),
             "submergedt":(0xFF, 0x99, 0x66),
             "water"     :(0x00, 0x66, 0x99),

@@ -2,7 +2,7 @@ from unit import UnitFactory
 from screens.screen import Screen
 import pygame
 
-class Offense_Panel:
+class OffensePanel:
     def __init__(self, w, h):
         self.surface = pygame.Surface((w*67, h*67)) # TODO make a const for cell size
         self._w = w
