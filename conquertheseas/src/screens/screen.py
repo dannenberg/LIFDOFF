@@ -1,23 +1,12 @@
 import pygame
+from constants import COLORS
 from mousehitbox import MouseHitboxes
 
 class Screen(object):
     """Screen initializes colors, mouse over/clicked events,
     and the display for launch
     nominally abstract"""
-    color= {"black"     :(0x00, 0x00, 0x00),
-            "gridline"  :(0x00, 0x00, 0x00, 64),
-            "white"     :(0xFF, 0xFF, 0xFF),
-            "submergedt":(0xFF, 0x99, 0x66),
-            "water"     :(0x00, 0x66, 0x99),
-            "bg"        :(0x33, 0x33, 0x33),
-            "highlight" :(0xCC, 0xCC, 0x00),
-            "lines"     :(0x00, 0x00, 0x00),
-            "sky"       :(0xCC, 0xFF, 0xFF),
-            "sand"      :(0xFF, 0xCC, 0x66),
-            "attackbut" :(0xCC, 0xCC, 0xCC),
-            "shopbg"    :(0x99, 0xCC, 0xFF)}
-    
+   
     _instance = {}
     def __new__(cls):   # Create Screen and all subclasses as Singletons
         if cls not in Screen._instance: # first creation
@@ -31,7 +20,7 @@ class Screen(object):
 
     def display(self, screen):
         """takes a screen draws screen state to screen"""
-        screen.fill(Screen.color["bg"])
+        screen.fill(COLORS["bg"])
     
     def click(self, mpos):
         """handles click events"""

@@ -1,5 +1,6 @@
 import pygame
 from screen import Screen
+from constants import COLORS
 from mousehitbox import MouseHitboxes
 
 class ShopScreen(Screen):
@@ -15,23 +16,23 @@ class ShopScreen(Screen):
         
     def display(self, scr):
         Screen.display(self, scr)
-        scr.fill(Screen.color["shopbg"])
-        pygame.draw.rect(scr, Screen.color["sand"], (0,0,1280,320))
-        pygame.draw.rect(scr, Screen.color["water"], (0,320,560,480))
+        scr.fill(COLORS["shopbg"])
+        pygame.draw.rect(scr, COLORS["sand"], (0,0,1280,320))
+        pygame.draw.rect(scr, COLORS["water"], (0,320,560,480))
         for x in xrange(-1,321,160):
-            pygame.draw.line(scr, Screen.color["black"], (0,x),(1280,x),2)
+            pygame.draw.line(scr, COLORS["black"], (0,x),(1280,x),2)
         for x in xrange(-1,1281,160):
-            pygame.draw.line(scr, Screen.color["black"], (x,0),(x,320),2)
-        pygame.draw.line(scr, Screen.color["black"], (560,320),(560,800),2)
+            pygame.draw.line(scr, COLORS["black"], (x,0),(x,320),2)
+        pygame.draw.line(scr, COLORS["black"], (560,320),(560,800),2)
         
         font = pygame.font.Font(None, 72)
-        text = font.render(self.prices_and_values[self.index]["name"], True, Screen.color["black"])
+        text = font.render(self.prices_and_values[self.index]["name"], True, COLORS["black"])
         scr.blit(text, (616,345))
         
         font2 = pygame.font.Font(None, 50)
-        text = font2.render("Cost: ",True,Screen.color["black"])
+        text = font2.render("Cost: ",True,COLORS["black"])
         scr.blit(text, (626,386))
-        text = font2.render("Next upgrade: ", True, Screen.color["black"])
+        text = font2.render("Next upgrade: ", True, COLORS["black"])
         
         font3 = pygame.font.Font(None, 40)
         
@@ -50,5 +51,5 @@ class ShopScreen(Screen):
             textlist[-1] += x+" "
         
         for i,x in enumerate(textlist):
-            text = font3.render(x, True, Screen.color["black"])
+            text = font3.render(x, True, COLORS["black"])
             scr.blit(text, (616, 420+i*30))
