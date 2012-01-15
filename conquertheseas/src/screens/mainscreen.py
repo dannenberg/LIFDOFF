@@ -1,5 +1,6 @@
 import pygame
 import math
+from constants import COLORS
 from mousehitbox import MouseHitboxes
 from screen import Screen
 
@@ -7,8 +8,8 @@ class MainScreen(Screen):
     """ Main menu screen """
     def __init__(self):
         Screen.__init__(self)
-        self.waterLevel = 0 #defines the height of the water in the background
-        self.waterRange = 16 #how much the water level fluctuates
+        self.water_level = 0 #defines the height of the water in the background
+        self.water_range = 16 #how much the water level fluctuates
         self.selectbox = [None, 15, 205, 50, True] #coords of the box (x, y, width, height) which highlights selected item
         self.gotobox = [12.5, 15, 205, 50] #coords of the desitination of the selectbox
         self.sel_accel = 3 #acceleration to new pos
@@ -77,17 +78,17 @@ class MainScreen(Screen):
     def display(self, screen):
         Screen.display(self, screen) #calls super
         
-        self.waterLevel = (self.waterLevel + (math.pi / 180)) % (math.pi * 2) #movement in rads for waterlevel (since it is based on sin)
-        modifier = int(math.sin(self.waterLevel) * self.waterRange) #actual change
+        self.water_level = (self.water_level + (math.pi / 180)) % (math.pi * 2) #movement in rads for waterlevel (since it is based on sin)
+        modifier = int(math.sin(self.water_level) * self.water_range) #actual change
         
         font = pygame.font.Font(None, 170) #title text defined and two colored versions created
-        text = font.render("CONQUER THE SEAS", True, Screen.color["black"])
-        whitetext = font.render("CONQUER THE SEAS", True, Screen.color["submergedt"])
+        text = font.render("CONQUER THE SEAS", True, COLORS["black"])
+        whitetext = font.render("CONQUER THE SEAS", True, COLORS["submergedt"])
         
         #draws the sky, water, and text
-        screen.fill(Screen.color["sky"])
+        screen.fill(COLORS["sky"])
         water = pygame.Surface((1280, 700 - modifier))
-        water.fill(Screen.color["water"])
+        water.fill(COLORS["water"])
         screen.blit(text, [20, 50])
         water.blit(whitetext, [20,  -50 - modifier])
         screen.blit(water, [0, modifier + 100])
@@ -120,12 +121,12 @@ class MainScreen(Screen):
 
         #draw all the menu items
         for i, x in enumerate(self.options):
-            text = self.smallerfont.render(x, True, Screen.color["white"])
+            text = self.smallerfont.render(x, True, COLORS["white"])
             textbox.blit(text, (25, i * 50 + 25))
             
         if self.submenuoptions != None:
             for i, x in enumerate(self.submenuoptions):
-                text = self.smallerfont.render(x, True, Screen.color["white"])
+                text = self.smallerfont.render(x, True, COLORS["white"])
                 subtextbox.blit(text, (25, i * 50 + 25))
             screen.blit(subtextbox, (90 + self.maxwid, 200))
         

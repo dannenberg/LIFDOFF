@@ -1,6 +1,6 @@
 from unit import UnitFactory
 from screens.screen import Screen
-from constants import PANEL_SQUARE_SIZE, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT
+from constants import PANEL_SQUARE_SIZE, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT, COLORS
 import pygame
 
 class OffensePanel:
@@ -30,11 +30,11 @@ class OffensePanel:
                     return
 
     def draw_panel(self):
-        pygame.draw.rect(self.surface, Screen.color["attackbut"], (0, 0, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT))
+        pygame.draw.rect(self.surface, COLORS["attackbut"], (0, 0, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT))
         for x in xrange(0, OFFENSIVE_PANEL_WIDTH, PANEL_SQUARE_SIZE):  # vert lines
-            pygame.draw.line(self.surface, Screen.color["lines"], (x, 0), (x, OFFENSIVE_PANEL_HEIGHT), 2)
+            pygame.draw.line(self.surface, COLORS["lines"], (x, 0), (x, OFFENSIVE_PANEL_HEIGHT), 2)
         for y in xrange(0, OFFENSIVE_PANEL_HEIGHT, PANEL_SQUARE_SIZE):  # hori lines
-            pygame.draw.line(self.surface, Screen.color["lines"], (0, y), (OFFENSIVE_PANEL_WIDTH, y), 2)
+            pygame.draw.line(self.surface, COLORS["lines"], (0, y), (OFFENSIVE_PANEL_WIDTH, y), 2)
         for i,x in enumerate(self.cells):
             for j,y in enumerate(x):
                 if y != None:
