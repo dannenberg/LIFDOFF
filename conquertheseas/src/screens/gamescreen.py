@@ -2,7 +2,7 @@ import pygame
 import math
 from offense_panel import OffensePanel
 from board import Board
-from unit import Unit,UnitFactory
+from unit import UnitFactory
 from screen import Screen
 from mousehitbox import MouseHitboxes
 
@@ -37,6 +37,7 @@ class GameScreen(Screen):
         
         self.offense_panel = OffensePanel(self.OFFENSIVE_PANEL_SQUARES_X, self.OFFENSIVE_PANEL_SQUARES_Y)
         self.offense_panel.add_unit(UnitFactory.TADPOLE)
+        self.offense_panel.add_unit(UnitFactory.YELLOW_SUB)
 
         self.enemyBoard = Board(self.BOARD_SQUARES_X, self.BOARD_SQUARES_Y)
         self.myBoard = Board(self.BOARD_SQUARES_X, self.BOARD_SQUARES_Y)
@@ -50,7 +51,9 @@ class GameScreen(Screen):
             else:
                 if self.held != None:
                     print "gamescreen.boardclick: add-pole!"
-                    self.enemyBoard.add_unit(UnitFactory(self.held, mpos))
+                    if not self.myBoard.add_unit(UnitFactory(self.held, mpos)):
+                        print "gamescreen.boardclick: can't drop here!"
+                        return
                     self.held = None
                     self.offense_panel.selected = None
         self.clickbox.append((self.ENEMY_BOARD_X, self.ENEMY_BOARD_Y, self.BOARD_WIDTH, self.BOARD_HEIGHT), boardclick)

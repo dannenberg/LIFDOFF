@@ -10,7 +10,7 @@ class OffensePanel:
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # no units at start
         self.selected = None
         self.tileset = pygame.image.load("../img/enemy_tileset.png")
-        self.image_dict = {UnitFactory.TADPOLE:0}
+        self.image_dict = {UnitFactory.TADPOLE:0, UnitFactory.YELLOW_SUB:3}
     
     def on_click(self, (x, y)):
         if self.cells[x][y] != None:
@@ -22,8 +22,8 @@ class OffensePanel:
                 return self.cells[x][y]
 
     def add_unit(self, unitid):
-        for y in xrange(self._h):
-            for x in xrange(self._w):
+        for x in xrange(self._w):
+            for y in xrange(self._h):
                 if self.cells[y][x] == None:
                     self.cells[y][x] = unitid
                     return
