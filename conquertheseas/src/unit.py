@@ -60,7 +60,7 @@ class Unit:
         return hold
 
     def on_click(self):
-        self._actions.append(Action(Action.MOVE, (self._loc[0]-1, self._loc[1])))   # TODO MAKE RELATIVE
-        self._actions.append(Action(Action.MOVE, (self._loc[0]-2, self._loc[1])))   # TODO MAKE RELATIVE
-        self._actions.append(Action(Action.MOVE, (self._loc[0]-3, self._loc[1])))   # TODO MAKE RELATIVE
+        #self._actions.append(Action(Action.MOVE, (self._loc[0]-1, self._loc[1])))   # TODO MAKE RELATIVE
+        #self._actions.append(Action(Action.MOVE, (self._loc[0]-2, self._loc[1])))   # TODO MAKE RELATIVE
+        #self._actions.append(Action(Action.MOVE, (self._loc[0]-3, self._loc[1])))   # TODO MAKE RELATIVE
         print "Unit.on_click: yay"
