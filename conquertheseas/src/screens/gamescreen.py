@@ -29,7 +29,7 @@ class GameScreen(Screen):
             print "gamescreen.boardclick "+str(mpos)
             if curunit != None: # clicked on a unit: do as he wants
                 movespd = 3 # TODO: Not constant
-                self.movement_locs = set((x+z[0],y+z[1]) for z in curunit.get_cells() for x in xrange(-movespd,movespd+1) for y in xrange(-movespd,movespd+1) if abs(x)+abs(y) <= movespd)
+                self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.held = curunit
                 curunit.on_click()
             else:               # clicked on nothing
