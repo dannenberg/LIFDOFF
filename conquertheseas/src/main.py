@@ -13,18 +13,18 @@ pygame.init()
 size=(1280,800)
 screen=pygame.display.set_mode(size)
 
-screens = {"intro":IntroMovie(),
-           "game": GameScreen(),
-           "main": MainScreen(),
-           "credits":CreditsScreen(),
-           "shop":ShopScreen()}
+screens = {"intro":IntroMovie,
+           "game": GameScreen,
+           "main": MainScreen,
+           "credits":CreditsScreen,
+           "shop":ShopScreen}
 
 pygame.display.set_caption("LIFDOFF")
 
 done=False
 clock = pygame.time.Clock()
 
-mainscreen = screens["intro"]
+mainscreen = screens["game"]()
 
 while not done:
     clock.tick(60)
@@ -42,8 +42,8 @@ while not done:
         done = True
     try:
         if command.split()[0] == "transition":
-            mainscreen = screens[command.split()[1]]
-    except:
+            mainscreen = screens[command.split()[1]]()
+    except (AttributeError, IndexError):
         pass
     
     pygame.display.flip()

@@ -1,5 +1,6 @@
 import pygame
 from screen import Screen
+from constants import COLORS
 from mousehitbox import MouseHitboxes
 
 class IntroMovie(Screen):
@@ -17,7 +18,7 @@ class IntroMovie(Screen):
         if self.playing == 0:
             self.playing = 1
             pygame.mixer.music.play()
-        scr.fill(Screen.color["white"])
+        scr.fill(COLORS["white"])
         
         self.overlay.fill((0xFF,0xFF,0xFF,int(2.55*abs((self.yloc+62-400)))))
         
