@@ -1,0 +1,79 @@
+Design Document
+
+Intro
+	- introduction to software project
+	- stakeholders
+		- demo, expectations, meeting availability
+		- work environment
+			- compiler/editor, agile/classic work environment, code repo specifics, code update rules, code validation rules, commenting/variable naming rules
+
+Architecture Overview
+	- architectural overview
+	- features list
+	
+Specific Design
+	- program's modules
+		- outline how each module will be coded and references back to req doc for visuals
+Supporting Material
+
+6 sections
+
+- cover page and table of contents
+1. intro
+	- intro
+		- purpose of document
+		- audience of document
+		- references and terms definition
+	- polices and tactics
+		- goals, guidelines, development methods
+2. design
+	- architecture considerations
+		- technology selection and it's application area
+	- design considerations
+		- assumptions, dependencies, general constraints
+	- high-level design
+		- system overview discussion
+		- design pattern identification
+		- final domain model
+			- showing classes and design patterns
+		- final deployment diagram
+3. specs
+	- software organization
+		- your view of the subsystems of project in text and drawing, using a block diagram
+		- package diagram (if need)
+	- module / object decompisition
+		- detailed system design by subsystems using filled out UML class diagrams
+			- CRC, class diagram, calling sequence diagrams + detailed design text
+			- state charts, interaction diagrams (as needed)
+	- critical section specification
+	- entity relationship and data dictionary
+	- low level architecture (if needed)
+	
+	- CRITICAL SECTION
+		- algorithm selection
+			- critical code snippets
+			- algorithm selection
+			- state chart
+			- calling sequence diagram
+			- predicate calculus rule specification
+			
+4. programming management
+	- directory structure and programming tools
+	- software building method
+		- revision history
+	- coding agreement
+	- migration procedures
+	- installation procedures
+	- training guidelines
+	
+5. test cases and procedures
+	- test-driven development
+	- acceptance test-driven development
+		- functional test cases
+	- error logger
+		- smart error logger
+	- buidling classes for auto testing
+		- auto testing method
+		- testing object calling all testable objects
+		
+6. appendix

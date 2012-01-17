@@ -1,0 +1,24 @@
+section 3: what kind of diagrams
+
+class name
+class variables
+	int balance;
+	- sentence or two describing why you have that variable inside that class
+- list every single class variable
+- then talk about class methods
+
+- public void deposit(int amount)
+	- sentence or two describing why you have that function
+	
+- it's really about a detailed description of everything in your project
+	- doesn't have to be EVERY SINGLE THING but the most important variables and functions
+	
+- BEFORE you do this, provide some kind of diagrams to teach the reader how your program is actually going to function
+- series of diagrams up and down that will help teach the reader so that they will be able to 
+	interpret your code shit
+- can really use any diagrams you want
+- want domain model
+	- then divided into modules (system, subsystem, whatever language you want to use) 
+- detailed UML
+
+- ONLY for one simple subsystem do we need to do the detailed UML and the variable/method shit
