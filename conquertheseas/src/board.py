@@ -10,6 +10,7 @@ class Board:
         self._h = h
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
+        self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
     
     def draw_board(self):
         for x in self.units:

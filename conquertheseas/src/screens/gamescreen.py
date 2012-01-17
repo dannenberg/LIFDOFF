@@ -6,6 +6,7 @@ from board import Board
 from unit import Unit,UnitFactory
 from screen import Screen
 from mousehitbox import MouseHitboxes
+from action import Action
 
 class GameScreen(Screen):
     """in game screen"""
@@ -23,10 +24,24 @@ class GameScreen(Screen):
         self.enemy_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
         self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
         
+        self.command = ""
+        def toShop(scr, mpos):
+            self.command = "transition shop"
+        self.clickbox.append((660,742,122,57), toShop)
+        
         def boardclick(scr, mpos):
             mpos = ((mpos[0])//SQUARE_SIZE, (mpos[1])//SQUARE_SIZE)
             curunit = self.enemy_board.get_cell_content(mpos)
             print "gamescreen.boardclick "+str(mpos)
+            if isinstance(self.held, Unit):
+                if mpos not in self.movement_locs:
+                    self.held = None
+                    self.movement_locs = []
+                else:   # show where he would like to go
+                    self.held._actions.append(Action(Action.MOVE, mpos))    # TODO: Actions should be in the unit class, not here.
+                    print self.held._actions
+                    self.held = None
+                    self.movement_locs = []
             if curunit != None: # clicked on a unit: do as he wants
                 movespd = 3 # TODO: Not constant
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
@@ -44,10 +59,13 @@ class GameScreen(Screen):
         self.clickbox.append((ENEMY_BOARD_X, ENEMY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), boardclick)
         
         def action_button(scr, mpos):
-            self.my_board.take_turn()
+            self.held = None
+            self.movement_locs = []
+            self.enemy_board.take_turn()
         
         def offense_panel_click(scr, mpos):
             mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)   # TODO hilarious constants
+            self.movement_locs = []
             self.held = self.offense_panel.on_click(mpos) 
         
         self.clickbox.append((OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT), offense_panel_click)
@@ -101,7 +119,8 @@ class GameScreen(Screen):
         # enemy board mouse over
         def mouseover(player):
             def hold(scr, mpos):
-                curunit = self.enemy_board.get_cell_content((mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE))
+                whichboard = self.my_board if player else self.enemy_board
+                curunit = whichboard.get_cell_content((mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE))
                 if not self.held:
                     if not curunit: # no unit mouseover'd
                         scr.mouseover_highlight = [(mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)]
@@ -162,4 +181,8 @@ class GameScreen(Screen):
         
         screen.blit(self.board_sans_buttons, (0, 0))
         screen.blit(self.button_bar, (0, 740))
+        
+        hold = self.command
+        self.command = ""
+        return hold
 
