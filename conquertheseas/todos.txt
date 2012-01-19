@@ -1,3 +1,15 @@
+================
+-- WHATS NEXT --
+================
+- automatic offensive moving
+- shootan
+- offensive deploying in the right area
+- collisions (  :(  )
+  - rank of hitting (defense vs offense vs boolit)
+- single machine multiplayer
+  - starting with 3 uncontrollable defensive
+  - ghetto turn system
+
 =================
 -- SMALL TODOS -- 
 If you're bored and looking for something to add to this fix deez things.
@@ -17,6 +29,7 @@ If you're bored and looking for something to add to this fix deez things.
 - Offensive select should work like a board, have click detection
 - Create a defensive unit larger than 1x1, plays properly
 - Move system
+- Resources
 
 ====================
 -- POSSIBLE FIXES --

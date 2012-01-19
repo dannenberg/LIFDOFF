@@ -8,9 +8,9 @@ class MouseHitboxes:
     def append(self, rect, on, off=lambda x:None):
         k = {"left":rect[0], "top":rect[1], "width":rect[2], "height":rect[3], "right":rect[0] + rect[2], "bottom":rect[1] + rect[3], "on":on, "off":off}
         for x in self._data:
-            if  (x["left"] <= k["left"] < x["right"] or x["left"] < k["right"] <= x["right"] or k["left"] <= x["left"] < k["right"] or k["left"] < x["right"] <= k["right"])\
-            and (x["top"] <= k["top"] < x["bottom"] or x["top"] < k["bottom"] <= x["bottom"] or k["top"] <= x["top"] < k["bottom"] or k["top"] < x["bottom"] <= k["bottom"]):
-                raise AttributeError("You have overlapping hitboxes! "+str(x))
+            if x["left"] < k["right"] and x["right"] > k["left"] and x["top"] < k["bottom"] and x["bottom"] > k["top"]:
+                if not (k["left"] > x["left"] and k["right"] < x["right"] and k["top"] > x["top"] and k["bottom"] < x["bottom"]):
+                    raise AttributeError("You have overlapping hitboxes! "+str(x))
         self._data.append(k)
         
     def out(self, key):
@@ -98,9 +98,9 @@ class TestMouseHitboxes(unittest.TestCase):
     # |  +--------+  |
     # +--------------+
     def test_one_in_other(self):
-        with self.assertRaises(AttributeError):
-            self.mh.append((0, 0, 3, 3), self.function)
-            self.mh.append((1, 1, 1, 1), self.function)
+        self.mh.append((0, 0, 3, 3), self.function)
+        self.mh.append((1, 1, 1, 1), self.function)
+        self.assertTrue(True)
     
     #    +--+
     #    |  |
