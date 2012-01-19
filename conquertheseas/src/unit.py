@@ -30,6 +30,7 @@ class Unit:
         self._spr_size = (w*SQUARE_SIZE, h*SQUARE_SIZE) # width and height in pixels
         self._loc = (x,y)           # location on the board
         self._actions = []
+        self._abilities = [Action.MOVE, Action.SHOOT]
         
     def advance_sprite(self):
         x = self._spr_src[0]+self._spr_size[0]
@@ -52,6 +53,9 @@ class Unit:
     def update_position(self, pos=None):
         self._loc = pos
         # TODO collisions
+
+    def get_abilities(self):
+        return self._abilities
 
     def get_coord(self):
         if self._parent:
