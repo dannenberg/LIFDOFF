@@ -49,6 +49,7 @@ class GameScreen(Screen):
                 self.held = None            # regardless, we want to deselect
                 self.current_action = None  # no more "MOVE" action
                 self.movement_locs = []     # clear the highlighted area
+                self.arrow_locs = []
             if curunit != None: # clicked on a unit: do as he wants
                 options = curunit.get_abilities()   # get his possible actions
                 if len(options) == 1: # skip selection: do only action
@@ -59,6 +60,8 @@ class GameScreen(Screen):
                         self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
                     def action_click(scr, mpos):
                         ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
+                        self.clickbox.remove((300,0))
+                        self.action_loc = None
                     self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
                     self.action_loc = (mpos[0]*SQUARE_SIZE, mpos[1]*SQUARE_SIZE, 0)
             else:               # clicked on nothing
@@ -78,16 +81,18 @@ class GameScreen(Screen):
             self.current_action = None
             self.movement_locs = []
             self.enemy_board.take_turn()
+        self.clickbox.append((1, 740, 207, 60), action_button)
         
         def ui_action(token, curunit):
-            self.cur_action = token
             if token == Action.MOVE:
+                self.current_action = token
                 movespd = 3 # TODO: Not constant
-                self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1) if not (x==y==0)) # TODO broken for big guys
+                self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.held = curunit
             elif token == Action.SHOOT:
-                pass
-                
+                curunit.queue_shoot()
+            else:
+                raise AttributeError("Unrecognized token "+str(token))
             
         def offense_panel_click(scr, mpos):
             mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)  
@@ -95,8 +100,6 @@ class GameScreen(Screen):
             self.held = self.offense_panel.on_click(mpos) 
         
         self.clickbox.append((OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT), offense_panel_click)
-        
-        self.clickbox.append((1, 740, 207, 60), action_button)
         
         self.movement_locs = []
         self.mouseover_highlight = []

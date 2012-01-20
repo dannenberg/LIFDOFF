@@ -1,4 +1,4 @@
-from unit import Unit
+from unit import Unit,UnitFactory
 from action import Action
 from constants import SQUARE_SIZE
 import pygame
@@ -51,6 +51,8 @@ class Board:
                 self.move_unit(unit, unit._actions[0].loc)
                 print "board.unit_take_action: MOVED"
             elif unit._actions[0].action == Action.SHOOT:
+                u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
+                self.add_unit(u)
                 pass    # TODO
             elif unit._action[0].action == Action.SPECIAL:
                 pass    # TODO
