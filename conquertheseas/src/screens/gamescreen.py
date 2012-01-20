@@ -40,32 +40,26 @@ class GameScreen(Screen):
         
         def boardclick(scr, mpos):
             mpos = ((mpos[0])//SQUARE_SIZE, (mpos[1])//SQUARE_SIZE)
-            curunit = self.enemy_board.get_cell_content(mpos)
+            curunit = self.enemy_board.get_cell_content(mpos)   # grab the unit @ this pos
             print "gamescreen.boardclick "+str(mpos)
-            if isinstance(self.held, Unit):
-                if mpos not in self.movement_locs:
-                    self.held = None
-                    self.current_action = None
-                    self.movement_locs = []
-                else:   # show where he would like to go
-                    self.held.queue_movements(x[:2] for x in self.arrow_locs)
+            if isinstance(self.held, Unit):     # if you're holding a Unit you're probably trying to move somewhere
+                if mpos in self.movement_locs:  # Deselect (you didn't try to move somewhere legal)
+                    self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
                     print self.held._actions
-                    self.held = None
-                    self.current_action = None
-                    self.movement_locs = []
+                self.held = None            # regardless, we want to deselect
+                self.current_action = None  # no more "MOVE" action
+                self.movement_locs = []     # clear the highlighted area
             if curunit != None: # clicked on a unit: do as he wants
-                options = curunit.get_abilities()
-                if len(options) == 0: # no actions dont select
-                    pass
-                elif len(options) == 1: # do only action
+                options = curunit.get_abilities()   # get his possible actions
+                if len(options) == 1: # skip selection: do only action
                     ui_action(options[0], curunit)
-                else:
-                    self.action_surface = pygame.Surface((45*len(options),45))
+                elif len(options):  # more than no actions
+                    self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
                     for i,o in enumerate(options):
-                        self.action_surface.blit(self.action_imgs, (45*i,0), ((45*Action.img_lookup[o],0), (45,45)))
+                        self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
                     def action_click(scr, mpos):
-                        self.current_action = self.held.get_abilities()[mpos[0]//45]
-                    self.clickbox.append((300,0,45*len(options),45), action_click)
+                        ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
+                    self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
                     self.action_loc = (mpos[0]*SQUARE_SIZE, mpos[1]*SQUARE_SIZE, 0)
             else:               # clicked on nothing
                 if self.held != None:   # looking to place
@@ -86,11 +80,11 @@ class GameScreen(Screen):
             self.enemy_board.take_turn()
         
         def ui_action(token, curunit):
+            self.cur_action = token
             if token == Action.MOVE:
                 movespd = 3 # TODO: Not constant
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.held = curunit
-                self.cur_action = Action.MOVE
             elif token == Action.SHOOT:
                 pass
                 
@@ -163,10 +157,12 @@ class GameScreen(Screen):
                     else:
                         scr.mouseover_highlight = curunit.get_cells()
                 elif isinstance(self.held,Unit):
-                    to_check = self.arrow_locs[-1][:2] if len(self.arrow_locs) else self.held._loc
-                    if (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE) != to_check:
-                        self.arrow_locs.append((mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE, 1))
-                            
+                    gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
+                    if gpos in self.movement_locs:
+                        to_check = self.arrow_locs[-1][:2] if len(self.arrow_locs) else self.held._loc  # go from the last arrow drawn. if no last arrow drawn, go from unit
+                        if gpos != to_check:    # don't draw over an arrow you've already placed
+                            self.arrow_locs.append((gpos[0], gpos[1], 1))
+                    
                     """ HIDEOUS CHUNK OF BAD ARROW DRAWING
                     if self.current_action == Action.MOVE:
                         mpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
