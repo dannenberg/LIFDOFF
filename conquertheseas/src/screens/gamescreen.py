@@ -83,7 +83,7 @@ class GameScreen(Screen):
             self.cur_action = token
             if token == Action.MOVE:
                 movespd = 3 # TODO: Not constant
-                self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
+                self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1) if not (x==y==0)) # TODO broken for big guys
                 self.held = curunit
             elif token == Action.SHOOT:
                 pass
