@@ -41,6 +41,7 @@ class Unit:
         self._loc = (x,y)           # location on the board
         self._actions = []
         self._abilities = [Action.MOVE, Action.SHOOT]
+        self._move_speed = 3
         
     def advance_sprite(self):
         x = self._spr_src[0]+self._spr_size[0]
@@ -91,6 +92,14 @@ class Unit:
             
     def queue_shoot(self):
         self._actions.append(Action(Action.SHOOT))
+
+    def create_move(self):
+        if self._class == Unit.BULLET:
+            for i in xrange(self._move_speed):  
+                self._actions.append(Action(Action.MOVE, (self._loc[0] + i + 1, self._loc[1])))
+        elif self._class == Unit.OFFENSE:
+            for i in xrange(self._move_speed):  
+                self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
 
     def on_click(self):
         #self._actions.append(Action(Action.MOVE, (self._loc[0]-1, self._loc[1])))   # TODO MAKE RELATIVE
