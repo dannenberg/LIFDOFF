@@ -36,7 +36,7 @@ class GameScreen(Screen):
         self.command = ""
         def toShop(scr, mpos):
             self.command = "transition shop"
-        self.clickbox.append((660,742,122,57), toShop)
+        self.clickbox.append((660,742,122,57), toShop) # SO MAGICAL!
         
         def boardclick(scr, mpos):
             mpos = ((mpos[0])//SQUARE_SIZE, (mpos[1])//SQUARE_SIZE)
@@ -48,7 +48,7 @@ class GameScreen(Screen):
                     self.current_action = None
                     self.movement_locs = []
                 else:   # show where he would like to go
-                    self.held._actions.append(Action(Action.MOVE, mpos))    # TODO: Actions should be in the unit class, not here.
+                    self.held.queue_movements(x[:2] for x in self.arrow_locs)
                     print self.held._actions
                     self.held = None
                     self.current_action = None
@@ -58,11 +58,14 @@ class GameScreen(Screen):
                 if len(options) == 0: # no actions dont select
                     pass
                 elif len(options) == 1: # do only action
-                    ui_action(options[0])
+                    ui_action(options[0], curunit)
                 else:
                     self.action_surface = pygame.Surface((45*len(options),45))
                     for i,o in enumerate(options):
                         self.action_surface.blit(self.action_imgs, (45*i,0), ((45*Action.img_lookup[o],0), (45,45)))
+                    def action_click(scr, mpos):
+                        self.current_action = self.held.get_abilities()[mpos[0]//45]
+                    self.clickbox.append((300,0,45*len(options),45), action_click)
                     self.action_loc = (mpos[0]*SQUARE_SIZE, mpos[1]*SQUARE_SIZE, 0)
             else:               # clicked on nothing
                 if self.held != None:   # looking to place
@@ -82,18 +85,18 @@ class GameScreen(Screen):
             self.movement_locs = []
             self.enemy_board.take_turn()
         
-        def ui_action(token):
-            if token == action.MOVE:
+        def ui_action(token, curunit):
+            if token == Action.MOVE:
                 movespd = 3 # TODO: Not constant
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.held = curunit
-                self.cur_action = action.MOVE
-            elif token == action.SHOOT:
+                self.cur_action = Action.MOVE
+            elif token == Action.SHOOT:
                 pass
                 
             
         def offense_panel_click(scr, mpos):
-            mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)   # TODO hilarious constants
+            mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)  
             self.movement_locs = []
             self.held = self.offense_panel.on_click(mpos) 
         
@@ -160,7 +163,12 @@ class GameScreen(Screen):
                     else:
                         scr.mouseover_highlight = curunit.get_cells()
                 elif isinstance(self.held,Unit):
-                    if current_action == action.MOVE:
+                    to_check = self.arrow_locs[-1][:2] if len(self.arrow_locs) else self.held._loc
+                    if (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE) != to_check:
+                        self.arrow_locs.append((mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE, 1))
+                            
+                    """ HIDEOUS CHUNK OF BAD ARROW DRAWING
+                    if self.current_action == Action.MOVE:
                         mpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
                         movespd = 3
                         
@@ -194,7 +202,8 @@ class GameScreen(Screen):
                             self.arrow_locs += [(mpos[0],mpos[1],direction)]
                             print len(self.arrow_locs)
                         
-                        scr.mouseover_highlight = [(loc[0]+mpos[0]//SQUARE_SIZE,loc[1]+mpos[1]//SQUARE_SIZE) for loc in self.held.get_shape()]
+                        """
+                    scr.mouseover_highlight = [(loc[0]+mpos[0]//SQUARE_SIZE,loc[1]+mpos[1]//SQUARE_SIZE) for loc in self.held.get_shape()]
                 else:
                     scr.mouseover_highlight = [(loc[0]+mpos[0]//SQUARE_SIZE,loc[1]+mpos[1]//SQUARE_SIZE) for loc in UnitFactory.get_shape_from_token(self.held)]
                 scr.highlit_board = player
@@ -241,9 +250,9 @@ class GameScreen(Screen):
         # action menu if needed
         if self.action_loc:
             if self.action_loc[2]:
-                self.my_board.surface.blit(self.action_surface, (self.action_loc[0], self.action_loc[1]))
+                self.board_sans_buttons.blit(self.action_surface, (300, 0))
             else: 
-                self.enemy_board.surface.blit(self.action_surface, (self.action_loc[0], self.action_loc[1]))
+                self.board_sans_buttons.blit(self.action_surface, (300, 0))
 
         self.board_sans_buttons.blit(self.enemy_board.surface, (ENEMY_BOARD_X, ENEMY_BOARD_Y))
         self.board_sans_buttons.blit(self.my_board.surface, (MY_BOARD_X, MY_BOARD_Y))

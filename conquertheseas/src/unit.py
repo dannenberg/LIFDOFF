@@ -74,6 +74,10 @@ class Unit:
         for x in self.addons:
             hold += x.get_cells()
         return hold
+    
+    def queue_movements(self, dests):
+        for d in dests:
+            self._actions.append(Action(Action.MOVE, d))
 
     def on_click(self):
         #self._actions.append(Action(Action.MOVE, (self._loc[0]-1, self._loc[1])))   # TODO MAKE RELATIVE
