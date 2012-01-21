@@ -5,11 +5,14 @@ from constants import SQUARE_SIZE
 class UnitFactory(object):
     TADPOLE = 1
     YELLOW_SUB = 2
+    BULLET = 3
     def __new__(_, idd, loc):
         if idd == UnitFactory.TADPOLE:
-            return Unit(loc, (1,1), "../img/tadpole.png")
+            return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE)
         if idd == UnitFactory.YELLOW_SUB:
-            return Unit(loc, (2,2), "../img/yellow_sub.png")
+            return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.DEFENSE)
+        if idd == UnitFactory.BULLET:
+            return Unit(loc, (1,1), "../img/tadpole.png", Unit.BULLET)
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
@@ -21,8 +24,15 @@ class UnitFactory(object):
         raise ValueError("Unknown unit id "+str(idd))
 
 class Unit:
+    DEFENSE = 1
+    OFFENSE = 2
+    BULLET  = 3
     def __init__(self, (x,y), (w, h), imgsrc, parent=None):
-        self._parent = parent
+        if parent in (Unit.DEFENSE, Unit.OFFENSE, Unit.BULLET):
+            self._class = parent
+            self._parent = None
+        else:
+            self._parent = parent
         self.addons = []
         self._tileset = pygame.image.load(imgsrc)
         self._spr_src = (0,0)     # topleft of source tile
@@ -31,6 +41,7 @@ class Unit:
         self._loc = (x,y)           # location on the board
         self._actions = []
         self._abilities = [Action.MOVE, Action.SHOOT]
+        self._move_speed = 3
         
     def advance_sprite(self):
         x = self._spr_src[0]+self._spr_size[0]
@@ -74,6 +85,21 @@ class Unit:
         for x in self.addons:
             hold += x.get_cells()
         return hold
+    
+    def queue_movements(self, dests):
+        for d in dests:
+            self._actions.append(Action(Action.MOVE, d))
+            
+    def queue_shoot(self):
+        self._actions.append(Action(Action.SHOOT))
+
+    def create_move(self):
+        if self._class == Unit.BULLET:
+            for i in xrange(self._move_speed):  
+                self._actions.append(Action(Action.MOVE, (self._loc[0] + i + 1, self._loc[1])))
+        elif self._class == Unit.OFFENSE:
+            for i in xrange(self._move_speed):  
+                self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
 
     def on_click(self):
         #self._actions.append(Action(Action.MOVE, (self._loc[0]-1, self._loc[1])))   # TODO MAKE RELATIVE
