@@ -40,11 +40,11 @@ class GameScreen(Screen):
         self.clickbox.append((660,742,122,57), toShop) # SO MAGICAL!
         
         def boardclick(scr, mpos):
-            mpos = ((mpos[0])//SQUARE_SIZE, (mpos[1])//SQUARE_SIZE)
-            curunit = self.enemy_board.get_cell_content(mpos)   # grab the unit @ this pos
-            print "gamescreen.boardclick "+str(mpos)
+            gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
+            curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
+            print "gamescreen.boardclick "+str(gpos)
             if isinstance(self.held, Unit):     # if you're holding a Unit you're probably trying to move somewhere
-                if mpos in self.movement_locs:  # Deselect (you didn't try to move somewhere legal)
+                if gpos in self.movement_locs:  # Deselect (you didn't try to move somewhere legal)
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
                     print self.held._actions
                 self.held = None            # regardless, we want to deselect
@@ -65,14 +65,14 @@ class GameScreen(Screen):
                         self.action_loc = None
                     try:
                         self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
-                        self.action_loc = (mpos[0]*SQUARE_SIZE, mpos[1]*SQUARE_SIZE, 0)
+                        self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
                     except AttributeError:
                         print "TODO: avoid double placing this hitbox"
             else:               # clicked on nothing
                 if self.held != None:   # looking to place
                     if not isinstance(self.held, Unit):
                         print "gamescreen.boardclick: add-pole!"
-                        if 35-OFFENSIVE_PLACEMENT_DEPTH > mpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, mpos)):
+                        if 35-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                             print "gamescreen.boardclick: can't drop here!"
                             return
                         self.placing_units = False
@@ -161,15 +161,19 @@ class GameScreen(Screen):
                     return num*4
                 return num//4
             def hold(scr, mpos):
-                whichboard = self.my_board if player else self.enemy_board
-                curunit = whichboard.get_cell_content((mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE))
+                if player:
+                    whichboard = self.my_board
+                    gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
+                else:
+                    whichboard = self.enemy_board
+                    gpos = (BOARD_SQUARES_X - 1-mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
+                curunit = whichboard.get_cell_content(gpos)
                 if not self.held:
                     if not curunit: # no unit mouseover'd
-                        scr.mouseover_highlight = [(mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)]
+                        scr.mouseover_highlight = [gpos]
                     else:
                         scr.mouseover_highlight = curunit.get_cells()
                 elif isinstance(self.held,Unit):
-                    gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
                     if gpos in self.movement_locs:
                         to_check = self.arrow_locs[-1][:2] if len(self.arrow_locs) else self.held._loc  # go from the last arrow drawn. if no last arrow drawn, go from unit
                         if gpos != to_check:    # don't draw over an arrow you've already placed
@@ -211,9 +215,9 @@ class GameScreen(Screen):
                             print len(self.arrow_locs)
                         
                         """
-                    scr.mouseover_highlight = [(loc[0]+mpos[0]//SQUARE_SIZE,loc[1]+mpos[1]//SQUARE_SIZE) for loc in self.held.get_shape()]
+                    scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in self.held.get_shape()]
                 else:
-                    scr.mouseover_highlight = [(loc[0]+mpos[0]//SQUARE_SIZE,loc[1]+mpos[1]//SQUARE_SIZE) for loc in UnitFactory.get_shape_from_token(self.held)]
+                    scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in UnitFactory.get_shape_from_token(self.held)]
                 scr.highlit_board = player
             return hold
         self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(0),mouseout)
@@ -264,7 +268,7 @@ class GameScreen(Screen):
             else: 
                 self.board_sans_buttons.blit(self.action_surface, (300, 0))
 
-        self.board_sans_buttons.blit(self.enemy_board.surface, (ENEMY_BOARD_X, ENEMY_BOARD_Y))
+        self.board_sans_buttons.blit(pygame.transform.flip(self.enemy_board.surface, True, False), (ENEMY_BOARD_X, ENEMY_BOARD_Y))
         self.board_sans_buttons.blit(self.my_board.surface, (MY_BOARD_X, MY_BOARD_Y))
         self.board_sans_buttons.blit(self.offense_panel.surface, (OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y))
         
