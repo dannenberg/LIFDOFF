@@ -61,7 +61,7 @@ class Board:
         return False
     
     def move_unit(self, unit, loc=None):
-        if loc[0] < 0 or loc[0] > 30 or loc[1] < 0 or loc[1] > 11:
+        if loc[0] < 0 or loc[0] > 35 or loc[1] < 0 or loc[1] > 11:
             if unit._class != Unit.DEFENSE:
                 self.remove_unit(unit)
         else:

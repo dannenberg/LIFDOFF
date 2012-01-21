@@ -13,6 +13,7 @@ class GameScreen(Screen):
     def __init__(self):
         Screen.__init__(self)
         
+        self.placing_units = False
         self.action_surface = None
 
         self.action_loc = None
@@ -71,9 +72,10 @@ class GameScreen(Screen):
                 if self.held != None:   # looking to place
                     if not isinstance(self.held, Unit):
                         print "gamescreen.boardclick: add-pole!"
-                        if not self.enemy_board.add_unit(UnitFactory(self.held, mpos)):
+                        if 35-OFFENSIVE_PLACEMENT_DEPTH > mpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, mpos)):
                             print "gamescreen.boardclick: can't drop here!"
                             return
+                        self.placing_units = False
                         self.held = None
                         self.current_action = None
                         self.offense_panel.selected = None
@@ -103,7 +105,8 @@ class GameScreen(Screen):
         def offense_panel_click(scr, mpos):
             mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)  
             self.movement_locs = []
-            self.held = self.offense_panel.on_click(mpos) 
+            self.held = self.offense_panel.on_click(mpos)
+            self.placing_units = True
         
         self.clickbox.append((OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT), offense_panel_click)
         
@@ -238,6 +241,8 @@ class GameScreen(Screen):
         for x in self.arrow_locs:
             self.enemy_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2), ((SQUARE_SIZE*x[2],0),(SQUARE_SIZE,SQUARE_SIZE)))
         
+        if self.placing_units:
+            self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*11)), ((35-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))
                 
         # panel highlight
         if self.highlight_panel_square != None:
