@@ -1,9 +1,6 @@
 ================
 -- WHATS NEXT --
 ================
-- automatic offensive moving
-- shootan
-- offensive deploying in the right area
 - collisions (  :(  )
   - rank of hitting (defense vs offense vs boolit)
 - single machine multiplayer

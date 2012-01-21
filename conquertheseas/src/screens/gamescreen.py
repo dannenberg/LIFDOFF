@@ -62,8 +62,11 @@ class GameScreen(Screen):
                         ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
                         self.clickbox.remove((300,0))
                         self.action_loc = None
-                    self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
-                    self.action_loc = (mpos[0]*SQUARE_SIZE, mpos[1]*SQUARE_SIZE, 0)
+                    try:
+                        self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
+                        self.action_loc = (mpos[0]*SQUARE_SIZE, mpos[1]*SQUARE_SIZE, 0)
+                    except AttributeError:
+                        print "TODO: avoid double placing this hitbox"
             else:               # clicked on nothing
                 if self.held != None:   # looking to place
                     if not isinstance(self.held, Unit):
