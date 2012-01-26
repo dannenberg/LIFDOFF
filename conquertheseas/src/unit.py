@@ -16,7 +16,7 @@ class UnitFactory(object):
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
-    def get_shape_from_token(idd):
+    def get_shape_from_token(idd):	# returns the size of the unit (0,0),(0,1),(1,0),(1,1) for a 2x2 unit
         if idd == UnitFactory.TADPOLE:
             return [(0,0)]
         if idd == UnitFactory.YELLOW_SUB:
@@ -30,7 +30,7 @@ class Unit:
     def __init__(self, (x,y), (w, h), imgsrc, parent=None):
         if parent in (Unit.DEFENSE, Unit.OFFENSE, Unit.BULLET):
             self._class = parent
-            self._parent = None
+            self._parent = None		# TODO: fix this
         else:
             self._parent = parent
         self.addons = []

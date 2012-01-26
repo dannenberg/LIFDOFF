@@ -14,15 +14,15 @@ class OffensePanel:
         self.image_dict = {UnitFactory.TADPOLE:0, UnitFactory.YELLOW_SUB:3}
     
     def on_click(self, (x, y)):
-        if self.cells[x][y] != None:
-            if self.selected == (x,y):
+        if self.cells[x][y] != None:	# if there's something in the square you clicked on
+            if self.selected == (x,y):	# if it  was already selected, deselect it
                 self.selected = None
                 return None
-            else:
+            else:						# if it wasn't already selected, now it is, and return
                 self.selected = (x, y)
                 return self.cells[x][y]
 
-    def add_unit(self, unitid):
+    def add_unit(self, unitid):		# finds the first open spot in offense panel and adds 
         for x in xrange(self._w):
             for y in xrange(self._h):
                 if self.cells[y][x] == None:
