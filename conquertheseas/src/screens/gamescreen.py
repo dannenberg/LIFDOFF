@@ -52,22 +52,23 @@ class GameScreen(Screen):
                 self.movement_locs = []     # clear the highlighted area
                 self.arrow_locs = []
             if curunit != None: # clicked on a unit: do as he wants
-                options = curunit.get_abilities()   # get his possible actions
-                if len(options) == 1: # skip selection: do only action
-                    ui_action(options[0], curunit)
-                elif len(options):  # more than no actions
-                    self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
-                    for i,o in enumerate(options):
-                        self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
-                    def action_click(scr, mpos):
-                        ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
-                        self.clickbox.remove((300,0))
-                        self.action_loc = None
-                    try:
-                        self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
-                        self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
-                    except AttributeError:
-                        print "TODO: avoid double placing this hitbox"
+                if curunit._class == Unit.DEFENSE:
+                    options = curunit.get_abilities()   # get his possible actions
+                    if len(options) == 1: # skip selection: do only action
+                        ui_action(options[0], curunit)
+                    elif len(options):  # more than no actions
+                        self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
+                        for i,o in enumerate(options):
+                            self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
+                        def action_click(scr, mpos):
+                            ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
+                            self.clickbox.remove((300,0))
+                            self.action_loc = None
+                        try:
+                            self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
+                            self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
+                        except AttributeError:
+                            print "TODO: avoid double placing this hitbox"
             else:               # clicked on nothing
                 if self.held != None:   # looking to place
                     if not isinstance(self.held, Unit):

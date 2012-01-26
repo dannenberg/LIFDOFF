@@ -10,7 +10,7 @@ class UnitFactory(object):
         if idd == UnitFactory.TADPOLE:
             return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE)
         if idd == UnitFactory.YELLOW_SUB:
-            return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.DEFENSE)
+            return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
         if idd == UnitFactory.BULLET:
             return Unit(loc, (1,1), "../img/tadpole.png", Unit.BULLET)
         raise ValueError("Unknown unit id "+str(idd))
@@ -33,14 +33,12 @@ class Unit:
             self._parent = None
         else:
             self._parent = parent
-        self.addons = []
         self._tileset = pygame.image.load(imgsrc)
         self._spr_src = (0,0)     # topleft of source tile
         self._size = (w, h)         # width/height
         self._spr_size = (w*SQUARE_SIZE, h*SQUARE_SIZE) # width and height in pixels
         self._loc = (x,y)           # location on the board
         self._actions = []
-        self._abilities = [Action.MOVE, Action.SHOOT]
         self._move_speed = 3
         
     def advance_sprite(self):
@@ -50,23 +48,16 @@ class Unit:
         self._spr_src = (x, self._spr_src[1])
         
     def draw_sprite(self, destsurface, loc = None):
-        self.advance_sprite()
-        if loc != None:             # determine correct relative positioning for addons and recursion
+        self.advance_sprite() # TODO wrong
+        if loc != None: # for drawing an addon using relative position
             loc = tuple(map(sum,zip(self._loc, loc))) #sum the tuples
         else:
             loc = self._loc
-        for x in self.addons:           # drawing subpieces
-            x.draw_sprite(destsurface, loc)
-            #print "unit.draw_sprite: subpieces!"
-        #print "unit.draw_sprite: drawin maself @ "+str([z*SQUARE_SIZE for z in loc])+", from "+str(self._spr_src)+" "+str(self._spr_size)
         destsurface.blit(self._tileset, [z*SQUARE_SIZE for z in loc], (self._spr_src, self._spr_size))
     
     def update_position(self, pos=None):
         self._loc = pos
         # TODO collisions
-
-    def get_abilities(self):
-        return self._abilities
 
     def get_coord(self):
         if self._parent:
@@ -75,16 +66,10 @@ class Unit:
 
     def get_cells(self):
         coord = self.get_coord()
-        hold = [(coord[0]+x, coord[1]+y) for x in xrange(self._size[0]) for y in xrange(self._size[1])]
-        for x in self.addons:
-            hold += x.get_cells()
-        return hold
+        return [(coord[0]+x, coord[1]+y) for x in xrange(self._size[0]) for y in xrange(self._size[1])]
         
     def get_shape(self):
-        hold = [(x, y) for x in xrange(self._size[0]) for y in xrange(self._size[1])]
-        for x in self.addons:
-            hold += x.get_cells()
-        return hold
+        return [(x, y) for x in xrange(self._size[0]) for y in xrange(self._size[1])]
     
     def queue_movements(self, dests):
         for d in dests:
@@ -100,9 +85,3 @@ class Unit:
         elif self._class == Unit.OFFENSE:
             for i in xrange(self._move_speed):  
                 self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
-
-    def on_click(self):
-        #self._actions.append(Action(Action.MOVE, (self._loc[0]-1, self._loc[1])))   # TODO MAKE RELATIVE
-        #self._actions.append(Action(Action.MOVE, (self._loc[0]-2, self._loc[1])))   # TODO MAKE RELATIVE
-        #self._actions.append(Action(Action.MOVE, (self._loc[0]-3, self._loc[1])))   # TODO MAKE RELATIVE
-        print "Unit.on_click: yay"
