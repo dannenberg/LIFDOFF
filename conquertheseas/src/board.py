@@ -1,4 +1,5 @@
 from unit import Unit,UnitFactory
+from defense import DefensiveUnit
 from action import Action
 from constants import SQUARE_SIZE
 import pygame
@@ -11,6 +12,8 @@ class Board:
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
         self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
+        for i in xrange(3):
+            self.add_unit(DefensiveUnit(i))
     
     def draw_board(self):
         for x in self.units:

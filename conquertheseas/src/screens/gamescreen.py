@@ -39,10 +39,28 @@ class GameScreen(Screen):
             self.command = "transition shop"
         self.clickbox.append((660,742,122,57), toShop) # SO MAGICAL!
         
-        def boardclick(scr, mpos):
+        def enemy_boardclick(scr, mpos):
             gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
             print "gamescreen.boardclick "+str(gpos)
+            
+            #else:               # clicked on nothing
+            if self.held != None:   # looking to place
+                if not isinstance(self.held, Unit):
+                    print "gamescreen.boardclick: add-pole!"
+                    if 35-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
+                        print "gamescreen.boardclick: can't drop here!"
+                        return
+                    self.placing_units = False
+                    self.held = None
+                    self.current_action = None
+                    self.offense_panel.selected = None
+                        
+        def my_boardclick(scr, mpos):
+            gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
+            curunit = self.my_board.get_cell_content(gpos)   # grab the unit @ this pos
+            print "gamescreen.boardclick "+str(gpos)
+            
             if isinstance(self.held, Unit):     # if you're holding a Unit you're probably trying to move somewhere
                 if gpos in self.movement_locs:  # Deselect (you didn't try to move somewhere legal)
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
@@ -51,6 +69,7 @@ class GameScreen(Screen):
                 self.current_action = None  # no more "MOVE" action
                 self.movement_locs = []     # clear the highlighted area
                 self.arrow_locs = []
+            
             if curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE:
                     options = curunit.get_abilities()   # get his possible actions
@@ -69,18 +88,9 @@ class GameScreen(Screen):
                             self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
                         except AttributeError:
                             print "TODO: avoid double placing this hitbox"
-            else:               # clicked on nothing
-                if self.held != None:   # looking to place
-                    if not isinstance(self.held, Unit):
-                        print "gamescreen.boardclick: add-pole!"
-                        if 35-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
-                            print "gamescreen.boardclick: can't drop here!"
-                            return
-                        self.placing_units = False
-                        self.held = None
-                        self.current_action = None
-                        self.offense_panel.selected = None
-        self.clickbox.append((ENEMY_BOARD_X, ENEMY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), boardclick)
+            
+        self.clickbox.append((ENEMY_BOARD_X, ENEMY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), enemy_boardclick)
+        self.clickbox.append((   MY_BOARD_X,    MY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), my_boardclick)
         
         def action_button(scr, mpos):
             self.held = None
@@ -241,10 +251,10 @@ class GameScreen(Screen):
         self.offense_panel.draw_panel()
         
         for x in self.movement_locs:
-            self.enemy_board.surface.blit(self.highlight, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2))
+            self.my_board.surface.blit(self.highlight, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2))
         
         for x in self.arrow_locs:
-            self.enemy_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2), ((SQUARE_SIZE*x[2],0),(SQUARE_SIZE,SQUARE_SIZE)))
+            self.my_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2), ((SQUARE_SIZE*x[2],0),(SQUARE_SIZE,SQUARE_SIZE)))
         
         if self.placing_units:
             self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*11)), ((35-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))

@@ -1,11 +1,15 @@
 from unit import Unit
 from action import Action
+from constants import *
 
 class DefensiveUnit(Unit):
-    def __init__(self, (x,y), (w,h), imgsrc):
+    def __init__(self, idd):
+        (x,y) = ((0,0),(5,5),(0,9))[idd]
+        (w,h) = ((2,2),(2,2),(2,2))[idd]
+        imgsrc = ("../img/yellow_sub.png","../img/yellow_sub.png","../img/yellow_sub.png")[idd]
         super(DefensiveUnit, self).__init__((x,y), (w,h), imgsrc, Unit.DEFENSE)
         self._abilities = [Action.MOVE, Action.SHOOT]
-        self._addons = []
+        self.addons = []
 
     def draw_sprite(self, destsurface, loc = None):
         self.advance_sprite()

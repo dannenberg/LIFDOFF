@@ -23,7 +23,7 @@ class UnitFactory(object):
             return [(x,y) for x in xrange(2) for y in xrange(2)]
         raise ValueError("Unknown unit id "+str(idd))
 
-class Unit:
+class Unit(object):
     DEFENSE = 1
     OFFENSE = 2
     BULLET  = 3
