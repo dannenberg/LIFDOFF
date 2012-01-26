@@ -1,4 +1,5 @@
 from unit import Unit,UnitFactory
+from defense import DefensiveUnit
 from action import Action
 from constants import SQUARE_SIZE
 import pygame
@@ -11,6 +12,8 @@ class Board:
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
         self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
+        for i in xrange(3):
+            self.add_unit(DefensiveUnit(i))
     
     def draw_board(self):
         for x in self.units:
@@ -32,6 +35,9 @@ class Board:
         return True
     
     def take_turn(self):
+        for unit in self.units:
+            if unit._class != Unit.DEFENSE:
+                unit.create_move()
         again = True
         while again:    # if anyone still has moves left
             again = False
@@ -61,7 +67,7 @@ class Board:
         return False
     
     def move_unit(self, unit, loc=None):
-        if loc[0] < 0 or loc[0] > 35 or loc[1] < 0 or loc[1] > 11:
+        if loc[0] < 0 or loc[0] > 34 or loc[1] < 0 or loc[1] > 10:
             if unit._class != Unit.DEFENSE:
                 self.remove_unit(unit)
         else:

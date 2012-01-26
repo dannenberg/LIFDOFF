@@ -47,3 +47,16 @@ Each Submit is split into Turns, so if you dump all your points into one defensi
 .............
 
 if you set it at column zero it comes from the right at time 0, 1 at 1, 2 at 2.
+
+something cuz design document
+==========
+arrow drawing
+terrain generation 
+upgrades/shoppe
+servershit
+  server class
+  pickle class (or function of board)
+ai function on server class for ai
+lobby
+  all the lobby shit
+
