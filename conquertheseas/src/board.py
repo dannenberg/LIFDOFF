@@ -35,6 +35,9 @@ class Board:
         return True
     
     def take_turn(self):
+        for unit in self.units:
+            if unit._class != Unit.DEFENSE:
+                unit.create_move()
         again = True
         while again:    # if anyone still has moves left
             again = False
@@ -64,7 +67,7 @@ class Board:
         return False
     
     def move_unit(self, unit, loc=None):
-        if loc[0] < 0 or loc[0] > 35 or loc[1] < 0 or loc[1] > 11:
+        if loc[0] < 0 or loc[0] > 34 or loc[1] < 0 or loc[1] > 10:
             if unit._class != Unit.DEFENSE:
                 self.remove_unit(unit)
         else:

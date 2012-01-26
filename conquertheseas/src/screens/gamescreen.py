@@ -96,10 +96,8 @@ class GameScreen(Screen):
             self.held = None
             self.current_action = None
             self.movement_locs = []
-            for unit in self.enemy_board.units:
-                if unit._class != Unit.DEFENSE:
-                    unit.create_move()
             self.enemy_board.take_turn()
+            self.my_board.take_turn()
         self.clickbox.append((1, 740, 207, 60), action_button)
         
         def ui_action(token, curunit):
