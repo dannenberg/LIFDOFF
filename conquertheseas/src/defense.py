@@ -4,6 +4,7 @@ from constants import *
 
 class DefensiveUnit(Unit):
     def __init__(self, idd):
+        #self.upgrades = ()[idd]()
         (x,y) = ((0,0),(5,5),(0,9))[idd]
         (w,h) = ((2,2),(2,2),(2,2))[idd]
         imgsrc = ("../img/yellow_sub.png","../img/yellow_sub.png","../img/yellow_sub.png")[idd]

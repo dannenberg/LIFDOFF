@@ -12,7 +12,7 @@ class UnitFactory(object):
         if idd == UnitFactory.YELLOW_SUB:
             return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
         if idd == UnitFactory.BULLET:
-            return Unit(loc, (1,1), "../img/tadpole.png", Unit.BULLET)
+            return Unit(loc, (1,1), "../img/bullet.png", Unit.BULLET)
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
