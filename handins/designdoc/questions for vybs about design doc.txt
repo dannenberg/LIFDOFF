@@ -1,0 +1,13 @@
+questions for vybs
+
+Policies and Tactics
+? Goals (of this document and in this software 
+build)
+? Guidelines (in developing this document)
+? Development methods (of this document – how 
+did we do this – for trace back purposes)
+
+this stuff is all just for the document?  not guidelines or development methods of the actual software?
+
+audience: how many things do we need?  this doesn't line up with the users of the game 
+(we had hardcore, moderate, light, server users) right?  currently have players and software devs
