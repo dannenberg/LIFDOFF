@@ -5,12 +5,17 @@ class MouseHitboxes:
         self._data = []
         self._last = None   # the index of the last element you saw; used for mouseout
         
-    def append(self, rect, on, off=lambda x:None):
-        k = {"left":rect[0], "top":rect[1], "width":rect[2], "height":rect[3], "right":rect[0] + rect[2], "bottom":rect[1] + rect[3], "on":on, "off":off}
-        for x in self._data:
-            if x["left"] < k["right"] and x["right"] > k["left"] and x["top"] < k["bottom"] and x["bottom"] > k["top"]:
+    def append(self, rect, on, off=lambda x:None, z=0):
+        k = {"left":rect[0], "top":rect[1], "width":rect[2], "height":rect[3], "right":rect[0] + rect[2], "bottom":rect[1] + rect[3], "on":on, "off":off, "z":z}
+        i = 0
+        for i,x in enumerate(self._data):
+            if x["z"] == k["z"] and (x["left"] < k["right"] and x["right"] > k["left"] and x["top"] < k["bottom"] and x["bottom"] > k["top"]):
                 raise AttributeError("You have overlapping hitboxes! "+str(x))
-        self._data.append(k)
+            if x["z"] < k["z"]:
+                break
+        self._data = self._data[:i]+[k]+self._data[i:]
+        if self._last>=i:
+            self._last += 1
         
     def out(self, key):
         if self._last != None:
@@ -31,11 +36,18 @@ class MouseHitboxes:
             self._last -= 1
         
     def _index(self, key):
+        i=0
         if self._last != None:  # this SHOULD improve performance with many elements. if it turns out it doesn't, you can remove this block
-            x = self._data[self._last]
-            if x["left"]<=key[0]<x["right"] and x["top"]<=key[1]<x["bottom"]:
+            last = self._data[self._last]
+            for i, x in enumerate(self._data):
+                if x["z"] <= last["z"]: # the < should never come into play, but just to be safe
+                    break
+                if x["left"]<=key[0]<x["right"] and x["top"]<=key[1]<x["bottom"]:
+                    self._last = i
+                    return i
+            if last["left"]<=key[0]<last["right"] and last["top"]<=key[1]<last["bottom"]:
                 return self._last
-        for i, x in enumerate(self._data):
+        for i, x in enumerate(self._data[i:]):
             if x["left"]<=key[0]<x["right"] and x["top"]<=key[1]<x["bottom"]:
                 self._last = i
                 return i
@@ -61,7 +73,14 @@ class MouseHitboxes:
 class TestMouseHitboxes(unittest.TestCase):
     def setUp(self):
         self.mh = MouseHitboxes()
-        self.function = lambda x:None
+        
+    def function(self, value):
+        return lambda x:value
+    
+    def test_one_is_other(self):
+        with self.assertRaises(AttributeError):
+            self.mh.append((0,0,5,5), self.function(0))
+            self.mh.append((0,0,5,5), self.function(1))
     
     #     +----+
     #  +--+--+ |
@@ -70,8 +89,8 @@ class TestMouseHitboxes(unittest.TestCase):
     #     +----+
     def test_half_inside(self):
         with self.assertRaises(AttributeError):
-            self.mh.append((0, 1, 2, 2), self.function)
-            self.mh.append((1, 0, 2, 4), self.function)
+            self.mh.append((0, 1, 2, 2), self.function(0))
+            self.mh.append((1, 0, 2, 4), self.function(1))
     
     #   +---+
     #   |   |
@@ -82,14 +101,14 @@ class TestMouseHitboxes(unittest.TestCase):
     # +---+
     def test_one_corner(self):
         with self.assertRaises(AttributeError):
-            self.mh.append((0, 1, 2, 2), self.function)
-            self.mh.append((1, 0, 2, 2), self.function)
+            self.mh.append((0, 1, 2, 2), self.function(0))
+            self.mh.append((1, 0, 2, 2), self.function(1))
     
     # opposite of previous
     def test_different_corner(self):
         with self.assertRaises(AttributeError):
-            self.mh.append((1, 0, 2, 2), self.function)
-            self.mh.append((0, 1, 2, 2), self.function)
+            self.mh.append((1, 0, 2, 2), self.function(0))
+            self.mh.append((0, 1, 2, 2), self.function(1))
     
     # +--------------+
     # |  +--------+  |
@@ -98,8 +117,8 @@ class TestMouseHitboxes(unittest.TestCase):
     # +--------------+
     def test_one_in_other(self):
         with self.assertRaises(AttributeError):
-            self.mh.append((0, 0, 3, 3), self.function)
-            self.mh.append((1, 1, 1, 1), self.function)
+            self.mh.append((0, 0, 3, 3), self.function(0))
+            self.mh.append((1, 1, 1, 1), self.function(1))
     
     #    +--+
     #    |  |
@@ -110,33 +129,33 @@ class TestMouseHitboxes(unittest.TestCase):
     #    +--+
     def test_cross(self):
         with self.assertRaises(AttributeError):
-            self.mh.append((1, 0, 1, 3), self.function)
-            self.mh.append((0, 1, 3, 1), self.function)
+            self.mh.append((1, 0, 1, 3), self.function(0))
+            self.mh.append((0, 1, 3, 1), self.function(1))
     
     # opposite of previous
     def test_other_cross(self):
         with self.assertRaises(AttributeError):
-            self.mh.append((0, 1, 3, 1), self.function)
-            self.mh.append((1, 0, 1, 3), self.function)
+            self.mh.append((0, 1, 3, 1), self.function(0))
+            self.mh.append((1, 0, 1, 3), self.function(1))
     
     def test_separate1(self):
-        self.mh.append((0, 0, 2, 2), self.function)
-        self.mh.append((2, 2, 1, 3), self.function)
+        self.mh.append((0, 0, 2, 2), self.function(0))
+        self.mh.append((2, 2, 1, 3), self.function(1))
         self.assertTrue(True)
     
     def test_separate2(self):
-        self.mh.append((0, 0, 2, 2), self.function)
-        self.mh.append((0, 2, 1, 3), self.function)
+        self.mh.append((0, 0, 2, 2), self.function(0))
+        self.mh.append((0, 2, 1, 3), self.function(1))
         self.assertTrue(True)
     
     def test_separate3(self):
-        self.mh.append((0, 0, 2, 2), self.function)
-        self.mh.append((2, 0, 1, 3), self.function)
+        self.mh.append((0, 0, 2, 2), self.function(0))
+        self.mh.append((2, 0, 1, 3), self.function(1))
         self.assertTrue(True)
     
     def test_separate4(self):
-        self.mh.append((2, 2, 1, 3), self.function)
-        self.mh.append((0, 0, 2, 2), self.function)
+        self.mh.append((2, 2, 1, 3), self.function(0))
+        self.mh.append((0, 0, 2, 2), self.function(1))
         self.assertTrue(True)
     
     def test_separate5(self):
