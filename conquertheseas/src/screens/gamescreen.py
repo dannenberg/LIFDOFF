@@ -55,8 +55,9 @@ class GameScreen(Screen):
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                     print "gamescreen.boardclick: can't drop here!"
                     return
+                self.set_mode(GameScreen.NOMODE)
                 clear_all_highlighting()
-                    
+                
         def clear_all_highlighting():
             self.held = None
             self.movement_locs = []
@@ -69,11 +70,12 @@ class GameScreen(Screen):
             curunit = self.my_board.get_cell_content(gpos)   # grab the unit @ this pos
             print "gamescreen.boardclick "+str(gpos)
             
-            if self.mode == GameScreen.MOVING:     # if you're holding a Unit you're probably trying to move somewhere
-                if gpos in self.movement_locs:  # Deselect (you didn't try to move somewhere legal)
+            if self.mode == GameScreen.MOVING:
+                if gpos in self.movement_locs:
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
-                    print self.held._actions
+                    print "gamescreen.boardclick "+str(self.held._actions)
                     self.set_mode(GameScreen.NOMODE)
+                clear_all_highlighting()
             
             if curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE: # TODO make a action menu creator for action mode!
@@ -107,10 +109,11 @@ class GameScreen(Screen):
         
         def ui_action(token, curunit):
             if token == Action.MOVE:
-                self.current_action = token
-                movespd = self.curunit._move_speed
+                self.current_action = token # TODO: this whole variable may be redundant...
+                movespd = curunit._move_speed
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.held = curunit
+                self.set_mode(GameScreen.MOVING)
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
             else:
@@ -238,7 +241,7 @@ class GameScreen(Screen):
         self.overbox.append((MY_BOARD_X, MY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(1),mouseout)
     
     def set_mode(self, new_mode):
-        if self.mode == GameScreen.PLACING:
+        if self.mode == GameScreen.DEPLOYING:
             self.held = None
         self.mode = new_mode
     
