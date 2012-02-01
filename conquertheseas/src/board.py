@@ -23,16 +23,26 @@ class Board:
         return self.cells[x][y]
     
     def place_unit(self, unit):
+        failure = False
         for (x, y) in unit.get_cells():
-            print "board.place_unit: adding "+str(x)+","+str(y)
-            if self.cells[x][y] != None:    # We're intersecting another unit: ABORT
-                for (xr, yr) in unit.get_cells():
+            #print "board.place_unit: adding "+str(x)+","+str(y)
+            try:
+                if self.cells[x][y] != None:    # We're intersecting another unit: ABORT
+                    failure = True
+                    break
+            except IndexError:
+                failure = True
+                break
+            self.cells[x][y] = unit
+            #print "board.place_unit "+str(self.cells[x][y])
+        if failure:
+            for (xr, yr) in unit.get_cells():
+                try:
                     if self.cells[xr][yr] == unit:
                         self.cells[xr][yr] = None
-                return False
-            self.cells[x][y] = unit
-            print self.cells[x][y]
-        return True
+                except IndexError:
+                    pass
+        return not failure
     
     def take_turn(self):
         for unit in self.units:
