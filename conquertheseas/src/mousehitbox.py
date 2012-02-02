@@ -156,9 +156,9 @@ class TestMouseHitboxes(unittest.TestCase):
     
     # +--------------+
     # |  +--------+  |
-    # |  | ||     |  |
+    # |  | []     |  |
     # |  |        |  |
-    # |  |    ||  |  |
+    # |  |    []  |  |
     # |  +--------+  |
     # +--------------+
     def test_many_layers(self):
