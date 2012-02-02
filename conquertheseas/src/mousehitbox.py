@@ -47,12 +47,13 @@ class MouseHitboxes:
                 if x["left"]<=key[0]<x["right"] and x["top"]<=key[1]<x["bottom"]:
                     self._last = i
                     return i
+            # _last gets priority over all in the z-class
             if last["left"]<=key[0]<last["right"] and last["top"]<=key[1]<last["bottom"]:
                 return self._last
-        for i, x in enumerate(self._data[i:]):
+        for j, x in enumerate(self._data[i:]):
             if x["left"]<=key[0]<x["right"] and x["top"]<=key[1]<x["bottom"]:
-                self._last = i
-                return i
+                self._last = i+j
+                return i+j
         self._last = None   # did not find a box
         return None
         
@@ -124,10 +125,6 @@ class TestMouseHitboxes(unittest.TestCase):
         self.assertEquals(self.mh[(3,5)]["on"]("doesnt matter what i put here"), 0)
         self.assertEquals(self.mh[(3,3)]["on"]("doesnt matter what i put here"), 0)
         self.assertEquals(self.mh[(3,7)]["on"]("doesnt matter what i put here"), 1)
-    
-    
-    
-    
     
     #   +---+
     #   |   |
