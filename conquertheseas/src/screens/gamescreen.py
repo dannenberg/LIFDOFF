@@ -59,28 +59,38 @@ class GameScreen(Screen):
                 
         def my_boardclick(scr, mpos):
             gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
-            curunit = self.my_board.get_cell_content(gpos)   # grab the unit @ this pos
+            curunit = self.held
+            clicked_unit = self.my_board.get_cell_content(gpos)   # grab the unit @ this pos
+            if curunit == None:
+                curunit = clicked_unit
+            elif curunit == clicked_unit:
+                self.set_mode(GameScreen.NO_MODE)
+                curunit = None
+            elif self.mode != GameScreen.MOVING:
+                self.set_mode(GameScreen.NO_MODE)
+                curunit = clicked_unit
+                
             print "gamescreen.boardclick "+str(gpos)
             
+            self.held = curunit
             if self.mode == GameScreen.MOVING:
                 if gpos in self.movement_locs:
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
                     print "gamescreen.boardclick "+str(self.held._actions)
                     self.set_mode(GameScreen.NO_MODE)
             
-            if curunit != None: # clicked on a unit: do as he wants
+            elif curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE: # TODO make a action menu creator for action mode!
                     options = curunit.get_abilities()   # get his possible actions
                     if len(options) == 1: # skip selection: do only action
                         ui_action(options[0], curunit)
                     elif len(options):  # more than no actions
+                        self.set_mode(GameScreen.ACTION_MENU)
                         self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
                         for i,o in enumerate(options):
                             self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
                         def action_click(scr, mpos):
                             ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
-                            self.clickbox.remove((300,0))
-                            self.action_loc = None
                         try:
                             self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
                             self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
@@ -107,6 +117,7 @@ class GameScreen(Screen):
                 self.set_mode(GameScreen.MOVING)
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
+                self.set_mode(GameScreen.NO_MODE)
             else:
                 raise AttributeError("Unrecognized token "+str(token))
             
@@ -238,10 +249,12 @@ class GameScreen(Screen):
             self.offense_panel.selected = None
             self.held = None
         if self.mode == GameScreen.MOVING:
+            self.held = None
             self.movement_locs = []
             self.arrow_locs = []
         if self.mode == GameScreen.ACTION_MENU:
-            pass
+            self.clickbox.remove((300,0))
+            self.action_loc = None
         self.mode = new_mode
     
     def display(self, screen):
@@ -283,7 +296,7 @@ class GameScreen(Screen):
         self.my_board.surface.blit(self.gridlines, (0, 0))
 
         # action menu if needed
-        if self.action_loc:
+        if self.mode == GameScreen.ACTION_MENU:
             if self.action_loc[2]:
                 self.board_sans_buttons.blit(self.action_surface, (300, 0))
             else: 
