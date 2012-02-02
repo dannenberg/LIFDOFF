@@ -12,7 +12,9 @@ class MouseHitboxes:
             if x["z"] == k["z"] and (x["left"] < k["right"] and x["right"] > k["left"] and x["top"] < k["bottom"] and x["bottom"] > k["top"]):
                 raise AttributeError("You have overlapping hitboxes! "+str(x))
             if x["z"] < k["z"]:
+                i-=1
                 break
+        i+=1
         self._data = self._data[:i]+[k]+self._data[i:]
         if self._last>=i:
             self._last += 1
@@ -82,6 +84,16 @@ class TestMouseHitboxes(unittest.TestCase):
             self.mh.append((0,0,5,5), self.function(0))
             self.mh.append((0,0,5,5), self.function(1))
     
+    def test_one_is_other_layered(self):
+        self.mh.append((0,0,5,5), self.function(0))
+        self.mh.append((0,0,5,5), self.function(1), z=4)
+        self.assertEquals(self.mh[(1,1)]["on"]("doesnt matter what i put here"), 1)
+    
+    def test_one_is_other_layered_opposite(self):
+        self.mh.append((0,0,5,5), self.function(0), z=9)
+        self.mh.append((0,0,5,5), self.function(1), z=4)
+        self.assertEquals(self.mh[(1,1)]["on"]("doesnt matter what i put here"), 0)
+    
     #     +----+
     #  +--+--+ |
     #  |  |  | |
@@ -91,6 +103,31 @@ class TestMouseHitboxes(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.mh.append((0, 1, 2, 2), self.function(0))
             self.mh.append((1, 0, 2, 4), self.function(1))
+
+    def test_half_inside_same_layer(self):
+        with self.assertRaises(AttributeError):
+            self.mh.append((0, 1, 2, 2), self.function(0), z=3)
+            self.mh.append((1, 0, 2, 4), self.function(1), z=3)
+    
+    def test_half_inside_layered(self):
+        self.mh.append((0, 2, 4, 4), self.function(0), z=0)
+        self.mh.append((2, 0, 4, 8), self.function(1), z=2)
+        self.assertEquals(self.mh[(0,3)]["on"]("doesnt matter what i put here"), 0)
+        self.assertEquals(self.mh[(3,5)]["on"]("doesnt matter what i put here"), 1)
+        self.assertEquals(self.mh[(3,3)]["on"]("doesnt matter what i put here"), 1)
+        self.assertEquals(self.mh[(3,7)]["on"]("doesnt matter what i put here"), 1)
+    
+    def test_half_inside_layered_opposite(self):
+        self.mh.append((0, 2, 4, 4), self.function(0), z=2)
+        self.mh.append((2, 0, 4, 8), self.function(1), z=0)
+        self.assertEquals(self.mh[(0,3)]["on"]("doesnt matter what i put here"), 0)
+        self.assertEquals(self.mh[(3,5)]["on"]("doesnt matter what i put here"), 0)
+        self.assertEquals(self.mh[(3,3)]["on"]("doesnt matter what i put here"), 0)
+        self.assertEquals(self.mh[(3,7)]["on"]("doesnt matter what i put here"), 1)
+    
+    
+    
+    
     
     #   +---+
     #   |   |
@@ -120,6 +157,35 @@ class TestMouseHitboxes(unittest.TestCase):
             self.mh.append((0, 0, 3, 3), self.function(0))
             self.mh.append((1, 1, 1, 1), self.function(1))
     
+    # +--------------+
+    # |  +--------+  |
+    # |  | ||     |  |
+    # |  |        |  |
+    # |  |    ||  |  |
+    # |  +--------+  |
+    # +--------------+
+    def test_many_layers(self):
+        self.mh.append((0, 0, 12, 12), self.function(0), z=0)
+        self.mh.append((2, 2, 8, 8), self.function(1), z=1)
+        self.mh.append((4, 4, 2, 2), self.function(2), z=2)
+        self.mh.append((6, 6, 2, 2), self.function(3), z=2)
+        self.assertEquals(self.mh[(1,1)]["on"]("doesnt matter what i put here"), 0)
+        self.assertEquals(self.mh[(3,3)]["on"]("doesnt matter what i put here"), 1)
+        self.assertEquals(self.mh[(5,5)]["on"]("doesnt matter what i put here"), 2)
+        self.assertEquals(self.mh[(7,7)]["on"]("doesnt matter what i put here"), 3)
+    
+    # cant diagram this due to lack of three space but think one 
+    # then another on top but only slightly, with another on top of that
+    # haning over the first and beyond the first
+    def test_overhang(self):
+        self.mh.append((6, 0, 12, 12), self.function(0), z=0)
+        self.mh.append((0, 0, 12, 12), self.function(1), z=1)
+        self.mh.append((4, 4, 28, 28), self.function(2), z=2)
+        self.assertEquals(self.mh[(1,1)]["on"]("doesnt matter what i put here"), 1)
+        self.assertEquals(self.mh[(15,1)]["on"]("doesnt matter what i put here"), 0)
+        self.assertEquals(self.mh[(30,30)]["on"]("doesnt matter what i put here"), 2)
+        self.assertEquals(self.mh[(16,5)]["on"]("doesnt matter what i put here"), 2)
+
     #    +--+
     #    |  |
     # +--+--+--+
