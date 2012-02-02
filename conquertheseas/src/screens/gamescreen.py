@@ -56,15 +56,7 @@ class GameScreen(Screen):
                     print "gamescreen.boardclick: can't drop here!"
                     return
                 self.set_mode(GameScreen.NOMODE)
-                clear_all_highlighting()
                 
-        def clear_all_highlighting():
-            self.held = None
-            self.movement_locs = []
-            self.arrow_locs = []
-            self.current_action = None
-            self.offense_panel.selected = None
-
         def my_boardclick(scr, mpos):
             gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.my_board.get_cell_content(gpos)   # grab the unit @ this pos
@@ -75,7 +67,6 @@ class GameScreen(Screen):
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
                     print "gamescreen.boardclick "+str(self.held._actions)
                     self.set_mode(GameScreen.NOMODE)
-                clear_all_highlighting()
             
             if curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE: # TODO make a action menu creator for action mode!
@@ -242,7 +233,13 @@ class GameScreen(Screen):
     
     def set_mode(self, new_mode):
         if self.mode == GameScreen.DEPLOYING:
+            self.offense_panel.selected = None
             self.held = None
+        if self.mode == GameScreen.MOVING:
+            self.movement_locs = []
+            self.arrow_locs = []
+        if self.mode == GameScreen.ACTION_MENU:
+            pass
         self.mode = new_mode
     
     def display(self, screen):
