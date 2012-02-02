@@ -10,14 +10,14 @@ from action import Action
 
 class GameScreen(Screen):
     """in game screen"""
-    NOMODE = 0
+    NO_MODE = 0
     DEPLOYING = 1
     ACTION_MENU = 2
     MOVING = 3
     def __init__(self):
         Screen.__init__(self)
         
-        self.mode = GameScreen.NOMODE
+        self.mode = GameScreen.NO_MODE
         self.action_surface = None
 
         self.action_loc = None
@@ -55,7 +55,7 @@ class GameScreen(Screen):
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                     print "gamescreen.boardclick: can't drop here!"
                     return
-                self.set_mode(GameScreen.NOMODE)
+                self.set_mode(GameScreen.NO_MODE)
                 
         def my_boardclick(scr, mpos):
             gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
@@ -66,7 +66,7 @@ class GameScreen(Screen):
                 if gpos in self.movement_locs:
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
                     print "gamescreen.boardclick "+str(self.held._actions)
-                    self.set_mode(GameScreen.NOMODE)
+                    self.set_mode(GameScreen.NO_MODE)
             
             if curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE: # TODO make a action menu creator for action mode!
@@ -111,10 +111,12 @@ class GameScreen(Screen):
                 raise AttributeError("Unrecognized token "+str(token))
             
         def offense_panel_click(scr, mpos):
+            if self.mode != GameScreen.DEPLOYING:
+                self.set_mode(GameScreen.DEPLOYING)
             mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)  
-            self.movement_locs = []
             self.held = self.offense_panel.on_click(mpos)
-            self.set_mode(GameScreen.DEPLOYING)
+            if self.held == None:
+                self.set_mode(GameScreen.NO_MODE)
         
         self.clickbox.append((OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT), offense_panel_click)
         
