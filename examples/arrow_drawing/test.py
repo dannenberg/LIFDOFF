@@ -1,7 +1,9 @@
-import sys, locale, os, unittest
+import os, unittest
 
-_lookup =  (u"\u2592", u"\x19", u"\x1b", u"\u2514", u"\x18",
-           u"\u2502", u"\u250C", "E", u"\x1a", u"\u2518",
+_lookup = (u"\u2592", [u"\u2193", u"\x19"][os.name=='nt'],
+          [u"\u2190", u"\x1b"][os.name=='nt'], u"\u2514",
+          [u"\u2191", u"\x18"][os.name=='nt'], u"\u2502",
+           u"\u250C", "E", [u"\u2192", u"\x1a"][os.name=='nt'], u"\u2518",
            u"\u2500", "E", u"\u2510","E","E","E","E")
 movespd = 3
 W = movespd*2+1
