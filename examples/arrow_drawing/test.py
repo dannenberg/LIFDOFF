@@ -26,6 +26,8 @@ class Arrows:
     def update_arrows(self, nx, ny):
         arrow_locs = self.arrow_locs[:]
         cutme = [tuple(z[:2]) for z in arrow_locs]
+        if (nx, ny) == cutme[-1]:
+            return
         if (nx, ny) in cutme:  # doubling over, cut yourself short
             ind = cutme.index((nx, ny))+1
             arrow_locs[ind-1][2] &= ~self.reverse(arrow_locs[ind][2]) # WRONG
@@ -108,6 +110,20 @@ class TestArrows(unittest.TestCase):
         self.arrow.update_arrows(1,0)
         self.arrow.update_arrows(2,0)
         musteq = [[1,0,10],[2,0,8]]
+        for i,a in enumerate(self.arrow):
+            self.assertEquals(a, musteq[i])
+
+    def test_arrow_not_move(self):
+        self.arrow.update_arrows(1,0)
+        self.arrow.update_arrows(1,0)
+        musteq = [[1,0,8]]
+        for i,a in enumerate(self.arrow):
+            self.assertEquals(a, musteq[i])
+
+    def test_arrow_double_back(self):
+        self.arrow.update_arrows(1,0)
+        self.arrow.update_arrows(0,1)
+        musteq = [[0,1,4]]
         for i,a in enumerate(self.arrow):
             self.assertEquals(a, musteq[i])
 
