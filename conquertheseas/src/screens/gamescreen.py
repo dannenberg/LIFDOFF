@@ -92,8 +92,10 @@ class GameScreen(Screen):
                         def action_click(scr, mpos):
                             ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
                         try:
-                            self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
-                            self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
+                            self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
+                            self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
+                            #self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
+                            #self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
                         except AttributeError:
                             print "TODO: avoid double placing this hitbox"
             
@@ -124,7 +126,7 @@ class GameScreen(Screen):
         def offense_panel_click(scr, mpos):
             if self.mode != GameScreen.DEPLOYING:
                 self.set_mode(GameScreen.DEPLOYING)
-            mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)  
+            mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)
             self.held = self.offense_panel.on_click(mpos)
             if self.held == None:
                 self.set_mode(GameScreen.NO_MODE)
@@ -182,6 +184,8 @@ class GameScreen(Screen):
                     return num*4
                 return num//4
             def hold(scr, mpos):
+                if self.mode == GameScreen.ACTION_MENU:
+                    return
                 if player:
                     whichboard = self.my_board
                     gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
@@ -253,7 +257,7 @@ class GameScreen(Screen):
             self.movement_locs = []
             self.arrow_locs = []
         if self.mode == GameScreen.ACTION_MENU:
-            self.clickbox.remove((300,0))
+            self.clickbox.remove((self.action_loc[0]+MY_BOARD_X, self.action_loc[1]+MY_BOARD_Y))
             self.action_loc = None
         self.mode = new_mode
     
@@ -297,11 +301,8 @@ class GameScreen(Screen):
 
         # action menu if needed
         if self.mode == GameScreen.ACTION_MENU:
-            if self.action_loc[2]:
-                self.board_sans_buttons.blit(self.action_surface, (300, 0))
-            else: 
-                self.board_sans_buttons.blit(self.action_surface, (300, 0))
-
+            self.my_board.surface.blit(self.action_surface, self.action_loc)
+        
         self.board_sans_buttons.blit(pygame.transform.flip(self.enemy_board.surface, True, False), (ENEMY_BOARD_X, ENEMY_BOARD_Y))
         self.board_sans_buttons.blit(self.my_board.surface, (MY_BOARD_X, MY_BOARD_Y))
         self.board_sans_buttons.blit(self.offense_panel.surface, (OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y))
