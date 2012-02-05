@@ -45,7 +45,7 @@ class GameScreen(Screen):
         
         def to_upgrade(scr, mpos):
             self.command = "transition upgrade"
-        self.clickbox.append((785,742,130,57), to_upgrade) # SO MAGICAL!
+        self.clickbox.append((785,742,230,57), to_upgrade) # SO MAGICAL!
 
         def enemy_boardclick(scr, mpos):
             gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)

@@ -2,30 +2,34 @@ class UpgradeFactory(object):
     DAMAGE = 1
     MOVEMENT = 2
     SPECIAL = 3
-    created = []
+    
+    created = {}
     def __new__(_, idd):
-        if created.contains(idd):
-            return thetokentoidd
+        if idd in created:
+            return created[idd]
         if idd == UpgradeFactory.DAMAGE:
-            foo = [ALL THE SHIT]
-            foo = [UpgradeFactory(f) for f in foo]
-            return Upgrade("Poop","Allows you to poop","Everybody poops and if they don't they're an android.",[],[],"nope",50,"../img/yellow_sub.png")
+            foo = ["MORTAR", "JNAUT", "TORPEDO"]    # tokens
+            foo = [UpgradeFactory(f) for f in foo]  # values
+            val = Upgrade("Damage","The Base Damage class, should be invisible.","o",foo,"nope",50,"../img/yellow_sub.png")
+            created[idd] = val
+            return val
         if idd == UpgradeFactory.MOVEMENT:
-            foo = [ALL THE SHIT]
-            foo = [UpgradeFactory(f) for f in foo]
-            return Upgrade(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
+            return 1
         if idd == UpgradeFactory.SPECIAL:
-            foo = [ALL THE SHIT]
-            foo = [UpgradeFactory(f) for f in foo]
-            return Upgrade(loc, (1,1), "../img/bullet.png", Unit.BULLET)
+            return 2
+        if idd == "MORTAR":
+            val = Upgrade("Mortar", "The Mortar class, I'm possibly invisible too?", "FLAVA FLAAAAV", [], "nope", 50, "../img/yellow_sub.png")
+        if idd == "JNAUT":
+            val = Upgrade("Juggernaut", "The Jaunt class", "So jaunt", [], "nope", 50, "../img/yellow_sub.png")
+        if idd == "TORPEDO":
+            val = Upgrade("Torpedo", "The Torpedo class", "Torp", [], "nope", 50, "../img/yellow_sub.png")
         raise ValueError("Unknown unit id "+str(idd))
 
 class Upgrade:
-    def __init__(self, name, desc, flavor, prereqs, unlocks, effect, cost, img):
+    def __init__(self, name, desc, flavor, unlocks, effect, cost, img):
         self.name = name
         self.description = desc
         self.flavor = flavor
-        self.prereqs = prereqs
         self.unlocks = unlocks
         self.game_effect = effect
         self.cost = cost
