@@ -39,10 +39,14 @@ class GameScreen(Screen):
         self.arrow_locs = []
         
         self.command = ""
-        def toShop(scr, mpos):
+        def to_shop(scr, mpos):
             self.command = "transition shop"
-        self.clickbox.append((660,742,122,57), toShop) # SO MAGICAL!
+        self.clickbox.append((660,742,122,57), to_shop) # SO MAGICAL!
         
+        def to_upgrade(scr, mpos):
+            self.command = "transition upgrade"
+        self.clickbox.append((785,742,130,57), to_upgrade) # SO MAGICAL!
+
         def enemy_boardclick(scr, mpos):
             gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
@@ -199,12 +203,14 @@ class GameScreen(Screen):
                     else:
                         scr.mouseover_highlight = curunit.get_cells()
                 elif isinstance(self.held,Unit):
+                    """
                     if gpos in self.movement_locs:
                         to_check = self.arrow_locs[-1][:2] if len(self.arrow_locs) else self.held._loc  # go from the last arrow drawn. if no last arrow drawn, go from unit
                         if gpos != to_check:    # don't draw over an arrow you've already placed
                             self.arrow_locs.append((gpos[0], gpos[1], 1))
+                    """
                     
-                    """ HIDEOUS CHUNK OF BAD ARROW DRAWING
+                    # HIDEOUS CHUNK OF BAD ARROW DRAWING
                     if self.current_action == Action.MOVE:
                         mpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
                         movespd = 3
@@ -239,7 +245,7 @@ class GameScreen(Screen):
                             self.arrow_locs += [(mpos[0],mpos[1],direction)]
                             print len(self.arrow_locs)
                         
-                        """
+                        
                     scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in self.held.get_shape()]
                 else:
                     scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in UnitFactory.get_shape_from_token(self.held)]
