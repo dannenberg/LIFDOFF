@@ -19,6 +19,7 @@ class GameScreen(Screen):
         
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
+        self.last_turn = False
 
         self.action_loc = None
         self.water_level = 0
@@ -80,6 +81,7 @@ class GameScreen(Screen):
             if self.mode == GameScreen.MOVING:
                 if gpos in self.movement_locs:
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
+                    self.my_board.move_unit(self.held, self.arrow_locs[-1][:2])
                     print "gamescreen.boardclick "+str(self.held._actions)
                     self.set_mode(GameScreen.NO_MODE)
             
@@ -107,12 +109,18 @@ class GameScreen(Screen):
         self.clickbox.append((   MY_BOARD_X,    MY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), my_boardclick)
         
         def action_button(scr, mpos):
-            self.held = None
-            self.current_action = None
-            self.movement_locs = []
-            self.enemy_board.take_turn()
-            self.my_board.take_turn()
-        self.clickbox.append((1, 740, 207, 60), action_button)
+            self.set_mode(GameScreen.NO_MODE)
+            for unit in self.my_board.units:
+                self.my_board.move_unit(unit, unit._unaltered_loc)
+            # TODO removed staged units fromenemy board 
+            if self.last_turn == True:
+                self.enemy_board.take_turn()
+                self.my_board.take_turn()
+                self.enemy_board.store_cur_pos()
+                self.my_board.store_cur_pos()
+            self.last_turn = not self.last_turn
+            self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
+        self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
         def ui_action(token, curunit):
             if token == Action.MOVE:
@@ -239,7 +247,10 @@ class GameScreen(Screen):
                             if len(scr.arrow_locs)>0:
                                 if self.arrow_locs[-1][2] == reverse(direction):
                                     del self.arrow_locs[-1]
-                                    self.arrow_locs[-1] = self.arrow_locs[-1][:2]+(self.arrow_locs[-1][2]&~direction,)
+                                    try:
+                                        self.arrow_locs[-1] = self.arrow_locs[-1][:2]+(self.arrow_locs[-1][2]&~direction,)
+                                    except IndexError:
+                                        print "OH NOOOOOOO FIX THIS"
                                     return
                                 self.arrow_locs[-1] = self.arrow_locs[-1][:2]+(self.arrow_locs[-1][2]|reverse(direction),)
                             self.arrow_locs += [(mpos[0],mpos[1],direction)]

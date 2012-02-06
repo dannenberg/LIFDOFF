@@ -6,11 +6,17 @@ class UnitFactory(object):
     TADPOLE = 1
     YELLOW_SUB = 2
     BULLET = 3
-    def __new__(_, idd, loc):
+    def __new__(_, idd, loc, fo_real = False):
         if idd == UnitFactory.TADPOLE:
-            return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE)
+            if fo_real:
+                return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE)
+            else:
+                return Unit(loc, (1,1), "../img/tadpole.png", Unit.STAGING)
         if idd == UnitFactory.YELLOW_SUB:
-            return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
+            if fo_real:
+                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
+            else:
+                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.STAGING)
         if idd == UnitFactory.BULLET:
             return Unit(loc, (1,1), "../img/bullet.png", Unit.BULLET)
         raise ValueError("Unknown unit id "+str(idd))
@@ -27,17 +33,20 @@ class Unit(object):
     DEFENSE = 1
     OFFENSE = 2
     BULLET  = 3
-    def __init__(self, (x,y), (w, h), imgsrc, parent=None):
-        if parent in (Unit.DEFENSE, Unit.OFFENSE, Unit.BULLET):
-            self._class = parent
-            self._parent = None		# TODO: fix this
-        else:
+    STAGING  = 4
+    def __init__(self, (x,y), (w, h), imgsrc, cls, parent=None):
+        if parent != None:
+            self._class = parent._class
             self._parent = parent
+        else:
+            self._parent = None
+            self._class = cls
         self._tileset = pygame.image.load(imgsrc)
         self._spr_src = (0,0)     # topleft of source tile
         self._size = (w, h)         # width/height
         self._spr_size = (w*SQUARE_SIZE, h*SQUARE_SIZE) # width and height in pixels
         self._loc = (x,y)           # location on the board
+        self._unaltered_loc = (x,y)
         self._actions = []
         self._move_speed = 3
         

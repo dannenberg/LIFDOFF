@@ -70,13 +70,28 @@ class Board:
                 u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
                 self.add_unit(u)
                 pass    # TODO
+            elif unit._action[0].action == Action.CREATE:
+                #u = UnitFactory(UnitFactory.Afasdfsdaf
+                pass
             elif unit._action[0].action == Action.SPECIAL:
                 pass    # TODO
             del unit._actions[0]
             return True
         return False
     
+    def remove_staging(self):
+        for unit in self.units:
+            if unit._class == Unit.STAGING:
+                unit._actions.append(Action.CREATE, loc)
+                self.remove_unit(unit)
+    
+    def store_cur_pos(self):
+        for unit in self.units:
+            unit._unaltered_loc = unit._loc
+
     def move_unit(self, unit, loc=None):
+        if loc == None:
+            loc = unit._loc
         if loc[0] < 0 or loc[0] > 34 or loc[1] < 0 or loc[1] > 10:
             if unit._class != Unit.DEFENSE:
                 self.remove_unit(unit)
