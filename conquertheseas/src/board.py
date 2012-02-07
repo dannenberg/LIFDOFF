@@ -11,6 +11,7 @@ class Board:
         self._h = h
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
+        self._actions = []
         self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i))
@@ -48,6 +49,11 @@ class Board:
         for unit in self.units:
             if unit._class != Unit.DEFENSE:
                 unit.create_move()
+        for action in self._actions:
+            if action.action == Action.CREATE:
+                unit = UnitFactory(action.loc, action.extra, True)
+                self.add_unit(unit)
+        self._actions = []
         again = True
         while again:    # if anyone still has moves left
             again = False
@@ -70,9 +76,6 @@ class Board:
                 u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
                 self.add_unit(u)
                 pass    # TODO
-            elif unit._action[0].action == Action.CREATE:
-                #u = UnitFactory(UnitFactory.Afasdfsdaf
-                pass
             elif unit._action[0].action == Action.SPECIAL:
                 pass    # TODO
             del unit._actions[0]
@@ -82,7 +85,7 @@ class Board:
     def remove_staging(self):
         for unit in self.units:
             if unit._class == Unit.STAGING:
-                unit._actions.append(Action.CREATE, loc)
+                self._actions.append(Action(Action.CREATE, unit._token, unit._loc))
                 self.remove_unit(unit)
     
     def store_cur_pos(self):

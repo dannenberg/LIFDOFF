@@ -110,6 +110,7 @@ class GameScreen(Screen):
         
         def action_button(scr, mpos):
             self.set_mode(GameScreen.NO_MODE)
+            self.enemy_board.remove_staging()
             for unit in self.my_board.units:
                 self.my_board.move_unit(unit, unit._unaltered_loc)
             # TODO removed staged units fromenemy board 
