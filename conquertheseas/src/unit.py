@@ -90,20 +90,23 @@ class Unit(object):
     def queue_shoot(self):
         self._actions.append(Action(Action.SHOOT))
     
-    def take_damage(self, dmg):
+    def take_damage(self, board, dmg=None):
         """ Returns remaining health """
-        unit.health = 0
+        if dmg is None or self.health-dmg <= 0:
+            board.remove_unit(self) # D:
+        self.health -= dmg
         return 0
     
-    def on_collision(self):
+    def on_collision(self, opposed, board):
         """ Returns damage done to opponent """
-        unit.health = 0
+        opposed.take_damage(board, 5)   # TODO: 5?
+        self.take_damage(board)
         return 5
     
     def create_move(self):
         if self._class == Unit.BULLET:
-            for i in xrange(self._move_speed):  
+            for i in xrange(self._move_speed):
                 self._actions.append(Action(Action.MOVE, (self._loc[0] + i + 1, self._loc[1])))
         elif self._class == Unit.OFFENSE:
-            for i in xrange(self._move_speed):  
+            for i in xrange(self._move_speed):
                 self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))

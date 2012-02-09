@@ -58,7 +58,7 @@ class Board:
         while again:    # if anyone still has moves left
             again = False
             print "board.take_turn: NEW TURN"
-            for x in self.units:
+            for x in self.units[:]:
                 again |= self.unit_take_action(x)   # if any unit moved, check all units again
                 x.moved = True
             for x in self.units:
@@ -78,18 +78,20 @@ class Board:
                 for ux,uy in nextlocs:  # this is serverside stuff :(
                     collided = self.cells[ux][uy]
                     if collided != None and collided != unit:
-                        print "wat ",collided
-                        if collided._class > unit._class:
-                            unit.take_damage(collided.on_collision()) # TODO : remove from board
+                        # this is confusing as anything so comments
+                        if collided._class > unit._class:   # bullet on offense or offense on defense
+                            collided.on_collision(unit, self)
                         elif collided._class == unit._class:
                             if unit.moved or unit._actions[0].action != Action.MOVE: # he's moved already, or he's not GOING to move
                                 unit._actions = []  # bunp
+                                unit.take_damage(self, 0)
                                 # TODO : Take some damage: may i suggest len(collided.get_shape())*c
                                 return False
                             else:   # if he's gonna move into you dats bad
                                 cloc = collided._actions[0].loc
                                 for cx,cy in collided.get_shape():
                                     if (cx+cloc[0], cy+cloc[1]) in nextlocs:    # onoz!
+                                        unit.take_damage(self, 0)   # same as prev TODO
                                         return False
                                 # otherwise he'll resolve the collision on his turn
                     else:
@@ -107,13 +109,10 @@ class Board:
         return False
     
     def remove_staging(self):
-        killunits = []
-        for unit in self.units:
+        for unit in self.units[:]:
             if unit._class == Unit.STAGING:
                 self._actions.append(Action(Action.CREATE, unit._token, unit._loc))
-                killunits.append(unit)
-        for x in killunits:
-            self.remove_unit(x)
+                self.remove_unit(unit)
     
     def store_cur_pos(self):
         for unit in self.units:
