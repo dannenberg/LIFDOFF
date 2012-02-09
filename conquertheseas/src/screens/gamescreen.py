@@ -130,7 +130,7 @@ class GameScreen(Screen):
                 movespd = curunit._move_speed
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.held = curunit
-                self.arrow_offset = (((curunit._size[0]-1)/2.0)*SQUARE_SIZE, ((curunit._size[1]-1)/2.0)*SQUARE_SIZE)
+                self.arrow_offset = (int(((curunit._size[0]-1)/2.0)*SQUARE_SIZE), int(((curunit._size[1]-1)/2.0)*SQUARE_SIZE))
                 self.set_mode(GameScreen.MOVING)
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
@@ -223,29 +223,29 @@ class GameScreen(Screen):
                     
                     # HIDEOUS CHUNK OF BAD ARROW DRAWING
                     if self.current_action == Action.MOVE:
-                        mpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
+                        gpos = ((mpos[0]-self.arrow_offset[0])//SQUARE_SIZE, (mpos[1]-self.arrow_offset[1])//SQUARE_SIZE)
                         movespd = 3
                         
                         lastloc = self.arrow_locs[-1] if len(self.arrow_locs)>0 else self.held._loc
-                        if lastloc[:2] == mpos:
+                        if lastloc[:2] == gpos:
                             return
                         if len(self.arrow_locs) >= movespd:
                             scr.arrow_locs = []
-                            xran,yran = (abs(mpos[i]-self.held._loc[i]) for i in xrange(2))
-                            xdir,ydir = (1 if mpos[i]-self.held._loc[i]>0 else -1 for i in xrange(2))
+                            xran,yran = (abs(gpos[i]-self.held._loc[i]) for i in xrange(2))
+                            xdir,ydir = (1 if gpos[i]-self.held._loc[i]>0 else -1 for i in xrange(2))
                             for x in xrange(1,xran):  # xdir
                                 scr.arrow_locs += [(self.held._loc[0]+x*xdir, self.held._loc[1], 10)]
                             if xran and yran:   # turn
                                 val = 0
                                 val |= 4 if ydir>0 else 1
                                 val |= 8 if xdir>0 else 2
-                                scr.arrow_locs += [(mpos[0],self.held._loc[1],val)]
+                                scr.arrow_locs += [(gpos[0],self.held._loc[1],val)]
                             for y in xrange(1,yran):  # ydir
-                                scr.arrow_locs += [(mpos[0],self.held._loc[1]+y*ydir,5)]
-                            scr.arrow_locs += [(mpos[0], mpos[1], (1 if ydir>0 else 4) if yran else (8 if xdir>0 else 2))]  # bellend
+                                scr.arrow_locs += [(gpos[0],self.held._loc[1]+y*ydir,5)]
+                            scr.arrow_locs += [(gpos[0], gpos[1], (1 if ydir>0 else 4) if yran else (8 if xdir>0 else 2))]  # bellend
                         else:
-                            xran,yran = (abs(mpos[i]-lastloc[i]) for i in xrange(2))
-                            xdir,ydir = (1 if mpos[i]-lastloc[i]>0 else -1 for i in xrange(2))
+                            xran,yran = (abs(gpos[i]-lastloc[i]) for i in xrange(2))
+                            xdir,ydir = (1 if gpos[i]-lastloc[i]>0 else -1 for i in xrange(2))
                             direction = (1 if ydir>0 else 4) if yran else (8 if xdir>0 else 2)
                             if len(scr.arrow_locs)>0:
                                 if self.arrow_locs[-1][2] == reverse(direction):
@@ -256,10 +256,10 @@ class GameScreen(Screen):
                                         print "OH NOOOOOOO FIX THIS"
                                     return
                                 self.arrow_locs[-1] = self.arrow_locs[-1][:2]+(self.arrow_locs[-1][2]|reverse(direction),)
-                            self.arrow_locs += [(mpos[0],mpos[1],direction)]
+                            self.arrow_locs += [(gpos[0],gpos[1],direction)]
                             print len(self.arrow_locs)
-                        
-                        
+                    # END HIDEOUS CHUNK OF BAD ARROW DRAWING
+                    
                     scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in self.held.get_shape()]
                 else:
                     scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in UnitFactory.get_shape_from_token(self.held)]
