@@ -38,6 +38,7 @@ class GameScreen(Screen):
         self.action_imgs = pygame.image.load("../img/action_choices.png")
         self.arrows = pygame.image.load("../img/arrow_formatted.png")
         self.arrow_locs = []
+        self.arrow_offset = (0,0)
         
         self.command = ""
         def to_shop(scr, mpos):
@@ -129,6 +130,7 @@ class GameScreen(Screen):
                 movespd = curunit._move_speed
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.held = curunit
+                self.arrow_offset = (((curunit._size[0]-1)/2.0)*SQUARE_SIZE, ((curunit._size[1]-1)/2.0)*SQUARE_SIZE)
                 self.set_mode(GameScreen.MOVING)
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
@@ -299,7 +301,7 @@ class GameScreen(Screen):
             self.my_board.surface.blit(self.highlight, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2))
         
         for x in self.arrow_locs:
-            self.my_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2), ((SQUARE_SIZE*x[2],0),(SQUARE_SIZE,SQUARE_SIZE)))
+            self.my_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2+self.arrow_offset[0], x[1]*SQUARE_SIZE+2+self.arrow_offset[1]), ((SQUARE_SIZE*x[2],0),(SQUARE_SIZE,SQUARE_SIZE)))
         
         if self.mode == GameScreen.DEPLOYING:
             self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*11)), ((35-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))
