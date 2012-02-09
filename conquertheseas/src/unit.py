@@ -33,7 +33,7 @@ class Unit(object):
     DEFENSE = 1
     OFFENSE = 2
     BULLET  = 3
-    STAGING  = 4
+    STAGING  = 0
     def __init__(self, (x,y), (w, h), imgsrc, cls, parent=None, token=None):
         if parent != None:
             self._class = parent._class
@@ -50,6 +50,8 @@ class Unit(object):
         self._unaltered_loc = (x,y)
         self._actions = []
         self._move_speed = 3
+        self.moved = False
+        self.health = 1
         
     def advance_sprite(self):
         x = self._spr_src[0]+self._spr_size[0]
@@ -87,7 +89,17 @@ class Unit(object):
             
     def queue_shoot(self):
         self._actions.append(Action(Action.SHOOT))
-
+    
+    def take_damage(self, dmg):
+        """ Returns remaining health """
+        unit.health = 0
+        return 0
+    
+    def on_collision(self):
+        """ Returns damage done to opponent """
+        unit.health = 0
+        return 5
+    
     def create_move(self):
         if self._class == Unit.BULLET:
             for i in xrange(self._move_speed):  

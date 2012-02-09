@@ -60,6 +60,9 @@ class Board:
             print "board.take_turn: NEW TURN"
             for x in self.units:
                 again |= self.unit_take_action(x)   # if any unit moved, check all units again
+                x.moved = True
+            for x in self.units:
+                x.moved = False
             # TODO eventually there will be a pause here.
         print "board.take_turn: NO NEW MOVES"
     
@@ -70,13 +73,34 @@ class Board:
     def unit_take_action(self, unit):
         if len(unit._actions) > 0:
             if unit._actions[0].action == Action.MOVE:
-                self.move_unit(unit, unit._actions[0].loc)
+                mloc = unit._actions[0].loc
+                nextlocs = [(x+mloc[0],y+mloc[1]) for x,y in unit.get_shape()]
+                for ux,uy in nextlocs:  # this is serverside stuff :(
+                    collided = self.cells[ux][uy]
+                    if collided != None and collided != unit:
+                        print "wat ",collided
+                        if collided._class > unit._class:
+                            unit.take_damage(collided.on_collision()) # TODO : remove from board
+                        elif collided._class == unit._class:
+                            if unit.moved or unit._actions[0].action != Action.MOVE: # he's moved already, or he's not GOING to move
+                                unit._actions = []  # bunp
+                                # TODO : Take some damage: may i suggest len(collided.get_shape())*c
+                                return False
+                            else:   # if he's gonna move into you dats bad
+                                cloc = collided._actions[0].loc
+                                for cx,cy in collided.get_shape():
+                                    if (cx+cloc[0], cy+cloc[1]) in nextlocs:    # onoz!
+                                        return False
+                                # otherwise he'll resolve the collision on his turn
+                    else:
+                        print "No collision!"
+                self.move_unit(unit, mloc)  # the movement
                 print "board.unit_take_action: MOVED"
             elif unit._actions[0].action == Action.SHOOT:
                 u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
                 self.add_unit(u)
                 pass    # TODO
-            elif unit._action[0].action == Action.SPECIAL:
+            elif unit._actions[0].action == Action.SPECIAL:
                 pass    # TODO
             del unit._actions[0]
             return True
