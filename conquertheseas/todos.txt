@@ -13,6 +13,7 @@ If you're bored and looking for something to add to this fix deez things.
 =================
 - Screen transitions are HI-LARIOUSLY bad. Fix dat.
 - Unit highlight size not reset until mousemove :(
+- Shift-click for multiplace offensive units
 
 =================
 -- LARGE TODOS --

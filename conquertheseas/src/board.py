@@ -47,7 +47,7 @@ class Board:
     
     def take_turn(self):
         for unit in self.units:
-            if unit._class != Unit.DEFENSE:
+            if unit._class not in (Unit.STAGING, Unit.DEFENSE):
                 unit.create_move()
         for action in self._actions:
             if action.action == Action.CREATE:
@@ -83,10 +83,13 @@ class Board:
         return False
     
     def remove_staging(self):
+        killunits = []
         for unit in self.units:
             if unit._class == Unit.STAGING:
                 self._actions.append(Action(Action.CREATE, unit._token, unit._loc))
-                self.remove_unit(unit)
+                killunits.append(unit)
+        for x in killunits:
+            self.remove_unit(x)
     
     def store_cur_pos(self):
         for unit in self.units:
