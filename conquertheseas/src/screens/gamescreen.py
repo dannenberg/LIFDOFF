@@ -33,7 +33,7 @@ class GameScreen(Screen):
         self.offense_panel.add_unit(UnitFactory.YELLOW_SUB)
         
         self.enemy_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
-        self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
+        self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, True)
         
         self.action_imgs = pygame.image.load("../img/action_choices.png")
         self.arrows = pygame.image.load("../img/arrow_formatted.png")

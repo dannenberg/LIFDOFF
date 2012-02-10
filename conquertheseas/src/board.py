@@ -5,7 +5,7 @@ from constants import SQUARE_SIZE
 import pygame
 
 class Board:
-    def __init__(self, w, h):
+    def __init__(self, w, h, purple=False):
         self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE)) # TODO make a const for cell size
         self._w = w
         self._h = h
@@ -14,7 +14,7 @@ class Board:
         self._actions = []
         self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
         for i in xrange(3):
-            self.add_unit(DefensiveUnit(i))
+            self.add_unit(DefensiveUnit(i, purple))
     
     def draw_board(self):
         for x in self.units:
