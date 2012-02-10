@@ -73,6 +73,8 @@ class Board:
             self.cells[x][y] = None
             
     def unit_take_action(self, unit):
+        if unit not in self.units:  # This, unfortuntately, is a concern
+            return False
         if len(unit._actions) > 0:
             if unit._actions[0].action == Action.MOVE:
                 mloc = unit._actions[0].loc
@@ -81,7 +83,6 @@ class Board:
                     if not (0<=ux<BOARD_SQUARES_X and 0<=uy<BOARD_SQUARES_Y):
                         continue
                     collided = self.cells[ux][uy]
-                    print collided
                     if collided != None and collided != unit:
                         # this is confusing as anything so comments
                         if collided._class > unit._class:   # bullet on offense or offense on defense
