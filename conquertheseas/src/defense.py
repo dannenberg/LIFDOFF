@@ -11,7 +11,7 @@ class DefensiveUnit(Unit):
             imgsrc = ("../img/purple_sub.png","../img/purple_sub.png","../img/purple_sub.png")[idd]
         else:
             imgsrc = ("../img/yellow_sub.png","../img/yellow_sub.png","../img/yellow_sub.png")[idd]
-        super(DefensiveUnit, self).__init__((x,y), (w,h), imgsrc, Unit.DEFENSE)
+        super(DefensiveUnit, self).__init__((x,y), (w,h), imgsrc, Unit.DEFENSE, 0, 0)
         self._abilities = [Action.MOVE, Action.SHOOT]
         self.addons = []
 

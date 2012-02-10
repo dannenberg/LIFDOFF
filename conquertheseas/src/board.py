@@ -53,7 +53,7 @@ class Board:
                 unit.create_move()
         for action in self._actions:
             if action.action == Action.CREATE:
-                unit = UnitFactory(action.loc, action.extra, True)
+                unit = UnitFactory(action.extra, action.loc, True)
                 self.add_unit(unit)
         self._actions = []
         again = True
@@ -118,7 +118,7 @@ class Board:
     def remove_staging(self):
         for unit in self.units[:]:
             if unit._class == Unit.STAGING:
-                self._actions.append(Action(Action.CREATE, unit._token, unit._loc))
+                self._actions.append(Action(Action.CREATE, unit._loc, unit._token))
                 self.remove_unit(unit)
     
     def store_cur_pos(self):

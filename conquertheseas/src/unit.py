@@ -9,16 +9,16 @@ class UnitFactory(object):
     def __new__(_, idd, loc, fo_real = False):
         if idd == UnitFactory.TADPOLE:
             if fo_real:
-                return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE)
+                return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE, 5, 5)
             else:
-                return Unit(loc, (1,1), "../img/tadpole.png", Unit.STAGING, token=idd)
+                return Unit(loc, (1,1), "../img/tadpole.png", Unit.STAGING, 5, 5, token=idd)
         if idd == UnitFactory.YELLOW_SUB:
             if fo_real:
-                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
+                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE, 5, 5)
             else:
-                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.STAGING, token=idd)
+                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.STAGING, 5, 5, token=idd)
         if idd == UnitFactory.BULLET:
-            return Unit(loc, (1,1), "../img/bullet.png", Unit.BULLET)
+            return Unit(loc, (1,1), "../img/bullet.png", Unit.BULLET, 0, 0)
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
@@ -34,7 +34,7 @@ class Unit(object):
     OFFENSE = 2
     BULLET  = 3
     STAGING  = 0
-    def __init__(self, (x,y), (w, h), imgsrc, cls, parent=None, token=None):
+    def __init__(self, (x,y), (w, h), imgsrc, cls, gold, val, parent=None, token=None):
         if parent != None:
             self._class = parent._class
             self._parent = parent
@@ -49,6 +49,8 @@ class Unit(object):
         self._loc = (x,y)           # location on the board
         self._unaltered_loc = (x,y)
         self._actions = []
+        self.exp_value = val
+        self.cash_value = gold
         self._move_speed = 3
         self.moved = False
         self.health = 1
@@ -94,6 +96,8 @@ class Unit(object):
         """ Returns remaining health """
         print "unit.take_damage: Taking",dmg,"damage"
         if dmg is None or self.health-dmg <= 0:
+            board.gold+=self.cash_value
+            board.exp+=self.exp_value
             board.remove_unit(self) # D:
             self.health = 0
         else:
