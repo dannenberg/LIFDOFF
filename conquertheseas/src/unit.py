@@ -6,11 +6,17 @@ class UnitFactory(object):
     TADPOLE = 1
     YELLOW_SUB = 2
     BULLET = 3
-    def __new__(_, idd, loc):
+    def __new__(_, idd, loc, fo_real = False):
         if idd == UnitFactory.TADPOLE:
-            return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE)
+            if fo_real:
+                return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE)
+            else:
+                return Unit(loc, (1,1), "../img/tadpole.png", Unit.STAGING, token=idd)
         if idd == UnitFactory.YELLOW_SUB:
-            return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
+            if fo_real:
+                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE)
+            else:
+                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.STAGING, token=idd)
         if idd == UnitFactory.BULLET:
             return Unit(loc, (1,1), "../img/bullet.png", Unit.BULLET)
         raise ValueError("Unknown unit id "+str(idd))
@@ -27,19 +33,25 @@ class Unit(object):
     DEFENSE = 1
     OFFENSE = 2
     BULLET  = 3
-    def __init__(self, (x,y), (w, h), imgsrc, parent=None):
-        if parent in (Unit.DEFENSE, Unit.OFFENSE, Unit.BULLET):
-            self._class = parent
-            self._parent = None		# TODO: fix this
-        else:
+    STAGING  = 0
+    def __init__(self, (x,y), (w, h), imgsrc, cls, parent=None, token=None):
+        if parent != None:
+            self._class = parent._class
             self._parent = parent
+        else:
+            self._parent = None
+            self._class = cls
         self._tileset = pygame.image.load(imgsrc)
+        self._token = token
         self._spr_src = (0,0)     # topleft of source tile
         self._size = (w, h)         # width/height
         self._spr_size = (w*SQUARE_SIZE, h*SQUARE_SIZE) # width and height in pixels
         self._loc = (x,y)           # location on the board
+        self._unaltered_loc = (x,y)
         self._actions = []
         self._move_speed = 3
+        self.moved = False
+        self.health = 1
         
     def advance_sprite(self):
         x = self._spr_src[0]+self._spr_size[0]
@@ -77,11 +89,27 @@ class Unit(object):
             
     def queue_shoot(self):
         self._actions.append(Action(Action.SHOOT))
-
+    
+    def take_damage(self, board, dmg=None):
+        """ Returns remaining health """
+        print "unit.take_damage: Taking",dmg,"damage"
+        if dmg is None or self.health-dmg <= 0:
+            board.remove_unit(self) # D:
+            self.health = 0
+        else:
+            self.health -= dmg
+        return self.health
+    
+    def on_collision(self, opposed, board):
+        """ Returns damage done to opponent """
+        opposed.take_damage(board, 5)   # TODO: 5?
+        self.take_damage(board)
+        return 5
+    
     def create_move(self):
         if self._class == Unit.BULLET:
-            for i in xrange(self._move_speed):  
+            for i in xrange(self._move_speed):
                 self._actions.append(Action(Action.MOVE, (self._loc[0] + i + 1, self._loc[1])))
         elif self._class == Unit.OFFENSE:
-            for i in xrange(self._move_speed):  
+            for i in xrange(self._move_speed):
                 self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))

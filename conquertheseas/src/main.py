@@ -7,6 +7,7 @@ from screens.introscreen import *
 from screens.mainscreen import *
 from screens.creditsscreen import *
 from screens.shopscreen import *
+from screens.upgradescreen import *
 
 pygame.init()
 
@@ -17,9 +18,10 @@ screens = {"intro":IntroMovie,
            "game": GameScreen,
            "main": MainScreen,
            "credits":CreditsScreen,
+           "upgrade":UpgradeScreen,
            "shop":ShopScreen}
 
-pygame.display.set_caption("LIFDOFF")
+pygame.display.set_caption("FRIENDS OF THE SEA")
 
 done=False
 clock = pygame.time.Clock()
