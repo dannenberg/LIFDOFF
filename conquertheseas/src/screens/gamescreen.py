@@ -19,6 +19,7 @@ class GameScreen(Screen):
     def __init__(self):
         Screen.__init__(self)
         
+        self.font = pygame.font.Font(None, 40) 
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
         self.last_turn = False
@@ -321,6 +322,12 @@ class GameScreen(Screen):
         # panel highlight
         if self.highlight_panel_square != None:
             self.offense_panel.surface.blit(self.highlight_panel, self.highlight_panel_square)
+
+        # gp/xp
+        gold_text = self.font.render("Gold: "+str(self.my_board.gold), True, COLORS["white"])
+        exp_text = self.font.render("EXP: "+str(self.my_board.exp), True, COLORS["white"])
+        self.board_sans_buttons.blit(gold_text, (7, 408))
+        self.board_sans_buttons.blit(exp_text, (7, 448))
         
         # board highlight
         curboard = self.my_board.surface if self.highlit_board else self.enemy_board.surface

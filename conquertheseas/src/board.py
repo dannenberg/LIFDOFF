@@ -12,6 +12,8 @@ class Board:
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
         self._actions = []
+        self.exp = 0
+        self.gold = 0
         self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i, purple))
