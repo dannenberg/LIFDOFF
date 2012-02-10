@@ -11,3 +11,35 @@ this stuff is all just for the document?  not guidelines or development methods 
 
 audience: how many things do we need?  this doesn't line up with the users of the game 
 (we had hardcore, moderate, light, server users) right?  currently have players and software devs
+
+how much detail in the dia file we have?  i'll show him and ask if that's what's needed - variables for everything
+with explanation for only one, or only variables for that one?
+
+Architecture considerations
+	? Technology selection & it's application area - is this just like...python, pygame - SOCKETS
+Design Considerations:
+	? Assumptions, dependencies, general constraints - what?  what does this apply to?  is this diagrams?
+High-level design
+	? System overview discussion - this is like... we have a server, that connects to clients, etc
+	? Design pattern identification - we used client-server model, talk about this
+	? Final domain model - how much detail?  what is this, specifically?
+		– Showing major classes & design patterns - showing unit class, etc? = just giant uml diagram of all classes?
+	? Final deployment diagram - what is this?  - allocation diagram
+	
+Section 3: The Specifications
+? Software Organization
+	? Your view of the subsystems of project in text and drawing, using a block/UML diagram (all classes)
+		- is this actually all classes?  of everything?
+	? Package diagram (if needed) - what is this?
+? Module / Object Decomposition	 - connector
+	? Detailed system design by subsystems using filled out UML Class Diagrams
+	– CRC, Class Diagram, calling sequence diagrams & 
+		detailed design text
+	– State charts, Interaction diagrams (as needed)
+? Critical Section Specification ??????????????????????????????????
+	? Entity Relationship & Data Dictionary - if we don't have a database, do we need this?
+	? Low level architecture (if needed) - i don't know what this is - data structures?  algos?
+	
+	[BCK2003]	L. Bass, P. Clements, R. Kazman. Software Architecture in Practice, Second Edition. Addison-Wesley, 2003. Ebook.
+	
+	SZY2002]	Clemens Szyperski. Component Software: Beyond Object-Oriented Programming, 2nd Edition. Addison-Wesley, 2002.

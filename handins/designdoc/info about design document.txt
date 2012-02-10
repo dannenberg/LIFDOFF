@@ -22,3 +22,6 @@ class variables
 - detailed UML
 
 - ONLY for one simple subsystem do we need to do the detailed UML and the variable/method shit
+
+
+- module view
