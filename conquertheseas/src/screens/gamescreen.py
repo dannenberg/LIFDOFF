@@ -279,6 +279,9 @@ class GameScreen(Screen):
         if self.mode == GameScreen.ACTION_MENU:
             self.clickbox.remove((self.action_loc[0]+MY_BOARD_X, self.action_loc[1]+MY_BOARD_Y))
             self.action_loc = None
+            if new_mode == GameScreen.NO_MODE:
+                self.held = None
+
         self.mode = new_mode
     
     def display(self, screen):
