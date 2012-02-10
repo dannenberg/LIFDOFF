@@ -4,6 +4,7 @@ from constants import *
 from offense_panel import OffensePanel
 from board import Board
 from unit import Unit,UnitFactory
+from defense import DefensiveUnit
 from screen import Screen
 from mousehitbox import MouseHitboxes
 from action import Action
@@ -14,13 +15,15 @@ class GameScreen(Screen):
     DEPLOYING = 1
     ACTION_MENU = 2
     MOVING = 3
+    GAMEOVER = 4
     def __init__(self):
         Screen.__init__(self)
         
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
         self.last_turn = False
-
+        self.victoryimg = None
+        
         self.action_loc = None
         self.water_level = 0
         self.water_range=SQUARE_SIZE/4
@@ -120,6 +123,22 @@ class GameScreen(Screen):
                 self.my_board.take_turn()
                 self.enemy_board.store_cur_pos()
                 self.my_board.store_cur_pos()
+                lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
+                win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
+                if win or lose:
+                    self.set_mode(GameScreen.GAMEOVER)
+                    self.clickbox.clear()
+                    self.overbox.clear()
+                    def toMenu(scr, mpos):
+                        self.command = "transition main"
+                    self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
+                    if win and lose:
+                        self.victoryimg = pygame.image.load("../img/tie.png")
+                    elif win:
+                        self.victoryimg = pygame.image.load("../img/victory.png")
+                    else:
+                        self.victoryimg = pygame.image.load("../img/defeat.png")
+                    
             self.last_turn = not self.last_turn
             self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
@@ -339,6 +358,9 @@ class GameScreen(Screen):
         
         screen.blit(self.board_sans_buttons, (0, 0))
         screen.blit(self.button_bar, (0, 740))
+        
+        if self.mode == GameScreen.GAMEOVER:
+            screen.blit(self.victoryimg, (0,0))
         
         hold = self.command
         self.command = ""
