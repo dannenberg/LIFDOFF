@@ -130,12 +130,7 @@ class GameScreen(Screen):
                     def toMenu(scr, mpos):
                         self.command = "transition main"
                     self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
-                    if win and lose:
-                        self.victoryimg = pygame.image.load("../img/tie.png")
-                    elif win:
-                        self.victoryimg = pygame.image.load("../img/victory.png")
-                    else:
-                        self.victoryimg = pygame.image.load("../img/defeat.png")
+                    self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
                     
             self.last_turn = not self.last_turn
             self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
