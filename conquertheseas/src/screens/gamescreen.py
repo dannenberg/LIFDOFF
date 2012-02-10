@@ -305,11 +305,11 @@ class GameScreen(Screen):
         
         if self.mode == GameScreen.DEPLOYING:
             self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*11)), ((35-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))
-                
+        
         # panel highlight
         if self.highlight_panel_square != None:
             self.offense_panel.surface.blit(self.highlight_panel, self.highlight_panel_square)
-
+        
         # board highlight
         curboard = self.my_board.surface if self.highlit_board else self.enemy_board.surface
         for loc in self.mouseover_highlight:
@@ -318,7 +318,7 @@ class GameScreen(Screen):
         #grid lines
         self.enemy_board.surface.blit(self.gridlines, (0, 0))
         self.my_board.surface.blit(self.gridlines, (0, 0))
-
+        
         # action menu if needed
         if self.mode == GameScreen.ACTION_MENU:
             self.my_board.surface.blit(self.action_surface, self.action_loc)

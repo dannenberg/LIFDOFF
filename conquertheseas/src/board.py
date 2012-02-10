@@ -1,7 +1,7 @@
 from unit import Unit,UnitFactory
 from defense import DefensiveUnit
 from action import Action
-from constants import SQUARE_SIZE
+from constants import SQUARE_SIZE, BOARD_SQUARES_X, BOARD_SQUARES_Y
 import pygame
 
 class Board:
@@ -76,6 +76,8 @@ class Board:
                 mloc = unit._actions[0].loc
                 nextlocs = [(x+mloc[0],y+mloc[1]) for x,y in unit.get_shape()]
                 for ux,uy in nextlocs:  # this is serverside stuff :(
+                    if not (0<=ux<BOARD_SQUARES_X and 0<=uy<BOARD_SQUARES_Y):
+                        continue
                     collided = self.cells[ux][uy]
                     print collided
                     if collided != None and collided != unit:
