@@ -26,8 +26,6 @@ class GameScreen(Screen):
         self.water_range=SQUARE_SIZE/4
         self.held = None
         
-        self.current_action = None
-
         self.offense_panel = OffensePanel(OFFENSIVE_PANEL_SQUARES_X, OFFENSIVE_PANEL_SQUARES_Y)
         self.offense_panel.add_unit(UnitFactory.TADPOLE)
         self.offense_panel.add_unit(UnitFactory.YELLOW_SUB)
@@ -126,12 +124,11 @@ class GameScreen(Screen):
         
         def ui_action(token, curunit):
             if token == Action.MOVE:
-                self.current_action = token # TODO: this whole variable may be redundant...
                 movespd = curunit._move_speed
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
-                self.held = curunit
                 self.arrow_offset = (int(((curunit._size[0]-1)/2.0)*SQUARE_SIZE), int(((curunit._size[1]-1)/2.0)*SQUARE_SIZE))
                 self.set_mode(GameScreen.MOVING)
+                self.held = curunit
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
                 self.set_mode(GameScreen.NO_MODE)
@@ -222,7 +219,7 @@ class GameScreen(Screen):
                     """
                     
                     # HIDEOUS CHUNK OF BAD ARROW DRAWING
-                    if self.current_action == Action.MOVE:
+                    if self.mode == GameScreen.MOVING:
                         gpos = ((mpos[0]-self.arrow_offset[0])//SQUARE_SIZE, (mpos[1]-self.arrow_offset[1])//SQUARE_SIZE)
                         movespd = 3
                         
@@ -277,11 +274,9 @@ class GameScreen(Screen):
             self.movement_locs = []
             self.arrow_locs = []
         if self.mode == GameScreen.ACTION_MENU:
+            self.held = None
             self.clickbox.remove((self.action_loc[0]+MY_BOARD_X, self.action_loc[1]+MY_BOARD_Y))
             self.action_loc = None
-            if new_mode == GameScreen.NO_MODE:
-                self.held = None
-
         self.mode = new_mode
     
     def display(self, screen):
