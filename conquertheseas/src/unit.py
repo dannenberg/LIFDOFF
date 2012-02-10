@@ -92,10 +92,13 @@ class Unit(object):
     
     def take_damage(self, board, dmg=None):
         """ Returns remaining health """
+        print "unit.take_damage: Taking",dmg,"damage"
         if dmg is None or self.health-dmg <= 0:
             board.remove_unit(self) # D:
-        self.health -= dmg
-        return 0
+            self.health = 0
+        else:
+            self.health -= dmg
+        return self.health
     
     def on_collision(self, opposed, board):
         """ Returns damage done to opponent """

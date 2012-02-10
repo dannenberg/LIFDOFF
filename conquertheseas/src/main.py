@@ -21,7 +21,7 @@ screens = {"intro":IntroMovie,
            "upgrade":UpgradeScreen,
            "shop":ShopScreen}
 
-pygame.display.set_caption("LIFDOFF")
+pygame.display.set_caption("FRIENDS OF THE SEA")
 
 done=False
 clock = pygame.time.Clock()

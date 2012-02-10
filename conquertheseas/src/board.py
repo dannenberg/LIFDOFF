@@ -57,14 +57,14 @@ class Board:
         again = True
         while again:    # if anyone still has moves left
             again = False
-            print "board.take_turn: NEW TURN"
+            #print "board.take_turn: NEW TURN"
             for x in self.units[:]:
                 again |= self.unit_take_action(x)   # if any unit moved, check all units again
                 x.moved = True
             for x in self.units:
                 x.moved = False
             # TODO eventually there will be a pause here.
-        print "board.take_turn: NO NEW MOVES"
+        #print "board.take_turn: NO NEW MOVES"
     
     def lift_unit(self, unit):
         for (x, y) in unit.get_cells():
@@ -77,6 +77,7 @@ class Board:
                 nextlocs = [(x+mloc[0],y+mloc[1]) for x,y in unit.get_shape()]
                 for ux,uy in nextlocs:  # this is serverside stuff :(
                     collided = self.cells[ux][uy]
+                    print collided
                     if collided != None and collided != unit:
                         # this is confusing as anything so comments
                         if collided._class > unit._class:   # bullet on offense or offense on defense
@@ -94,10 +95,12 @@ class Board:
                                         unit.take_damage(self, 0)   # same as prev TODO
                                         return False
                                 # otherwise he'll resolve the collision on his turn
-                    else:
-                        print "No collision!"
+                        else: # collided._class < unit._class
+                            collided.on_collision(unit, self)   # TODO: probably wrong
+                    #else:
+                        #print "board.unit_take_action: No collision!"
                 self.move_unit(unit, mloc)  # the movement
-                print "board.unit_take_action: MOVED"
+                #print "board.unit_take_action: MOVED"
             elif unit._actions[0].action == Action.SHOOT:
                 u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
                 self.add_unit(u)
