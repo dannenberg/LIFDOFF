@@ -115,7 +115,7 @@ class GameScreen(Screen):
             self.enemy_board.remove_staging()
             for unit in self.my_board.units:
                 self.my_board.move_unit(unit, unit._unaltered_loc)
-            # TODO removed staged units fromenemy board 
+            # TODO removed staged units from enemy board
             if self.last_turn == True:
                 self.enemy_board.take_turn()
                 self.my_board.take_turn()
