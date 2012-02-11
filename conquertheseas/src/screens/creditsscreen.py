@@ -12,9 +12,8 @@ class CreditsScreen(Screen):
         self.water_range = 16 #how much the water level fluctuates
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items
         def go_back(someone, mpos):
-            self.command = "transition main"
+            self.main.change_screen("main")
         self.clickbox.append((30,650,102,50), go_back)
-        self.command = ""
         
     def display(self, screen):
         Screen.display(self, screen) #calls super
@@ -50,7 +49,3 @@ class CreditsScreen(Screen):
         backbox.fill((0,0,0,128))
         backbox.blit(text, (10,10))
         screen.blit(backbox, (30, 650))
-        
-        hold = self.command
-        self.command = ""
-        return hold

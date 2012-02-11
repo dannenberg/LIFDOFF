@@ -42,13 +42,12 @@ class GameScreen(Screen):
         self.arrow_locs = []
         self.arrow_offset = (0,0)
         
-        self.command = ""
         def to_shop(scr, mpos):
-            self.command = "transition shop"
+            self.main.change_screen("shop")
         self.clickbox.append((660,742,122,57), to_shop) # SO MAGICAL!
         
         def to_upgrade(scr, mpos):
-            self.command = "transition upgrade"
+            self.main.change_screen("upgrade")
         self.clickbox.append((785,742,230,57), to_upgrade) # SO MAGICAL!
 
         def enemy_boardclick(scr, mpos):
@@ -129,7 +128,7 @@ class GameScreen(Screen):
                     self.clickbox.clear()
                     self.overbox.clear()
                     def toMenu(scr, mpos):
-                        self.command = "transition main"
+                        self.main.change_screen("main")
                     self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
                     self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
                     
@@ -361,8 +360,3 @@ class GameScreen(Screen):
         
         if self.mode == GameScreen.GAMEOVER:
             screen.blit(self.victoryimg, (0,0))
-        
-        hold = self.command
-        self.command = ""
-        return hold
-

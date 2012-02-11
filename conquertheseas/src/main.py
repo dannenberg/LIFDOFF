@@ -15,10 +15,8 @@ class Main():
 
         size=(1280,800)
         self.screen=pygame.display.set_mode(size)
-        self.intro = IntroMovie(self)
-        self.game = GameScreen(self)
-        self.screens = {"intro":self.intro,
-                   "game": self.game,
+        self.screens = {"intro": IntroMovie(self),
+                   "game": GameScreen(self),
                    "main": MainScreen(self),
                    "credits":CreditsScreen(self),
                    "upgrade":UpgradeScreen(self),
@@ -29,7 +27,7 @@ class Main():
         self.done=False
         clock = pygame.time.Clock()
 
-        self.mainscreen = self.screens["game"]
+        self.mainscreen = self.screens["main"]
 
         while not self.done:
             clock.tick(60)
@@ -46,18 +44,17 @@ class Main():
                 elif event.type == pygame.KEYUP:
                     pass
             
-            command = self.mainscreen.display(self.screen)
-            if command == "exit":
-                self.done = True
-            try:
-                if command.split()[0] == "transition":
-                    self.mainscreen = screens[command.split()[1]]()
-            except (AttributeError, IndexError):
-                pass
+            self.mainscreen.display(self.screen)
             
             pygame.display.flip()
 
         pygame.quit ()
+    
+    def change_screen(self, screen):
+        self.mainscreen = self.screens[screen]
+
+    def exit(self):
+        self.done = True
 
 if __name__ == "__main__":
     Main()

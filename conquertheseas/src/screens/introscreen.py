@@ -27,4 +27,4 @@ class IntroMovie(Screen):
         self.yloc -= .75
         if self.yloc < 300-62:
             pygame.mixer.music.stop()
-            return "transition main"
+            self.main.change_screen("main")
