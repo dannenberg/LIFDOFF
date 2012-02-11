@@ -2,8 +2,8 @@ import pygame
 from screen import Screen
 
 class UpgradeScreen(Screen):
-    def __init__(self):
-        Screen.__init__(self)
+    def __init__(self, main):
+        Screen.__init__(self, main)
         self.tree_one = pygame.Surface((320, 800))
         self.tree_two = pygame.Surface((320, 800))
         self.tree_three = pygame.Surface((320, 800))

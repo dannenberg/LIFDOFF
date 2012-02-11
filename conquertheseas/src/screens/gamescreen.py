@@ -16,8 +16,8 @@ class GameScreen(Screen):
     ACTION_MENU = 2
     MOVING = 3
     GAMEOVER = 4
-    def __init__(self):
-        Screen.__init__(self)
+    def __init__(self, main):
+        Screen.__init__(self, main)
         
         self.font = pygame.font.Font(None, 40) 
         self.mode = GameScreen.NO_MODE

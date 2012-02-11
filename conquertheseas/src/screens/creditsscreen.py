@@ -6,8 +6,8 @@ from constants import COLORS
 
 class CreditsScreen(Screen):
     """ Main menu screen """
-    def __init__(self):
-        Screen.__init__(self)
+    def __init__(self, main):
+        Screen.__init__(self, main)
         self.water_level = 0 #defines the height of the water in the background
         self.water_range = 16 #how much the water level fluctuates
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items

@@ -4,8 +4,8 @@ from constants import COLORS
 from mousehitbox import MouseHitboxes
 
 class ShopScreen(Screen):
-    def __init__(self):
-        Screen.__init__(self)
+    def __init__(self, main):
+        Screen.__init__(self, main)
         self.command = ""
         self.prices_and_values = [{"name":"Mine","desc":"Basic nautical weaponry, drop it off and hope for the best. These ones have seen better days.","flav":"During the American Civil War, hundreds of these mines were laid along various rivers. After the war, they were collected by legitimate businesses and put on the market, although almost no one has been crazy enough to buy them."},
                                   {"name":"Angry Fish","desc":"This angry fish will start moving slowly, but will charge forward when it sees an enemy ship.","flav":"Angry Fish were created by mad scientists, in order to stop those who would oppose them. Unfortunately, mad scientists do not have any allies, so Angry Fish have been conditioned to attack all ships."},
