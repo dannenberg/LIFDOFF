@@ -38,6 +38,10 @@ while not done:
             mainscreen.over(pygame.mouse.get_pos())
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mainscreen.click(pygame.mouse.get_pos())
+        elif event.type == pygame.KEYDOWN:
+            pass
+        elif event.type == pygame.KEYUP:
+            pass
     
     command = mainscreen.display(screen)
     if command == "exit":
