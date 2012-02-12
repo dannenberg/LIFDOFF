@@ -62,7 +62,8 @@ class GameScreen(Screen):
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                     print "gamescreen.boardclick: can't drop here!"
                     return
-                self.set_mode(GameScreen.NO_MODE)
+                if pygame.K_LSHIFT not in self.main.keys:
+                    self.set_mode(GameScreen.NO_MODE)
                 
         def my_boardclick(scr, mpos):
             gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
