@@ -58,6 +58,9 @@ class Main():
 
     def exit(self):
         self.done = True
+        
+    def reset_screen(self, screen):
+        self.screens[screen] = self.screens[screen].__class__(self)
 
 if __name__ == "__main__":
     Main()

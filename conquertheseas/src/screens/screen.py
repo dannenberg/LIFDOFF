@@ -6,12 +6,6 @@ class Screen(object):
     """Screen initializes colors, mouse over/clicked events,
     and the display for launch
     nominally abstract"""
-   
-    _instance = {}
-    def __new__(cls, main):   # Create Screen and all subclasses as Singletons
-        if cls not in Screen._instance: # first creation
-            Screen._instance[cls] = super(Screen, cls).__new__(cls)   # create a new one
-        return Screen._instance[cls]  # return the old one
     
     def __init__(self, main):
         self.size = (1280, 800)
