@@ -1,3 +1,10 @@
+MORE QUESTIONS:
+
+TESTING DIAGRAM?
+
+
+
+
 questions for vybs
 
 Policies and Tactics
@@ -48,3 +55,13 @@ Section 3: The Specifications
 	[BCK2003]	L. Bass, P. Clements, R. Kazman. Software Architecture in Practice, Second Edition. Addison-Wesley, 2003. Ebook.
 	
 	SZY2002]	Clemens Szyperski. Component Software: Beyond Object-Oriented Programming, 2nd Edition. Addison-Wesley, 2002.
+
+	
+	
+	
+	
+	
+	
+	
+	
+	

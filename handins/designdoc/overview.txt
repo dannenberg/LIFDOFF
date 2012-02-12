@@ -43,6 +43,10 @@ Supporting Material
 		- package diagram (if need)
 	- module / object decompisition
 		- detailed system design by subsystems using filled out UML class diagrams
+		
+			- make a diagram for each class - one for screen, one for unit, one for client, one for server
+			- ONLY DO DETAILED FOR ONE THING (unit, maybe)
+			
 			- CRC, class diagram, calling sequence diagrams + detailed design text
 			- state charts, interaction diagrams (as needed)
 	- critical section specification
@@ -77,3 +81,11 @@ Supporting Material
 		- testing object calling all testable objects
 		
 6. appendix
+
+
+
+
+DIAGRAMS TO MAKE:
+
+2.3.3 final domain model
+2.3.2 - client server 	design pattern diagram?
