@@ -16,11 +16,11 @@ class Main():
         size=(1280,800)
         self.screen=pygame.display.set_mode(size)
         self.screens = {"intro": IntroMovie(self),
-                   "game": GameScreen(self),
-                   "main": MainScreen(self),
-                   "credits":CreditsScreen(self),
-                   "upgrade":UpgradeScreen(self),
-                   "shop":ShopScreen(self)}
+                        "game": GameScreen(self),
+                        "main": MainScreen(self),
+                        "credits":CreditsScreen(self),
+                        "upgrade":UpgradeScreen(self),
+                        "shop":ShopScreen(self)}
 
         pygame.display.set_caption("FRIENDS OF THE SEA")
 
@@ -28,6 +28,8 @@ class Main():
         clock = pygame.time.Clock()
 
         self.mainscreen = self.screens["main"]
+
+        self.keys = set()
 
         while not self.done:
             clock.tick(60)
@@ -38,11 +40,12 @@ class Main():
                 elif event.type == pygame.MOUSEMOTION:
                     self.mainscreen.over(pygame.mouse.get_pos())
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    self.mainscreen.click(pygame.mouse.get_pos())
+                    if pygame.mouse.get_pressed()[0]:
+                        self.mainscreen.click(pygame.mouse.get_pos())
                 elif event.type == pygame.KEYDOWN:
-                    pass
+                    self.keys.add(event.key)
                 elif event.type == pygame.KEYUP:
-                    pass
+                    self.keys.discard(event.key)
             
             self.mainscreen.display(self.screen)
             
