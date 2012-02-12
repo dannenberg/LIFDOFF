@@ -6,7 +6,7 @@ import pygame
 
 class Board:
     def __init__(self, w, h, purple=False):
-        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE)) # TODO make a const for cell size
+        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE))
         self._w = w
         self._h = h
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
@@ -14,7 +14,6 @@ class Board:
         self._actions = []
         self.exp = 0
         self.gold = 0
-        self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i, purple))
     

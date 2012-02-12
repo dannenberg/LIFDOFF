@@ -27,7 +27,7 @@ class Main():
         self.done=False
         clock = pygame.time.Clock()
 
-        self.mainscreen = self.screens["main"]
+        self.mainscreen = self.screens["game"]
 
         self.keys = set()
 

@@ -55,7 +55,6 @@ class GameScreen(Screen):
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
             print "gamescreen.boardclick "+str(gpos)
             
-            #else:               # clicked on nothing
             if self.mode == GameScreen.DEPLOYING:
                 #if not isinstance(self.held, Unit):
                 print "gamescreen.boardclick: add-pole!"
@@ -154,8 +153,8 @@ class GameScreen(Screen):
         def offense_panel_click(scr, mpos):
             if self.mode != GameScreen.DEPLOYING:
                 self.set_mode(GameScreen.DEPLOYING)
-            mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)
-            self.held = self.offense_panel.on_click(mpos)
+            gpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)
+            self.held = self.offense_panel.on_click(gpos)
             if self.held == None:
                 self.set_mode(GameScreen.NO_MODE)
         
