@@ -9,45 +9,58 @@ from screens.creditsscreen import *
 from screens.shopscreen import *
 from screens.upgradescreen import *
 
-pygame.init()
+class Main():
+    def __init__(self):
+        pygame.init()
 
-size=(1280,800)
-screen=pygame.display.set_mode(size)
+        size=(1280,800)
+        self.screen=pygame.display.set_mode(size)
+        self.screens = {"intro": IntroMovie(self),
+                        "game": GameScreen(self),
+                        "main": MainScreen(self),
+                        "credits":CreditsScreen(self),
+                        "upgrade":UpgradeScreen(self),
+                        "shop":ShopScreen(self)}
 
-screens = {"intro":IntroMovie,
-           "game": GameScreen,
-           "main": MainScreen,
-           "credits":CreditsScreen,
-           "upgrade":UpgradeScreen,
-           "shop":ShopScreen}
+        pygame.display.set_caption("FRIENDS OF THE SEA")
 
-pygame.display.set_caption("FRIENDS OF THE SEA")
+        self.done=False
+        clock = pygame.time.Clock()
 
-done=False
-clock = pygame.time.Clock()
+        self.mainscreen = self.screens["game"]
 
-mainscreen = screens["game"]()
+        self.keys = set()
 
-while not done:
-    clock.tick(60)
+        while not self.done:
+            clock.tick(60)
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.done=True
+                elif event.type == pygame.MOUSEMOTION:
+                    self.mainscreen.over(pygame.mouse.get_pos())
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if pygame.mouse.get_pressed()[0]:
+                        self.mainscreen.click(pygame.mouse.get_pos())
+                elif event.type == pygame.KEYDOWN:
+                    self.keys.add(event.key)
+                elif event.type == pygame.KEYUP:
+                    self.keys.discard(event.key)
+            
+            self.mainscreen.display(self.screen)
+            
+            pygame.display.flip()
+
+        pygame.quit ()
     
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done=True
-        elif event.type == pygame.MOUSEMOTION:
-            mainscreen.over(pygame.mouse.get_pos())
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mainscreen.click(pygame.mouse.get_pos())
-    
-    command = mainscreen.display(screen)
-    if command == "exit":
-        done = True
-    try:
-        if command.split()[0] == "transition":
-            mainscreen = screens[command.split()[1]]()
-    except (AttributeError, IndexError):
-        pass
-    
-    pygame.display.flip()
+    def change_screen(self, screen):
+        self.mainscreen = self.screens[screen]
 
-pygame.quit ()
+    def exit(self):
+        self.done = True
+        
+    def reset_screen(self, screen):
+        self.screens[screen] = self.screens[screen].__class__(self)
+
+if __name__ == "__main__":
+    Main()

@@ -1,20 +1,21 @@
 from unit import Unit,UnitFactory
 from defense import DefensiveUnit
 from action import Action
-from constants import SQUARE_SIZE
+from constants import SQUARE_SIZE, BOARD_SQUARES_X, BOARD_SQUARES_Y
 import pygame
 
 class Board:
-    def __init__(self, w, h):
-        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE)) # TODO make a const for cell size
+    def __init__(self, w, h, purple=False):
+        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE))
         self._w = w
         self._h = h
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
         self._actions = []
-        self.arrows = pygame.image.load("../img/arrow.png")  # TODO: Load cool image which i haven't done yet.
+        self.exp = 0
+        self.gold = 0
         for i in xrange(3):
-            self.add_unit(DefensiveUnit(i))
+            self.add_unit(DefensiveUnit(i, purple))
     
     def draw_board(self):
         for x in self.units:
@@ -51,7 +52,7 @@ class Board:
                 unit.create_move()
         for action in self._actions:
             if action.action == Action.CREATE:
-                unit = UnitFactory(action.loc, action.extra, True)
+                unit = UnitFactory(action.extra, action.loc, True)
                 self.add_unit(unit)
         self._actions = []
         again = True
@@ -71,13 +72,16 @@ class Board:
             self.cells[x][y] = None
             
     def unit_take_action(self, unit):
+        if unit not in self.units:  # This, unfortuntately, is a concern
+            return False
         if len(unit._actions) > 0:
             if unit._actions[0].action == Action.MOVE:
                 mloc = unit._actions[0].loc
                 nextlocs = [(x+mloc[0],y+mloc[1]) for x,y in unit.get_shape()]
                 for ux,uy in nextlocs:  # this is serverside stuff :(
+                    if not (0<=ux<BOARD_SQUARES_X and 0<=uy<BOARD_SQUARES_Y):
+                        continue
                     collided = self.cells[ux][uy]
-                    print collided
                     if collided != None and collided != unit:
                         # this is confusing as anything so comments
                         if collided._class > unit._class:   # bullet on offense or offense on defense
@@ -114,7 +118,7 @@ class Board:
     def remove_staging(self):
         for unit in self.units[:]:
             if unit._class == Unit.STAGING:
-                self._actions.append(Action(Action.CREATE, unit._token, unit._loc))
+                self._actions.append(Action(Action.CREATE, unit._loc, unit._token))
                 self.remove_unit(unit)
     
     def store_cur_pos(self):

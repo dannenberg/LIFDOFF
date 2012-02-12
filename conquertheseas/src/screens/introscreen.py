@@ -4,8 +4,8 @@ from constants import COLORS
 from mousehitbox import MouseHitboxes
 
 class IntroMovie(Screen):
-    def __init__(self):
-        Screen.__init__(self)
+    def __init__(self, main):
+        Screen.__init__(self, main)
         self.introtheme = pygame.mixer.music.load("../sound/lifdoff.ogg")
         self.logo = pygame.image.load("../img/lifdofflogo.png")
         self.overlay = pygame.Surface((1280,800),pygame.SRCALPHA)
@@ -27,4 +27,4 @@ class IntroMovie(Screen):
         self.yloc -= .75
         if self.yloc < 300-62:
             pygame.mixer.music.stop()
-            return "transition main"
+            self.main.change_screen("main")

@@ -6,8 +6,8 @@ from screen import Screen
 
 class MainScreen(Screen):
     """ Main menu screen """
-    def __init__(self):
-        Screen.__init__(self)
+    def __init__(self, main):
+        Screen.__init__(self, main)
         self.water_level = 0 #defines the height of the water in the background
         self.water_range = 16 #how much the water level fluctuates
         self.selectbox = [None, 15, 205, 50, True] #coords of the box (x, y, width, height) which highlights selected item
@@ -47,7 +47,7 @@ class MainScreen(Screen):
             self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
             
             def click_singleplayer(x,mpos):
-                self.command = "transition game"    # DIS IS BAD
+                self.main.change_screen("game")
             
             self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)
             
@@ -66,14 +66,13 @@ class MainScreen(Screen):
             self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
             
         def click_credits(someone, mpos):
-            self.command = "transition credits"
+            self.main.change_screen("credits")
             
         def click_exit(someone, mpos): #ideally this will close the game
-            self.command = "exit"
+            self.main.exit()
         
         for i,x in enumerate([click_newgame, lambda x,y:x, click_options, click_credits, click_exit]):
             self.clickbox.append((30, 215+50*i, self.maxwid, 45), x)
-        self.command = False
     
     def display(self, screen):
         Screen.display(self, screen) #calls super
@@ -131,10 +130,6 @@ class MainScreen(Screen):
             screen.blit(subtextbox, (90 + self.maxwid, 200))
         
         screen.blit(textbox, (30, 200))
-        
-        hold = self.command
-        self.command = ""
-        return hold
         
     def maxwidth(self, optionlist):
         return max([self.smallerfont.size(x)[0] for x in optionlist])

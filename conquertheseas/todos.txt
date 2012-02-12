@@ -1,39 +1,23 @@
 ================
 -- WHATS NEXT --
 ================
-- collisions (  :(  )
-  - rank of hitting (defense vs offense vs boolit)
-- single machine multiplayer
-  - starting with 3 uncontrollable defensive
-  - ghetto turn system
+- Lobby screen
 
 =================
 -- SMALL TODOS -- 
 If you're bored and looking for something to add to this fix deez things.
 =================
-- Screen transitions are HI-LARIOUSLY bad. Fix dat.
 - Unit highlight size not reset until mousemove :(
-- Shift-click for multiplace offensive units
+- Stop shooting yourself. Stop shooting yourself. Stop shooting yourself. Stop shooting yourself
 
 =================
 -- LARGE TODOS --
 =================
-- Any game logic, whatsoever.
 - Upgrade screen
 - Pause menu
 - Options in the main menu currently do nothing, and work similarly
   to the newgame submenu, for some reason. This is not expected behaviour.
 - Animation dictionary: associates strings to arrays of coordinates, which coorespond to tiles
-- Offensive select should work like a board, have click detection
-- Create a defensive unit larger than 1x1, plays properly
-- Move system
-- Resources
-
-====================
--- POSSIBLE FIXES --
-====================
-- Perhaps we should make a "button" class that associates visuals and click/overboxes.
-  - in that case MouseHitboxes should be a composite pattern, which could get a little ugly but doable.
 
 ====================
 -- DESIGN CHOICES --

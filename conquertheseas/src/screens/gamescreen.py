@@ -4,6 +4,7 @@ from constants import *
 from offense_panel import OffensePanel
 from board import Board
 from unit import Unit,UnitFactory
+from defense import DefensiveUnit
 from screen import Screen
 from mousehitbox import MouseHitboxes
 from action import Action
@@ -14,39 +15,39 @@ class GameScreen(Screen):
     DEPLOYING = 1
     ACTION_MENU = 2
     MOVING = 3
-    def __init__(self):
-        Screen.__init__(self)
+    GAMEOVER = 4
+    def __init__(self, main):
+        Screen.__init__(self, main)
         
+        self.font = pygame.font.Font(None, 40) 
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
         self.last_turn = False
-
+        self.victoryimg = None
+        
         self.action_loc = None
         self.water_level = 0
         self.water_range=SQUARE_SIZE/4
         self.held = None
         
-        self.current_action = None
-
         self.offense_panel = OffensePanel(OFFENSIVE_PANEL_SQUARES_X, OFFENSIVE_PANEL_SQUARES_Y)
         self.offense_panel.add_unit(UnitFactory.TADPOLE)
         self.offense_panel.add_unit(UnitFactory.YELLOW_SUB)
         
         self.enemy_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
-        self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
+        self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, True)
         
         self.action_imgs = pygame.image.load("../img/action_choices.png")
         self.arrows = pygame.image.load("../img/arrow_formatted.png")
         self.arrow_locs = []
         self.arrow_offset = (0,0)
         
-        self.command = ""
         def to_shop(scr, mpos):
-            self.command = "transition shop"
+            self.main.change_screen("shop")
         self.clickbox.append((660,742,122,57), to_shop) # SO MAGICAL!
         
         def to_upgrade(scr, mpos):
-            self.command = "transition upgrade"
+            self.main.change_screen("upgrade")
         self.clickbox.append((785,742,230,57), to_upgrade) # SO MAGICAL!
 
         def enemy_boardclick(scr, mpos):
@@ -54,14 +55,14 @@ class GameScreen(Screen):
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
             print "gamescreen.boardclick "+str(gpos)
             
-            #else:               # clicked on nothing
             if self.mode == GameScreen.DEPLOYING:
                 #if not isinstance(self.held, Unit):
                 print "gamescreen.boardclick: add-pole!"
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                     print "gamescreen.boardclick: can't drop here!"
                     return
-                self.set_mode(GameScreen.NO_MODE)
+                if pygame.K_LSHIFT not in self.main.keys:
+                    self.set_mode(GameScreen.NO_MODE)
                 
         def my_boardclick(scr, mpos):
             gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
@@ -114,24 +115,35 @@ class GameScreen(Screen):
             self.enemy_board.remove_staging()
             for unit in self.my_board.units:
                 self.my_board.move_unit(unit, unit._unaltered_loc)
-            # TODO removed staged units fromenemy board 
+            # TODO removed staged units from enemy board
             if self.last_turn == True:
                 self.enemy_board.take_turn()
                 self.my_board.take_turn()
                 self.enemy_board.store_cur_pos()
                 self.my_board.store_cur_pos()
+                lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
+                win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
+                if win or lose:
+                    self.set_mode(GameScreen.GAMEOVER)
+                    self.clickbox.clear()
+                    self.overbox.clear()
+                    def toMenu(scr, mpos):
+                        self.main.change_screen("main")
+                        self.main.reset_screen("game")
+                    self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
+                    self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
+                    
             self.last_turn = not self.last_turn
             self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
         def ui_action(token, curunit):
             if token == Action.MOVE:
-                self.current_action = token # TODO: this whole variable may be redundant...
                 movespd = curunit._move_speed
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
-                self.held = curunit
                 self.arrow_offset = (int(((curunit._size[0]-1)/2.0)*SQUARE_SIZE), int(((curunit._size[1]-1)/2.0)*SQUARE_SIZE))
                 self.set_mode(GameScreen.MOVING)
+                self.held = curunit
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
                 self.set_mode(GameScreen.NO_MODE)
@@ -141,8 +153,8 @@ class GameScreen(Screen):
         def offense_panel_click(scr, mpos):
             if self.mode != GameScreen.DEPLOYING:
                 self.set_mode(GameScreen.DEPLOYING)
-            mpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)
-            self.held = self.offense_panel.on_click(mpos)
+            gpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)
+            self.held = self.offense_panel.on_click(gpos)
             if self.held == None:
                 self.set_mode(GameScreen.NO_MODE)
         
@@ -222,7 +234,7 @@ class GameScreen(Screen):
                     """
                     
                     # HIDEOUS CHUNK OF BAD ARROW DRAWING
-                    if self.current_action == Action.MOVE:
+                    if self.mode == GameScreen.MOVING:
                         gpos = ((mpos[0]-self.arrow_offset[0])//SQUARE_SIZE, (mpos[1]-self.arrow_offset[1])//SQUARE_SIZE)
                         movespd = 3
                         
@@ -277,6 +289,7 @@ class GameScreen(Screen):
             self.movement_locs = []
             self.arrow_locs = []
         if self.mode == GameScreen.ACTION_MENU:
+            self.held = None
             self.clickbox.remove((self.action_loc[0]+MY_BOARD_X, self.action_loc[1]+MY_BOARD_Y))
             self.action_loc = None
         self.mode = new_mode
@@ -305,11 +318,17 @@ class GameScreen(Screen):
         
         if self.mode == GameScreen.DEPLOYING:
             self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*11)), ((35-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))
-                
+        
         # panel highlight
         if self.highlight_panel_square != None:
             self.offense_panel.surface.blit(self.highlight_panel, self.highlight_panel_square)
 
+        # gp/xp
+        gold_text = self.font.render("Gold: "+str(self.my_board.gold), True, COLORS["white"])
+        exp_text = self.font.render("EXP: "+str(self.my_board.exp), True, COLORS["white"])
+        self.board_sans_buttons.blit(gold_text, (7, 408))
+        self.board_sans_buttons.blit(exp_text, (7, 448))
+        
         # board highlight
         curboard = self.my_board.surface if self.highlit_board else self.enemy_board.surface
         for loc in self.mouseover_highlight:
@@ -318,7 +337,7 @@ class GameScreen(Screen):
         #grid lines
         self.enemy_board.surface.blit(self.gridlines, (0, 0))
         self.my_board.surface.blit(self.gridlines, (0, 0))
-
+        
         # action menu if needed
         if self.mode == GameScreen.ACTION_MENU:
             self.my_board.surface.blit(self.action_surface, self.action_loc)
@@ -340,7 +359,5 @@ class GameScreen(Screen):
         screen.blit(self.board_sans_buttons, (0, 0))
         screen.blit(self.button_bar, (0, 740))
         
-        hold = self.command
-        self.command = ""
-        return hold
-
+        if self.mode == GameScreen.GAMEOVER:
+            screen.blit(self.victoryimg, (0,0))
