@@ -1,4 +1,5 @@
 import os, unittest
+import heapq
 
 _lookup = (u"\u2592", [u"\u2193", u"\x19"][os.name=='nt'],
           [u"\u2190", u"\x1b"][os.name=='nt'], u"\u2514",
@@ -15,51 +16,74 @@ def clear():
 class Arrows:
     def __init__(self, movespd):
         self.movespd = movespd
-        self.arrow_locs = [[0,0,0]]
-    
+        self.arrow_locs = [[0,0,0,0]]   # x,y,in,out
+        
     def reverse(self, bit):
         if bit < 4:
             return bit*4
         return bit//4
-    
-    # add (nx, ny) to the arrows
+        
+    def get_arrow_type(self, data):
+        return data[2]|data[3]
+        
     def update_arrows(self, nx, ny):
-        arrow_locs = self.arrow_locs[:]
-        cutme = [tuple(z[:2]) for z in arrow_locs]
-        if (nx, ny) == cutme[-1]:
-            return
-        if (nx, ny) in cutme:  # doubling over, cut yourself short
-            ind = cutme.index((nx, ny))+1
-            arrow_locs[ind-1][2] &= ~self.reverse(arrow_locs[ind][2]) # WRONG
-            arrow_locs[:] = arrow_locs[:ind]
-            # and then we need to make the arrow point the right way...
-            print "CUT"
-            self.arrow_locs = arrow_locs
-            return
-        else:
-            print "No of course",nx,",",ny,"wasn't in",cutme
+        cut = self.coords(self.arrow_locs)
+        if [nx, ny] in cut: # cut the start
+            self.cut_arrows(cut.index([nx, ny]))
+            return True
+        hold = self.arrow_locs[:]
         
-        while abs(nx-arrow_locs[-1][0]) + abs(ny-arrow_locs[-1][1]) > movespd - len(arrow_locs) +1:
-            if len(arrow_locs) == 1:
-                return arrow_locs
-            rembit = self.reverse(arrow_locs[-1][2])
-            arrow_locs[:] = arrow_locs[:-1]
-            arrow_locs[-1][2] &= ~rembit
+        while self.arrow_locs:
+            cut = self.coords(self.arrow_locs)
+            paths = {}
+            seen = set([tuple(x[:2]) for x in self.arrow_locs])
+            x = tuple(self.arrow_locs[-1][:2])
+            pq = [(self.heuristic(x,self.arrow_locs), x)]
+            while pq:
+                x = heapq.heappop(pq)[1]
+                seen.add(x)
+                if x == (nx,ny):    # reconstruct
+                    nextpath = []
+                    while x != tuple(cut[-1]):
+                        nextpath = [tuple(x[:])]+nextpath
+                        x = paths[x]
+                    self.arrow_locs += self.direct_arrows(nextpath, self.arrow_locs[-1])
+                    return True
+                for y in self.get_adj(x, seen):
+                    if y not in pq: # ???
+                        h = self.heuristic(y, self.arrow_locs)
+                        if h<=self.movespd:
+                            heapq.heappush(pq, (h, y))
+                            paths[y] = x
+            self.cut_arrows()   # cut the tail
+        self.arrow_locs = hold
+        return False    # found no path
         
-        for x in xrange(arrow_locs[-1][0]+1,nx+1):
-            arrow_locs[-1][2] |= 2
-            arrow_locs.append([x,arrow_locs[-1][1],8])
-        for x in xrange(arrow_locs[-1][0]-1,nx-1, -1):
-            arrow_locs[-1][2] |= 8
-            arrow_locs.append([x,arrow_locs[-1][1],2])
-        for y in xrange(arrow_locs[-1][1]+1,ny+1):
-            arrow_locs[-1][2] |= 4
-            arrow_locs.append([arrow_locs[-1][0],y,1])
-        for y in xrange(arrow_locs[-1][1]-1,ny-1, -1):
-            arrow_locs[-1][2] |= 1
-            arrow_locs.append([arrow_locs[-1][0],y,4])
-        self.arrow_locs = arrow_locs
-        return
+    def direct_arrows(self, arrowlist, last):
+        toR = []
+        for x in arrowlist:
+            back = 8 if last[0]<x[0] else (2 if last[0]>x[0] else (1 if last[1]<x[1] else 4))
+            toR += [list(x)+[back,0]]
+            last[3] = self.reverse(back)
+            last = toR[-1]
+        return toR
+        
+    def cut_arrows(self, index=None):
+        if index is None:
+            index = len(self.arrow_locs)-2
+        self.arrow_locs[index][3] = 0   # empty out
+        self.arrow_locs = self.arrow_locs[:index+1]       # slice
+        
+    def get_adj(self, (x,y), arrows):
+        cut = self.coords(arrows)
+        return (z for z in ((x+1,y), (x,y+1), (x-1,y), (x,y-1)) if z not in cut)
+        
+    def heuristic(self, (x,y), arrows):
+        ex,ey = arrows[-1][:2]
+        return abs(ex-x)+abs(ey-y)+len(arrows)-1    # h+g
+        
+    def coords(self, arrows):
+        return [a[:2] for a in arrows]
         
     def __iter__(self):
         return self.arrow_locs[1:].__iter__()
@@ -81,7 +105,7 @@ def update_board(board, arrow_locs):
             if not (y==x==0):
                 board[py+y][px+x] = _lookup[0]
     for x in arrow_locs:
-        board[py+x[1]][px+x[0]] = _lookup[x[2]]
+        board[py+x[1]][px+x[0]] = _lookup[arrow_locs.get_arrow_type(x)]
 
 def main():
     arrow_locs = Arrows(movespd)
@@ -89,7 +113,6 @@ def main():
     
     while 1:
         update_board(board, arrow_locs)
-        #clear()
         print_board(board)
         coord = raw_input("next coord:")
         try:
