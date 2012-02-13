@@ -1,3 +1,10 @@
+MORE QUESTIONS:
+
+TESTING DIAGRAM?
+
+
+
+
 questions for vybs
 
 Policies and Tactics
@@ -17,20 +24,24 @@ with explanation for only one, or only variables for that one?
 
 Architecture considerations
 	? Technology selection & it's application area - is this just like...python, pygame - SOCKETS
+		- git, python, jedit, vim, notepad++
 Design Considerations:
 	? Assumptions, dependencies, general constraints - what?  what does this apply to?  is this diagrams?
+		- 2 sections, we assume code does this, etc etc
+		- other section - assume people have python, have internet, etc
 High-level design
 	? System overview discussion - this is like... we have a server, that connects to clients, etc
 	? Design pattern identification - we used client-server model, talk about this
 	? Final domain model - how much detail?  what is this, specifically?
 		– Showing major classes & design patterns - showing unit class, etc? = just giant uml diagram of all classes?
+		- modules connected to each other, this idea goes with this, etc
 	? Final deployment diagram - what is this?  - allocation diagram
 	
 Section 3: The Specifications
 ? Software Organization
 	? Your view of the subsystems of project in text and drawing, using a block/UML diagram (all classes)
 		- is this actually all classes?  of everything?
-	? Package diagram (if needed) - what is this?
+	? Package diagram (if needed) - what is this? - modules 
 ? Module / Object Decomposition	 - connector
 	? Detailed system design by subsystems using filled out UML Class Diagrams
 	– CRC, Class Diagram, calling sequence diagrams & 
@@ -39,7 +50,18 @@ Section 3: The Specifications
 ? Critical Section Specification ??????????????????????????????????
 	? Entity Relationship & Data Dictionary - if we don't have a database, do we need this?
 	? Low level architecture (if needed) - i don't know what this is - data structures?  algos?
+		- SHOW HOW CLIENTS AND SERVER INTERACT
 	
 	[BCK2003]	L. Bass, P. Clements, R. Kazman. Software Architecture in Practice, Second Edition. Addison-Wesley, 2003. Ebook.
 	
 	SZY2002]	Clemens Szyperski. Component Software: Beyond Object-Oriented Programming, 2nd Edition. Addison-Wesley, 2002.
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
