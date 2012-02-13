@@ -1,7 +1,15 @@
 MORE QUESTIONS:
 
 TESTING DIAGRAM?
-
+all diagrams in section 3 - do we need state diagram?
+do we need use cases (anywhere?)
+is our module (clickable) okay to talk about?
+shoudl we show entire UML diagram?  link to website?
+show and describe each section?
+which sections need descriptions of variables and methods?
+entity relationship and data dictionary in section 3?  
+talk about GUI, screenshots or anything?
+difference between installation procedures section vs deployment diagram?
 
 
 
