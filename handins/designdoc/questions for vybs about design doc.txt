@@ -1,16 +1,42 @@
 MORE QUESTIONS:
 
+
+
 TESTING DIAGRAM?
 block diagram is awful, our modules are not strictly defined, how should we show this?
+	- show client, store, play, main menu - connect them to each other
 all diagrams in section 3 - do we need state diagram?
-do we need use cases (anywhere?)
+	- for method signatures, explain HOW TO DO THIS
+	- say things like log(n)
+	- need to be recreated
+	- state space diagram if needed
+	
+do we need use cases (anywhere)
+	- 
 is our module (clickable) okay to talk about?
 should we show entire UML diagram?  link to website?
+	- 
 show and describe each section?
 which sections need descriptions of variables and methods?
+	- ONLY MODULE
 entity relationship and data dictionary in section 3?  
+	- prices and values in a flat file that we pull in
+	- python dictionary
 talk about GUI, screenshots or anything?
+	- no 
 difference between installation procedures section vs deployment diagram?
+	 - deployment is end result - what does the computer look like
+		- python interpreter, libraries installed, 
+		- Client
+			<<windows vista>>
+			{
+			[ our program ] 
+			<< python >> 
+			<< pygame >>}
+			connect client/server to client/server
+	- install 
+
+can we get our paper back?  we haven't seen it yet...
 
 
 
