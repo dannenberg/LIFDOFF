@@ -8,6 +8,7 @@ from screens.mainscreen import *
 from screens.creditsscreen import *
 from screens.shopscreen import *
 from screens.upgradescreen import *
+from screens.lobbyscreen import *
 
 class Main():
     def __init__(self):
@@ -20,7 +21,8 @@ class Main():
                         "main": MainScreen(self),
                         "credits":CreditsScreen(self),
                         "upgrade":UpgradeScreen(self),
-                        "shop":ShopScreen(self)}
+                        "shop":ShopScreen(self),
+                        "lobby":LobbyScreen(self)}
 
         pygame.display.set_caption("FRIENDS OF THE SEA")
 
