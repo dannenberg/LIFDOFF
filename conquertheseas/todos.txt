@@ -9,6 +9,7 @@ If you're bored and looking for something to add to this fix deez things.
 =================
 - Unit highlight size not reset until mousemove :(
 - Stop shooting yourself. Stop shooting yourself. Stop shooting yourself. Stop shooting yourself
+- IP on-click should copy IP
 
 =================
 -- LARGE TODOS --

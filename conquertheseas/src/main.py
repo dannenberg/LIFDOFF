@@ -32,7 +32,7 @@ class Main():
         self.done=False
         clock = pygame.time.Clock()
 
-        self.mainscreen = self.screens["game"]
+        self.mainscreen = self.screens["lobby"]
 
         self.keys = set()
         preblit = pygame.Surface((self.stdsize))
