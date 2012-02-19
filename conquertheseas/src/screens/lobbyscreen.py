@@ -1,6 +1,9 @@
+import random   # fer testing TODO remove me please
+
 import urllib
 from constants import COLORS
 from screens.screen import Screen
+from message_panel import MessagePanel
 import pygame
 class LobbyScreen(Screen):
     def __init__(self, main):
@@ -36,10 +39,17 @@ class LobbyScreen(Screen):
         self.button_start.blit(txt_start_game, (30,15))
         self.base_panel.blit(self.button_start, (870,10))
         
+        self.msgpanel = MessagePanel((652,509), 17)
         self.startable = False
         def to_main(scr, mpos):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
+        def send_message(scr, mpos):
+            st = ""
+            for _ in xrange(10):
+                st += random.choice("abcdefghijklmnopqrstuvwxyz")
+            self.msgpanel.message("Orez", st)
+        self.clickbox.append((565,577,582,30), send_message)
     
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
@@ -54,4 +64,5 @@ class LobbyScreen(Screen):
         screen.blit(self.players_panel, (26,38))
         screen.blit(self.chat_panel, (545, 38))
         screen.blit(self.base_panel, (26, 681))
+        screen.blit(self.msgpanel.view, (566,63))
         
