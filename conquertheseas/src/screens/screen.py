@@ -38,3 +38,6 @@ class Screen(object):
         result = self.overbox[mpos]
         if result != None:
             result["on"](self, (mpos[0] - result["left"], mpos[1] - result["top"]))
+            
+    def notify_key(self, key):
+        pass    # implementation is subclass-specific
