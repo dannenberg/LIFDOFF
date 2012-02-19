@@ -50,6 +50,7 @@ class Main():
                         self.mainscreen.click(pygame.mouse.get_pos())
                 elif event.type == pygame.KEYDOWN:
                     self.keys.add(event.key)
+                    self.mainscreen.notify_key(event)
                 elif event.type == pygame.KEYUP:
                     self.keys.discard(event.key)
                 elif event.type == pygame.VIDEORESIZE:

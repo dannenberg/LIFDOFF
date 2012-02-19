@@ -1,7 +1,7 @@
 import pygame
 from constants import COLORS
 
-TRANSPARENT = (0xFF,0,0xFF)
+TRANSPARENT = (0xFF,0,0xFF,0)
 class MessagePanel:
     def __init__(self, (widthpx, heightpx), heightln, font=None):
         """ Takes the width and height in pixels, the height in number of lines,
@@ -11,14 +11,11 @@ class MessagePanel:
         else:
             self.font = font
         self.height = self.font.get_linesize()
-        self.surface = pygame.Surface((widthpx, (self.height*heightln)))
-        self.surface.set_colorkey(TRANSPARENT)
+        self.surface = pygame.Surface((widthpx, (self.height*heightln)), pygame.SRCALPHA)
         self.surface.fill(TRANSPARENT)
-        self._juggler = pygame.Surface((widthpx, (self.height*heightln)))
-        self._juggler.set_colorkey(TRANSPARENT)
+        self._juggler = pygame.Surface((widthpx, (self.height*heightln)), pygame.SRCALPHA)
         self._juggler.fill(TRANSPARENT)
-        self.view = pygame.Surface((widthpx, heightpx))
-        self.view.set_colorkey(TRANSPARENT)
+        self.view = pygame.Surface((widthpx, heightpx), pygame.SRCALPHA)
         self.view.fill(TRANSPARENT)
         
     def message(self, by, msg, color=(0xFF, 0xFF, 0xFF)):
@@ -33,7 +30,6 @@ class MessagePanel:
         self._juggler.fill(TRANSPARENT)
         self._juggler.blit(name, (0,0))
         for i,x in enumerate(lines):
-            print x
             text = self.font.render(x, True, COLORS["white"])
             self._juggler.blit(text, (0 if i else name.get_width(), i*self.height))
         self.surface.blit(self._juggler, (0, self.surface.get_height()+bunp))

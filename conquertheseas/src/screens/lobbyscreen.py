@@ -1,5 +1,6 @@
 import random   # fer testing TODO remove me please
 
+from string import lowercase
 import urllib
 from constants import COLORS
 from screens.screen import Screen
@@ -16,16 +17,17 @@ class LobbyScreen(Screen):
         self.redraw_players()
         self.chat_panel = pygame.Surface((696, 578), pygame.SRCALPHA)
         self.chat_panel.fill((0,0,0,128))
-        textbox = pygame.Surface((582,30), pygame.SRCALPHA)
-        textbox.fill((0,0,0,64))
-        self.chat_panel.blit(textbox, (20,539))
+        self.textbox = pygame.Surface((1820,30), pygame.SRCALPHA)
+        self.textbox.fill((0,0,0,64))
+        
         chatbox = pygame.Surface((652, 509), pygame.SRCALPHA)
         chatbox.fill((0,0,0,64))
         self.chat_panel.blit(chatbox, (20,23))
         self.base_panel = pygame.Surface((1215, 96), pygame.SRCALPHA)
         self.base_panel.fill((0,0,0,128))
-        self.font = pygame.font.Font(None, 70)
-        txt_leave_lobby = self.font.render("Leave Lobby", True, COLORS["white"])
+        self.largefont = pygame.font.Font(None, 70)
+        self.font = pygame.font.Font(None, 30)
+        txt_leave_lobby = self.largefont.render("Leave Lobby", True, COLORS["white"])
         self.button_leave_lobby = pygame.Surface((331,76), pygame.SRCALPHA)
         self.button_leave_lobby.fill((0,0,0,64))
         self.button_leave_lobby.blit(txt_leave_lobby, (15,15))
@@ -34,25 +36,20 @@ class LobbyScreen(Screen):
             self.ip = urllib.urlopen('http://whatismyip.org').read()    # yes, this is actually the accepted way to do this
         except (urllib.URLError, urllib.HTTPError):
             self.ip = " "
-        txt_ip = self.font.render(self.ip, True, COLORS["white"])
+        txt_ip = self.largefont.render(self.ip, True, COLORS["white"])
         self.base_panel.blit(txt_ip, (450, 25))
         self.button_start = pygame.Surface((331,76), pygame.SRCALPHA)
         self.button_start.fill((0,0,0,64))
-        txt_start_game = self.font.render("Start Game", True, COLORS["white"])
+        txt_start_game = self.largefont.render("Start Game", True, COLORS["white"])
         self.button_start.blit(txt_start_game, (30,15))
         self.base_panel.blit(self.button_start, (870,10))
         
-        self.msgpanel = MessagePanel((652,509), 17)
+        self.text_input = ""
+        self.msgpanel = MessagePanel((652,509), 23, self.font)
         self.startable = False
         def to_main(scr, mpos):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
-        def send_message(scr, mpos):
-            st = ""
-            for _ in xrange(9):
-                st += random.choice("abcdefghijklmnopqrstuvwxyz")
-            self.msgpanel.message("Orez", ' '.join([st]*4), (0xFF, 0, 0))
-        self.clickbox.append((565,577,582,30), send_message)
     
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
@@ -66,6 +63,20 @@ class LobbyScreen(Screen):
         screen.fill(COLORS["water"])
         screen.blit(self.players_panel, (26,38))
         screen.blit(self.chat_panel, (545, 38))
+        screen.blit(self.textbox, (565,577), (min(self.textbox.get_width()-582, max(0,(self.font.size(self.text_input)[0])-582+10)),0,582,30))
         screen.blit(self.base_panel, (26, 681))
         screen.blit(self.msgpanel.view, (566,63))
         
+    def notify_key(self, inkey):
+        if inkey.key == pygame.K_BACKSPACE:
+            self.text_input = self.text_input[:-1]
+        elif inkey.key == pygame.K_RETURN:
+            self.msgpanel.message("Orez", self.text_input, (0xFF, 0, 0))
+            self.text_input = ""
+        elif self.font.size(self.text_input+inkey.unicode)[0] <= self.textbox.get_width()-10:
+            self.text_input += inkey.unicode
+        else:
+            return
+        self.textbox.fill((0,0,0,64))
+        txt = self.font.render(self.text_input, True, COLORS["white"])
+        self.textbox.blit(txt, (5,5))
