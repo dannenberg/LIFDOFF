@@ -11,7 +11,6 @@ class MessagePanel:
         else:
             self.font = font
         self.height = self.font.get_linesize()
-        print self.height*heightln
         self.surface = pygame.Surface((widthpx, (self.height*heightln)))
         self.surface.set_colorkey(TRANSPARENT)
         self.surface.fill(TRANSPARENT)
@@ -22,13 +21,38 @@ class MessagePanel:
         self.view.set_colorkey(TRANSPARENT)
         self.view.fill(TRANSPARENT)
         
-    def message(self, by, msg):
+    def message(self, by, msg, color=(0xFF, 0xFF, 0xFF)):
+        name = self.font.render(by+": ", True, color)
+        lines = self.split_message(msg, name.get_width())
+        bunp = -len(lines)*self.height
         self._juggler.fill(TRANSPARENT)
-        height = self.height    # TODO: make it based on message length
-        self._juggler.blit(self.surface, (0,-height))
+        self._juggler.blit(self.surface, (0, bunp))
         self.surface.fill(TRANSPARENT)
         self.surface.blit(self._juggler, (0,0))
-        text = self.font.render(msg, True, COLORS["white"])
-        self.surface.blit(text, (0,self.surface.get_height()-self.height))
+        
+        self._juggler.fill(TRANSPARENT)
+        self._juggler.blit(name, (0,0))
+        for i,x in enumerate(lines):
+            print x
+            text = self.font.render(x, True, COLORS["white"])
+            self._juggler.blit(text, (0 if i else name.get_width(), i*self.height))
+        self.surface.blit(self._juggler, (0, self.surface.get_height()+bunp))
+        
         self.view.fill(TRANSPARENT)
         self.view.blit(self.surface, (0, self.view.get_height()-self.surface.get_height()))    # TODO: maybe make it keep track of scroll (instead of scrolling to the bottom)
+        
+    def split_message(self, msg, wid):
+        toR = []
+        screenwid = self.view.get_width()
+        msg = msg.split(' ')
+        line = ""
+        while msg:
+            if self.font.size(msg[0])[0]+wid > screenwid:  # nextline
+                wid = 0
+                toR += [line]
+                line = ""
+            wid += self.font.size(msg[0]+" ")[0]
+            line += msg[0]+" "
+            msg = msg[1:]
+        toR += [line]
+        return toR

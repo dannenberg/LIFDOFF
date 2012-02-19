@@ -48,7 +48,10 @@ class MainScreen(Screen):
             
             def click_singleplayer(x,mpos):
                 self.main.change_screen("game")
+            def click_hostgame(scr, mpos):
+                self.main.change_screen("lobby")
             
+            self.clickbox.append((90+self.maxwid, 300, self.submaxwid+50, 50), click_hostgame)
             self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)
             
         def click_options(someone, mpos):

@@ -30,7 +30,10 @@ class LobbyScreen(Screen):
         self.button_leave_lobby.fill((0,0,0,64))
         self.button_leave_lobby.blit(txt_leave_lobby, (15,15))
         self.base_panel.blit(self.button_leave_lobby, (10,10))
-        self.ip = urllib.urlopen('http://whatismyip.org').read()    # yes, this is actually the accepted way to do this
+        try:
+            self.ip = urllib.urlopen('http://whatismyip.org').read()    # yes, this is actually the accepted way to do this
+        except (urllib.URLError, urllib.HTTPError):
+            self.ip = " "
         txt_ip = self.font.render(self.ip, True, COLORS["white"])
         self.base_panel.blit(txt_ip, (450, 25))
         self.button_start = pygame.Surface((331,76), pygame.SRCALPHA)
@@ -46,9 +49,9 @@ class LobbyScreen(Screen):
         self.clickbox.append((37,692,329,74), to_main)
         def send_message(scr, mpos):
             st = ""
-            for _ in xrange(10):
+            for _ in xrange(9):
                 st += random.choice("abcdefghijklmnopqrstuvwxyz")
-            self.msgpanel.message("Orez", st)
+            self.msgpanel.message("Orez", ' '.join([st]*4), (0xFF, 0, 0))
         self.clickbox.append((565,577,582,30), send_message)
     
     def redraw_players(self):
