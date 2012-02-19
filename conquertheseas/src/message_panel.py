@@ -16,7 +16,7 @@ class MessagePanel:
         self._juggler = pygame.Surface((widthpx, (self.height*heightln)), pygame.SRCALPHA)
         self._juggler.fill(TRANSPARENT)
         self.view = pygame.Surface((widthpx, heightpx), pygame.SRCALPHA)
-        self.view.fill(TRANSPARENT)
+        self.view.fill((0,0,0,64))
         
     def message(self, by, msg, color=(0xFF, 0xFF, 0xFF)):
         name = self.font.render(by+": ", True, color)
@@ -34,7 +34,7 @@ class MessagePanel:
             self._juggler.blit(text, (0 if i else name.get_width(), i*self.height))
         self.surface.blit(self._juggler, (0, self.surface.get_height()+bunp))
         
-        self.view.fill(TRANSPARENT)
+        self.view.fill((0,0,0,64))
         self.view.blit(self.surface, (0, self.view.get_height()-self.surface.get_height()))    # TODO: maybe make it keep track of scroll (instead of scrolling to the bottom)
         
     def split_message(self, msg, wid):
