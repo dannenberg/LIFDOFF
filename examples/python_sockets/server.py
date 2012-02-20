@@ -35,11 +35,19 @@ def handler(conn,addr,stream):
             done = True
 
 # allow people to connect
-threading.Thread(target=accept_connections,args=(players,instream)).start()
+connect_thread = threading.Thread(target=accept_connections,args=(players,instream))
+connect_thread.start()
 
-while 1:
-    if not instream.empty():    # if new messages
-        dat = instream.get()    # get a message
-        print dat               # post it to server
-        for x in players:       # send it to all players
-            x[0].send(dat)      # Burma Shave
+done = False
+
+while not done:
+    try:
+        if not instream.empty():    # if new messages
+            dat = instream.get()    # get a message
+            print dat               # post it to server
+            for x in players:       # send it to all players
+                x[0].send(dat)      # Burma Shave
+    except KeyboardInterrupt:
+        connect_thread._Thread__stop() # kill the thread allowing connections so thi will actually quit
+        done = True                    # given all the _ this may be dangerous...
+        s.close()
