@@ -13,13 +13,16 @@ s.listen(5) # n people may connect. does not appear to work?
 
 players = []
 instream = Queue.Queue()    # Threadsafe queue
+player_threads = []
 
 def accept_connections(players,stream):
     while 1:
         conn, addr = s.accept()    # blocking, waits for new connection
         print "Connecting "+str(addr)
         players.append((conn,addr)) # add to playerlist
-        threading.Thread(target=handler,args=(conn,addr,stream)).start()    # start a thread for them to speak
+        player_thread = threading.Thread(target=handler,args=(conn,addr,stream)) 
+        player_threads.append(player_thread)
+        player_thread.start()   # start a thread for them to speak
 
 def handler(conn,addr,stream):
     done = False
@@ -51,3 +54,8 @@ while not done:
         connect_thread._Thread__stop() # kill the thread allowing connections so thi will actually quit
         done = True                    # given all the _ this may be dangerous...
         s.close()
+        for thread in player_threads:
+            thread._Thread__stop() 
+        for player in players:
+            player[0].shutdown(1)
+            player[0].close()
