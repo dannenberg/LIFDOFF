@@ -24,7 +24,7 @@ while not done:    # input TO server
         if text == "/quit":
             done = True
         else:
-            s.send(text+"\r\n")
+            s.send("MSG "+text+"\r\n")
     except KeyboardInterrupt:
         done = True
 
