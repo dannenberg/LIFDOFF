@@ -15,19 +15,38 @@ players = []
 players_lock = threading.Lock()
 instream = Queue.Queue()    # Threadsafe queue
 
-def toggle_readiness():
-    pass
-
-def send_message(message):
+def send_message(addr, message):
     print message
     players_lock.acquire()
     for player in players:
-        player["socket"][0].send(message)
+        if str(player["socket"][1]) != addr:
+            player["socket"][0].send(message)
+    players_lock.release()
+
+def change_name(addr, message):
+    players_lock.acquire()
+    for player in players:
+        if str(player["socket"][1]) == addr:
+            player["name"] = message
+            print player["name"]
+            player["socket"][0].send("your name is now " + str(player["name"]))
+    players_lock.release()
+
+def toggle_readiness(addr, message):
+    players_lock.acquire()
+    for player in players:
+        if str(player["socket"][1]) == addr:
+            player["ready"] = not player["ready"]
+            if player["ready"]:
+                player["socket"][0].send("you're ready")
+            else:
+                player["socket"][0].send("you're not ready")
     players_lock.release()
 
 commands = { 
             "MSG" : send_message,
-            "RDY" : toggle_readiness
+            "NAME" : change_name,
+            "READY" : toggle_readiness
             }
 
 def accept_connections(stream):
@@ -65,13 +84,13 @@ while not done:
     try:
         if not instream.empty():    # if new messages
             dat = instream.get()    # get a message
-            colonloc = dat.find(':')               # post it to server
+            colonloc = dat.find(':')               # this parsing is pretty ugly feel free to pretty it up 
             cmdend = colonloc+1+dat[colonloc:].find(' ')
-            info = dat[0:colonloc]
+            addr = dat[0:colonloc]
             cmd = dat[colonloc+1:cmdend-1]
             args = dat[cmdend:]
-            print info+"\ncmd: "+cmd+"\nargs: "+args+"\n"
-            commands[cmd](args)
+            #print addr+"\ncmd: "+cmd+"\nargs: "+args+"\n"
+            commands[cmd](addr, args)
     except KeyboardInterrupt:
         connect_thread._Thread__stop() # kill the thread allowing connections so this will actually quit
         done = True                    # given all the _ this may be dangerous...

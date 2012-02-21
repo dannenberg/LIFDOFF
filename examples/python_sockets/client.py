@@ -23,6 +23,10 @@ while not done:    # input TO server
         text = raw_input(">")   # blocking
         if text == "/quit":
             done = True
+        elif text == "/ready":
+            s.send("READY "+"\r\n")
+        elif text.startswith("/name"):
+            s.send("NAME "+text[6:]+"\r\n")
         else:
             s.send("MSG "+text+"\r\n")
     except KeyboardInterrupt:
