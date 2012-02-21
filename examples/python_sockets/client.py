@@ -19,11 +19,14 @@ text = ""
 threading.Thread(target=handler,args=(s,)).start()  # create a new thread to handle input from server
 
 while not done:    # input TO server
-    text = raw_input(">")   # blocking
-    if text == "/quit":
+    try:
+        text = raw_input(">")   # blocking
+        if text == "/quit":
+            done = True
+        else:
+            s.send(text+"\r\n")
+    except KeyboardInterrupt:
         done = True
-    else:
-        s.send(text+"\r\n")
 
 s.shutdown(1)
 s.close()
