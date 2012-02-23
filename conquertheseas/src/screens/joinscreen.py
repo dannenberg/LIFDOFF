@@ -1,10 +1,12 @@
 from screens.screen import Screen
 from string import count
 from constants import COLORS
+from bg_waves import Waves
 import pygame
 class JoinScreen(Screen):
     def __init__(self, main):
         Screen.__init__(self, main)
+        self.waves = Waves()
         self.inputblock = pygame.Surface((245,130), pygame.SRCALPHA)
         self.inputblock.fill((0,0,0,128))
         self.textbox = pygame.Surface((225, 30), pygame.SRCALPHA)
@@ -32,7 +34,7 @@ class JoinScreen(Screen):
         
     def display(self, screen):
         Screen.display(self, screen)
-        screen.fill(COLORS["water"])
+        self.waves.display(screen)
         screen.blit(self.inputblock, (517,335))
         screen.blit(self.textbox, (527,380))
         if self.countdown > 0:

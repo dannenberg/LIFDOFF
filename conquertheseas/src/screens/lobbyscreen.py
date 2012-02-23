@@ -4,6 +4,7 @@ import urllib, urllib2
 from constants import COLORS
 from screens.screen import Screen
 from message_panel import MessagePanel
+from bg_waves import Waves
 import pygame
 class LobbyScreen(Screen):
     def __init__(self, main):
@@ -12,6 +13,8 @@ class LobbyScreen(Screen):
         self.color_pick = 0
         self.largefont = pygame.font.Font(None, 70)
         self.font = pygame.font.Font(None, 30)
+        
+        self.waves = Waves()
         
         self.players_panel = pygame.Surface((496,578), pygame.SRCALPHA)
         self.players_panel.fill((0, 0, 0, 128))
@@ -67,7 +70,7 @@ class LobbyScreen(Screen):
     
     def display(self, screen):
         Screen.display(self, screen)
-        screen.fill(COLORS["water"])
+        self.waves.display(screen)
         screen.blit(self.players_panel, (26,38))
         screen.blit(self.chat_panel, (545, 38))
         screen.blit(self.textbox, (565,577), (min(self.textbox.get_width()-582, max(0,(self.font.size(self.text_input)[0])-582+10)),0,582,30))

@@ -3,13 +3,13 @@ import math
 from mousehitbox import MouseHitboxes
 from screen import Screen
 from constants import COLORS
+from bg_waves import Waves
 
 class CreditsScreen(Screen):
     """ Main menu screen """
     def __init__(self, main):
         Screen.__init__(self, main)
-        self.water_level = 0 #defines the height of the water in the background
-        self.water_range = 16 #how much the water level fluctuates
+        self.waves = Waves()
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items
         def go_back(someone, mpos):
             self.main.change_screen("main")
@@ -17,21 +17,7 @@ class CreditsScreen(Screen):
         
     def display(self, screen):
         Screen.display(self, screen) #calls super
-        
-        self.water_level = (self.water_level + (math.pi / 180)) % (math.pi * 2) #movement in rads for waterlevel (since it is based on sin)
-        modifier = int(math.sin(self.water_level) * self.water_range) #actual change
-        
-        font = pygame.font.Font(None, 170) #title text defined and two colored versions created
-        text = font.render("CONQUER THE SEAS", True, COLORS["black"])
-        whitetext = font.render("CONQUER THE SEAS", True, COLORS["submergedt"])
-        
-        #draws the sky, water, and text
-        screen.fill(COLORS["sky"])
-        water = pygame.Surface((1280, 700 - modifier))
-        water.fill(COLORS["water"])
-        screen.blit(text, [20, 50])
-        water.blit(whitetext, [20,  -50 - modifier])
-        screen.blit(water, [0, modifier + 100])
+        self.waves.display(screen)
         
         ####################################
         
