@@ -10,6 +10,7 @@ from screens.creditsscreen import *
 from screens.shopscreen import *
 from screens.upgradescreen import *
 from screens.lobbyscreen import *
+from screens.joinscreen import *
 
 class Main():
     def __init__(self):
@@ -25,15 +26,17 @@ class Main():
                         "credits":CreditsScreen(self),
                         "upgrade":UpgradeScreen(self),
                         "shop":ShopScreen(self),
-                        "lobby":LobbyScreen(self)}
+                        "lobby":LobbyScreen(self),
+                        "join":JoinScreen(self)}
 
         pygame.display.set_caption("FRIENDS OF THE SEA")
 
         self.done=False
         clock = pygame.time.Clock()
 
-        self.mainscreen = self.screens["lobby"]
+        self.mainscreen = self.screens["join"]
 
+        pygame.key.set_repeat(500,20)   # half second delay, 20 second interval
         self.keys = set()
         preblit = pygame.Surface((self.stdsize))
         preblit2 = None

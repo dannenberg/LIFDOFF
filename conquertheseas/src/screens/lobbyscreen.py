@@ -1,5 +1,3 @@
-import random   # fer testing TODO remove me please
-
 from string import lowercase
 import threading
 import urllib, urllib2

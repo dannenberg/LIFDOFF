@@ -47,6 +47,16 @@ class MessagePanel:
                 wid = 0
                 toR += [line]
                 line = ""
+                if self.font.size(msg[0])[0] > screenwid:  # nextline too long!?
+                    for c in msg[0]:
+                        if self.font.size(line+c)[0] > screenwid:
+                            toR += [line]
+                            line = ""
+                        line += c
+                    line += " "
+                    wid += self.font.size(line+" ")[0]
+                    msg = msg[1:]
+                    continue
             wid += self.font.size(msg[0]+" ")[0]
             line += msg[0]+" "
             msg = msg[1:]
