@@ -81,6 +81,7 @@ class MainScreen(Screen):
             self.clickbox.append((30, 215+50*i, self.maxwid, 45), x)
     
     def display(self, screen):
+        """ main screen turn on """
         Screen.display(self, screen) #calls super
         
         self.water_level = (self.water_level + (math.pi / 180)) % (math.pi * 2) #movement in rads for waterlevel (since it is based on sin)
