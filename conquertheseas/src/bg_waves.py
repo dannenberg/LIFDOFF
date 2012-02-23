@@ -17,7 +17,7 @@ class Waves(object):
         self.text = self.font.render("CONQUER THE SEAS", True, COLORS["black"])
         self.whitetext = self.font.render("CONQUER THE SEAS", True, COLORS["submergedt"])
         
-    def display(self, screen):
+    def display(self, screen, display_text=True):
         self.water_level = (self.water_level + (math.pi / 180)) % (math.pi * 2) #movement in rads for waterlevel (since it is based on sin)
         modifier = int(math.sin(self.water_level) * self.water_range) #actual change
         
@@ -25,6 +25,7 @@ class Waves(object):
         screen.fill(COLORS["sky"])
         water = pygame.Surface((1280, 700 - modifier))
         water.fill(COLORS["water"])
-        screen.blit(self.text, (20, 50))
-        water.blit(self.whitetext, (20,  -50 - modifier))
+        if display_text:
+            screen.blit(self.text, (20, 50))
+            water.blit(self.whitetext, (20,  -50 - modifier))
         screen.blit(water, (0, modifier + 100))

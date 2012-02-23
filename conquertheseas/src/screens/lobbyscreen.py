@@ -70,7 +70,7 @@ class LobbyScreen(Screen):
     
     def display(self, screen):
         Screen.display(self, screen)
-        self.waves.display(screen)
+        self.waves.display(screen, False)
         screen.blit(self.players_panel, (26,38))
         screen.blit(self.chat_panel, (545, 38))
         screen.blit(self.textbox, (565,577), (min(self.textbox.get_width()-582, max(0,(self.font.size(self.text_input)[0])-582+10)),0,582,30))
