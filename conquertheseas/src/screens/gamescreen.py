@@ -172,6 +172,10 @@ class GameScreen(Screen):
         self.highlight_panel.set_alpha(128) # alpha level
         self.highlight_panel.fill(COLORS["highlight"]) # this fills the entire surface
         
+        self.water_tint = pygame.Surface((BOARD_WIDTH, BOARD_HEIGHT))
+        self.water_tint.fill(COLORS["water"])
+        self.water_tint.set_alpha(64)
+        
         mmbutton = pygame.image.load("../img/mainmenu.png")
         ubutton  = pygame.image.load("../img/upgrades.png")
         sbutton  = pygame.image.load("../img/shop.png")
@@ -309,6 +313,9 @@ class GameScreen(Screen):
         self.my_board.draw_board()
         self.enemy_board.draw_board()
         self.offense_panel.draw_panel()
+        
+        self.my_board.surface.blit(self.water_tint, ((0,modifier),(BOARD_WIDTH, BOARD_HEIGHT - modifier)))
+        self.enemy_board.surface.blit(self.water_tint, ((0,modifier),(BOARD_WIDTH, BOARD_HEIGHT - modifier)))
         
         for x in self.movement_locs:
             self.my_board.surface.blit(self.highlight, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2))

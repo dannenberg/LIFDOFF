@@ -40,6 +40,9 @@ class Main():
         self.keys = set()
         preblit = pygame.Surface((self.stdsize))
         preblit2 = None
+        
+        font = pygame.font.Font(None, 16)
+        
         while not self.done:
             clock.tick(60)
             
@@ -62,6 +65,7 @@ class Main():
                     self.mainscreen.abs_scale(self.scale)
             
             self.mainscreen.display(preblit)
+            preblit.blit(font.render(str(clock.get_fps()), True, (0xFF,0,0)), (0,0))
             preblit2 = pygame.transform.scale(preblit, self.size)
             self.screen.blit(preblit2, (0,0))
             pygame.display.flip()
