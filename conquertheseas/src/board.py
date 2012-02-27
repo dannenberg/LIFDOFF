@@ -6,7 +6,7 @@ import pygame
 
 class Board:
     def __init__(self, w, h, purple=False):
-        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE))
+        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE), pygame.SRCALPHA)
         self._w = w
         self._h = h
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size

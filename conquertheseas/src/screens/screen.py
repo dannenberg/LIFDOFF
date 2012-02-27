@@ -1,5 +1,5 @@
 import pygame
-from constants import COLORS
+from constants import COLORS, SIZE_X, SIZE_Y
 from mousehitbox import MouseHitboxes
 
 class Screen(object):
@@ -8,7 +8,8 @@ class Screen(object):
     nominally abstract"""
     
     def __init__(self, main):
-        self.size = (1280, 800)
+        self.size = (SIZE_X, SIZE_Y)
+        self.scale = 1
         self.main = main
         self.clickbox = MouseHitboxes()
         self.overbox = MouseHitboxes()
@@ -17,8 +18,12 @@ class Screen(object):
         """takes a screen draws screen state to screen"""
         screen.fill(COLORS["bg"])
     
+    def abs_scale(self, size):
+        self.scale = size
+    
     def click(self, mpos):
         """handles click events"""
+        mpos = (int(mpos[0]/self.scale), int(mpos[1]/self.scale))
         result = self.clickbox[mpos]
         if result != None:
             print "screen.click: "+str(mpos) + " " + str((mpos[0] - result["left"], mpos[1] - result["top"]))
@@ -28,7 +33,11 @@ class Screen(object):
     
     def over(self, mpos):
         """handles mouseover events"""
+        mpos = (int(mpos[0]/self.scale), int(mpos[1]/self.scale))
         self.overbox.out(mpos)(self)
         result = self.overbox[mpos]
         if result != None:
             result["on"](self, (mpos[0] - result["left"], mpos[1] - result["top"]))
+            
+    def notify_key(self, key):
+        pass    # implementation is subclass-specific

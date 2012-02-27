@@ -3,13 +3,12 @@ import math
 from constants import COLORS
 from mousehitbox import MouseHitboxes
 from screen import Screen
+from bg_waves import Waves
 
 class MainScreen(Screen):
     """ Main menu screen """
     def __init__(self, main):
         Screen.__init__(self, main)
-        self.water_level = 0 #defines the height of the water in the background
-        self.water_range = 16 #how much the water level fluctuates
         self.selectbox = [None, 15, 205, 50, True] #coords of the box (x, y, width, height) which highlights selected item
         self.gotobox = [12.5, 15, 205, 50] #coords of the desitination of the selectbox
         self.sel_accel = 3 #acceleration to new pos
@@ -20,6 +19,8 @@ class MainScreen(Screen):
         self.submenuoptions = None
         self.submenu = 0
         self.maxwid = max([self.smallerfont.size(x)[0] for x in self.options])
+        
+        self.waves = Waves()
         
         def over(setbit):
             def anon(scr, mpos): #picks new location for gotobox
@@ -48,8 +49,14 @@ class MainScreen(Screen):
             
             def click_singleplayer(x,mpos):
                 self.main.change_screen("game")
+            def click_joingame(scr, mpos):
+                self.main.change_screen("join")
+            def click_hostgame(scr, mpos):
+                self.main.change_screen("lobby")
             
             self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)
+            self.clickbox.append((90+self.maxwid, 250, self.submaxwid+50, 50), click_joingame)
+            self.clickbox.append((90+self.maxwid, 300, self.submaxwid+50, 50), click_hostgame)
             
         def click_options(someone, mpos):
             if self.submenu == 2:
@@ -75,23 +82,10 @@ class MainScreen(Screen):
             self.clickbox.append((30, 215+50*i, self.maxwid, 45), x)
     
     def display(self, screen):
+        """ main screen turn on """
         Screen.display(self, screen) #calls super
         
-        self.water_level = (self.water_level + (math.pi / 180)) % (math.pi * 2) #movement in rads for waterlevel (since it is based on sin)
-        modifier = int(math.sin(self.water_level) * self.water_range) #actual change
-        
-        font = pygame.font.Font(None, 170) #title text defined and two colored versions created
-        text = font.render("CONQUER THE SEAS", True, COLORS["black"])
-        whitetext = font.render("CONQUER THE SEAS", True, COLORS["submergedt"])
-        
-        #draws the sky, water, and text
-        screen.fill(COLORS["sky"])
-        water = pygame.Surface((1280, 700 - modifier))
-        water.fill(COLORS["water"])
-        screen.blit(text, [20, 50])
-        water.blit(whitetext, [20,  -50 - modifier])
-        screen.blit(water, [0, modifier + 100])
-        
+        self.waves.display(screen)
         ####################################
         
         textbox = pygame.Surface((self.maxwid + 50, len(self.options)*50+30), pygame.SRCALPHA)
