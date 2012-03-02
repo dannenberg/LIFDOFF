@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import re
 from constants import SIZE_X,SIZE_Y
 from screens.screen import *
 from screens.gamescreen import *
@@ -11,11 +12,13 @@ from screens.shopscreen import *
 from screens.upgradescreen import *
 from screens.lobbyscreen import *
 from screens.joinscreen import *
+from dummy import Dummy
 
 class Main():
     def __init__(self):
         pygame.init()
 
+        self.client = Dummy()
         self.stdsize=(SIZE_X,SIZE_Y)
         self.size=self.stdsize
         self.scale = 1
@@ -34,7 +37,7 @@ class Main():
         self.done=False
         clock = pygame.time.Clock()
 
-        self.mainscreen = self.screens["join"]
+        self.mainscreen = self.screens["lobby"]
 
         pygame.key.set_repeat(500,20)   # half second delay, 20 second interval
         self.keys = set()
@@ -87,6 +90,9 @@ class Main():
             return ((int(scale*self.stdsize[0]),h),scale)
         scale = float(w)/self.stdsize[0]
         return ((w,int(scale*self.stdsize[1])),scale)
+    
+    def valid_nick(self, newnick):
+        return re.match(r"^[A-Z][A-Z0-9 ]{0,20}[A-Z0-9]$", newnick, re.I)
 
 if __name__ == "__main__":
     Main()
