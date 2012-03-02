@@ -3,7 +3,7 @@ import select
 import threading
 
 HOST = socket.gethostname()
-PORT = 11170
+PORT = 11172
 ADDR = (HOST,PORT)
 
 class Server(threading.Thread):
@@ -16,7 +16,6 @@ class Server(threading.Thread):
         threading.Thread.__init__(self)
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(ADDR)
-        self.connections = []
         self.slots = [{"type":Server.OPEN} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
         self.host = None
         self.commands = {
@@ -26,15 +25,13 @@ class Server(threading.Thread):
             "START" : self.start_game,
             "KICK" : self.kick_player
             }
-            
- 
         
     def run(self):
         print "listening"
         self.server.listen(5)
         while 1:
             # list of socket objects from clients, plus the server socket
-            inputs = self.connections + [self.server]
+            inputs = [x["conn"] for x in self.slots if x.has_key("conn")] + [self.server]
             # blocks until someone connects or a client sends a message
             ready, _, _ = select.select(inputs, [], [])
             if ready:
@@ -48,7 +45,6 @@ class Server(threading.Thread):
                         self.slots[0] = {"type":Server.PLAYER, "name":"Host", "ready":False, "conn":conn}
                         conn.send("Welcome to the game, you're the host!")
                         print "it's a new connection!"
-                        self.connections.append(conn)
                     else:
                     # check slots
                         for x in xrange(10):
@@ -57,7 +53,6 @@ class Server(threading.Thread):
                                 self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn}
                                 conn.send(self.get_server_data(x))
                                 print "it's a new connection!"
-                                self.connections.append(conn)
                                 for i in self.slots:
                                     if i.has_key("conn"):
                                         i["conn"].send("JOIN " + str(x) + " Player " + str(x))
@@ -79,7 +74,6 @@ class Server(threading.Thread):
                         # closed their connection
                         print "closed connection"
                         c.close()
-                        del(self.connections[self.connections.index(c)])
                     else:
                         # echoes actual message to all players   
                         cmdend = message.find(' ')
@@ -93,7 +87,6 @@ class Server(threading.Thread):
 
     def stop(self):
         self.server.close()
-        del(self.connections)
         
     def get_server_data(self, slot):
         toR = "DATA " + str(slot) + "\n"
@@ -159,6 +152,7 @@ class Server(threading.Thread):
         if self.slots[0]["conn"] == c:
             if self.slots[int(message)]["type"] == Server.PLAYER:
                 self.slots[int(message)]["conn"].close()
+                self.slots[int(message)] = {"type":Server.OPEN}
                 for x in self.slots:
                     if x.has_key("conn"):
                         x["conn"].send("KICK " + message)
@@ -174,14 +168,19 @@ class Client(threading.Thread):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
     def run(self):
-        #print "nigga made a pizza"
         self.sock.connect(ADDR)
         while 1:
-            #print "nigga made aWHIEL LOOP pizza"
-            self.process_message(self.sock.recv(255))
-        
+            message = self.sock.recv(255)
+            if not message:
+                # an empty string indicates that the client has
+                # closed their connection
+                print "closed connection"
+                self.sock.close()
+                break
+            else:
+                self.process_message(message)
+
     def process_message(self, message):
-        # dannenberg loves cocks in his body
         if message == '':
             self.sock.close()
         print message
