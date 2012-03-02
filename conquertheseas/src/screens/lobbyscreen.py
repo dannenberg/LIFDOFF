@@ -6,10 +6,20 @@ from screens.screen import Screen
 from message_panel import MessagePanel
 from bg_waves import Waves
 import pygame
+
+CLOSED = 1
+OPEN = 2
+AI = 3
+
 class LobbyScreen(Screen):
     def __init__(self, main):
         Screen.__init__(self, main)
-        self.player_colors = [(0xFF,0,0), (0,0xFF,0), (0xFF,0,0xFF), (0xFF,0xFF,0), (0,0xFF,0xFF), (0xFF, 180, 0), (180,0,0xFF), (0, 0xFF, 100), (0xFF,0xCC,0xCC), (0xCC,0xCC,0xFF)]
+        
+        self.my_index = 0
+        
+        self.player_colors = [(0xFF,0,0), (0,0xFF,0), (0xFF,0,0xFF), (0xFF,0xFF,0),
+                              (0,0xFF,0xFF), (0xFF, 180, 0), (180,0,0xFF),
+                              (0, 0xFF, 100), (0xFF,0xCC,0xCC), (0xCC,0xCC,0xFF)]
         self.color_pick = 0
         self.largefont = pygame.font.Font(None, 70)
         self.font = pygame.font.Font(None, 30)
@@ -18,13 +28,14 @@ class LobbyScreen(Screen):
         
         self.players_panel = pygame.Surface((496,578), pygame.SRCALPHA)
         self.players_panel.fill((0, 0, 0, 128))
-        self.player_surfs = []
-        for _ in xrange(10):
-            self.player_surfs.append(pygame.Surface((474,48), pygame.SRCALPHA))
+        self.players = []
+        
+        self.players.append(["Orez",pygame.Surface((474,48), pygame.SRCALPHA)]) # TODO: bad
+        for _ in xrange(1,10):
+            self.players.append([CLOSED,pygame.Surface((474,48), pygame.SRCALPHA)])
         self.redraw_players()
         self.chat_panel = pygame.Surface((696, 578), pygame.SRCALPHA)
         self.chat_panel.fill((0,0,0,128))
-        #pygame.draw.rect(self.chat_panel
         self.textbox = pygame.Surface((1820,30), pygame.SRCALPHA)
         self.textbox.fill((0,0,0,64))
         self.base_panel = pygame.Surface((1215, 96), pygame.SRCALPHA)
@@ -60,13 +71,25 @@ class LobbyScreen(Screen):
         def to_main(scr, mpos):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
+        
+        self.reload_server_data()   # TODO: might take a while, put it in a thread? Limit actions before it finishes
     
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
-        for i,x in enumerate(self.player_surfs):
-            x.fill((0,0,0,64))
-            pygame.draw.rect(x, (0,0,0,0), (48,0,12,48))
-            self.players_panel.blit(x, (10,37+i*54))
+        for i,(name, surf) in enumerate(self.players):
+            surf.fill((0,0,0,64))
+            pygame.draw.rect(surf, (0,0,0,0), (48,0,12,48))
+            color = self.player_colors[i]
+            if isinstance(name, int):
+                color = (0x80, 0x80, 0x80)
+                if name == CLOSED:
+                    name = "Closed"
+                elif name == OPEN:
+                    name = "Open"
+                elif name == AI:
+                    name = "AI Player"
+            surf.blit(self.font.render(name, True, color), (65,15))
+            self.players_panel.blit(surf, (10,37+i*54))
     
     def display(self, screen):
         Screen.display(self, screen)
@@ -77,10 +100,56 @@ class LobbyScreen(Screen):
         screen.blit(self.base_panel, (26, 681))
         screen.blit(self.msgpanel.view, (566,63))
         
-    def message(self):
-        if self.text_input:
-            self.msgpanel.message("Orez", self.text_input, self.player_colors[self.color_pick])
-            self.text_input = ""
+    def message(self, data=None):
+        index = self.my_index
+        msg = self.text_input
+        if not (data is None):  # gotta parse the data
+            data = data.split(" ")
+            index, msg = data[0], ' '.join(data[1:])
+        if msg: # needs to like... say something.
+            if isinstance(self.players[index][0], int):
+                print "Why is",self.players[index][0],"trying to talk?"
+                return
+            if index == self.my_index:
+                self.text_input = ""
+                if msg[:6] == "/nick ":
+                    newnick = msg[6:]
+                    if self.main.valid_nick(newnick):
+                        self.send_nick_change(newnick)
+                    return
+                self.main.client.send_msg(msg)
+            self.msgpanel.message(self.players[index][0], msg, self.player_colors[index])
+        
+    def reload_server_data(self, data="4\n0 Dickbob\n0 ChildToucher\n0 Despicable Human\n0 MurderTorture\n0 Orez\n2\n3\n1\n1\n1"):
+        # get that info somehow
+        self.my_index = int(data[0])
+        data = data.split("\n")[1:]
+        for i,d in enumerate(data):
+            num = int(d[0])
+            if num:
+                self.players[i][0] = num
+            else:
+                self.players[i][0] = d[2:]
+        self.redraw_players()
+    
+    def send_nick_change(self, nick):
+        self.main.client.send_nick(nick)
+        self.recv_nick_change(str(self.my_index)+" "+nick)
+        
+    def recv_nick_change(self, data=None):
+        data = data.split(" ")
+        i, name = int(data[0]), ' '.join(data[1:])
+        self.players[i][0] = name
+        self.redraw_players()
+        
+    def parse_server_output(self, msg):
+        actions = {"MSG":self.message, "NICK":self.nick_change, "JOIN":self.nick_change, "DATA":self.reload_server_data}
+        msg = msg.split(" ")
+        cmd,msg = msg[0],' '.join(msg[1:])
+        if cmd not in actions:
+            print "Unknown action",cmd
+            return
+        actions[cmd](msg)
         
     def notify_key(self, inkey):
         if inkey.key == pygame.K_BACKSPACE:
