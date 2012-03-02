@@ -3,7 +3,7 @@ import select
 import threading
 
 HOST = socket.gethostname()
-PORT = 11101
+PORT = 11170
 ADDR = (HOST,PORT)
 
 class Server(threading.Thread):
@@ -212,3 +212,16 @@ class Client(threading.Thread):
         
     def stop(self):
         self.sock.close()
+        
+if __name__ == "__main__":
+    if int(raw_input("Server? ")):
+        s = Server()
+        s.start()
+    else:
+        c = Client()
+        c.start()
+    while 1:
+        try:
+            exec(raw_input(">"))
+        except:
+            print "You have fucked up."
