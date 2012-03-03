@@ -16,12 +16,13 @@ class Server(threading.Thread):
         threading.Thread.__init__(self)
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(ADDR)
-        self.slots = [{"type":Server.OPEN} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
+        self.slots = [{"type":Server.CLOSED} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
         self.host = None
         self.commands = {
             "MSG" : self.send_message,
             "NICK" : self.change_name,
-            "READY" : self.toggle_readiness,
+            "SLOT" : self.set_slot,
+            "READY" : self.set_ready,
             "START" : self.start_game,
             "KICK" : self.kick_player
             }
@@ -110,6 +111,15 @@ class Server(threading.Thread):
                 else:
                     x["conn"].send(message)
                     
+    # TODO: DON'T USE ON PEOPLE. KICK EM FIRST
+    def set_slot(self, c, message):
+        if self.slots[0]["conn"] == c:
+            slot, setting = int(message[0]), int(message[2])
+            self.slots[slot]["type"] = setting
+            for x in self.slots:
+                if x.has_key("conn"):
+                    x["conn"].send("NICK "+str(slot)+" "+str(setting))
+    
     def change_name(self, c, message):
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
@@ -124,13 +134,13 @@ class Server(threading.Thread):
                 else:
                     x["conn"].send(message)
                     
-    def toggle_readiness(self, c, message):
+    def set_ready(self, c, message):
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
                 if x["conn"] == c:
                     sender = i
-                    x["ready"] = not x["ready"]
-        message = "READY " + str(sender) + " " + str(int(self.slots[sender]["ready"]))
+                    x["ready"] = int(message)
+        message = "READY " + str(sender) + " " + message
         for x in self.slots:
             if x.has_key("conn"):
                 if x["conn"] == c:
@@ -193,16 +203,19 @@ class Client(threading.Thread):
         message = "MSG " + message
         self.send(message)
         
+    def set_slot(self, slot, setting):
+        message = "SLOT " + str(slot) + " " + str(setting)
+        self.send(message)
+        
     def kick_player(self, message):
         message = "KICK " + message
         self.send(message)
     
-    def start_game(self, message):
-        message = "START " + message
-        self.send(message)
+    def start_game(self, _):
+        self.send("START")
     
-    def toggle_readiness(self, message):
-        message = "READY " + message
+    def set_ready(self, message):
+        message = "READY " + str(message)
         self.send(message)
         
     def change_name(self, message):
