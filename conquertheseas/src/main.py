@@ -12,13 +12,13 @@ from screens.shopscreen import *
 from screens.upgradescreen import *
 from screens.lobbyscreen import *
 from screens.joinscreen import *
-from dummy import Dummy
 
 class Main():
     def __init__(self):
         pygame.init()
 
-        self.client = Dummy()
+        self.server = None
+        self.client = None
         self.stdsize=(SIZE_X,SIZE_Y)
         self.size=self.stdsize
         self.scale = 1
@@ -37,7 +37,7 @@ class Main():
         self.done=False
         clock = pygame.time.Clock()
 
-        self.mainscreen = self.screens["lobby"]
+        self.mainscreen = self.screens["main"]
 
         pygame.key.set_repeat(500,20)   # half second delay, 20 second interval
         self.keys = set()

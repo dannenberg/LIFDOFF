@@ -6,6 +6,8 @@ from screens.screen import Screen
 from message_panel import MessagePanel
 from bg_waves import Waves
 import pygame
+import networking
+from dummy import Dummy
 
 CLOSED = 1
 OPEN = 2
@@ -30,9 +32,9 @@ class LobbyScreen(Screen):
         self.players_panel.fill((0, 0, 0, 128))
         self.players = []
         
-        self.players.append(["Orez",pygame.Surface((474,48), pygame.SRCALPHA)]) # TODO: bad
+        self.players.append(["Orez",pygame.Surface((474,48), pygame.SRCALPHA), False]) # TODO: bad
         for _ in xrange(1,10):
-            self.players.append([CLOSED,pygame.Surface((474,48), pygame.SRCALPHA)])
+            self.players.append([CLOSED, pygame.Surface((474,48), pygame.SRCALPHA), True])
         self.redraw_players()
         self.chat_panel = pygame.Surface((696, 578), pygame.SRCALPHA)
         self.chat_panel.fill((0,0,0,128))
@@ -72,13 +74,20 @@ class LobbyScreen(Screen):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
         
-        self.reload_server_data()   # TODO: might take a while, put it in a thread? Limit actions before it finishes
+        self.main.client = networking.Client()
+        self.main.client.start()
+        
+        while self.main.client.msgs.empty():
+            pass
+        parse_server_output(self.main.clients.msgs.get())
     
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
-        for i,(name, surf) in enumerate(self.players):
+        for i,(name, surf, ready) in enumerate(self.players):
             surf.fill((0,0,0,64))
-            pygame.draw.rect(surf, (0,0,0,0), (48,0,12,48))
+            if ready:
+                pygame.draw.rect(surf, (135,221,68,128), (0,0,48,48))
+            pygame.draw.rect(surf, (0,0,0,0), (48,0,12,48)) # clear
             color = self.player_colors[i]
             if isinstance(name, int):
                 color = (0x80, 0x80, 0x80)
@@ -117,10 +126,16 @@ class LobbyScreen(Screen):
                     if self.main.valid_nick(newnick):
                         self.send_nick_change(newnick)
                     return
-                self.main.client.send_msg(msg)
+                if msg[:6] == "/kick ":
+                    newkick = msg[6:]
+                    for i, (name, _, _) in enumerate(self.players):
+                        if name == newkick:
+                            self.recv_kick_player(str(i))
+                    return
+                self.main.client.send_message(msg)
             self.msgpanel.message(self.players[index][0], msg, self.player_colors[index])
         
-    def reload_server_data(self, data="4\n0 Dickbob\n0 ChildToucher\n0 Despicable Human\n0 MurderTorture\n0 Orez\n2\n3\n1\n1\n1"):
+    def reload_server_data(self, data="4\n0 0 Dickbob\n0 0 ChildToucher\n0 0 Despicable Human\n0 0 MurderTorture\n0 0 Orez\n2\n3\n1\n1\n1"):
         # get that info somehow
         self.my_index = int(data[0])
         data = data.split("\n")[1:]
@@ -128,8 +143,15 @@ class LobbyScreen(Screen):
             num = int(d[0])
             if num:
                 self.players[i][0] = num
+                self.players[i][2] = False
             else:
-                self.players[i][0] = d[2:]
+                self.players[i][0] = d[4:]
+                self.players[i][2] = bool(int(d[2]))
+        self.redraw_players()
+    
+    def ready_up(self, data):
+        index, ready  = int(data[0]), bool(int(data[2]))
+        self.players[index][2] = ready
         self.redraw_players()
     
     def send_nick_change(self, nick):
@@ -139,11 +161,24 @@ class LobbyScreen(Screen):
     def recv_nick_change(self, data=None):
         data = data.split(" ")
         i, name = int(data[0]), ' '.join(data[1:])
+        if not (isinstance(self.players[i][0], int) == isinstance(name, int) == False):
+            self.ready_up(str(i)+" 0")
         self.players[i][0] = name
         self.redraw_players()
         
+    def recv_kick_player(self, data=None):
+        kickme = int(data[0])
+        if kickme == self.my_index: # D:
+            self.main.client = None
+            self.main.change_screen("main")
+            return
+        self.players[kickme][0] = OPEN
+        self.players[kickme][2] = False
+        self.redraw_players()
+        
     def parse_server_output(self, msg):
-        actions = {"MSG":self.message, "NICK":self.nick_change, "JOIN":self.nick_change, "DATA":self.reload_server_data}
+        actions = {"MSG":self.message, "NICK":self.nick_change, "JOIN":self.nick_change,
+                   "DATA":self.reload_server_data, "READY":self.ready_up, "KICK":self.recv_kick_player}
         msg = msg.split(" ")
         cmd,msg = msg[0],' '.join(msg[1:])
         if cmd not in actions:

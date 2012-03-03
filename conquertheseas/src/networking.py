@@ -1,9 +1,10 @@
 import socket
 import select
 import threading
+from Queue import Queue
 
 HOST = socket.gethostname()
-PORT = 11172
+PORT = 11173
 ADDR = (HOST,PORT)
 
 class Server(threading.Thread):
@@ -176,6 +177,7 @@ class Client(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.msgs = Queue()
         
     def run(self):
         self.sock.connect(ADDR)
@@ -193,9 +195,8 @@ class Client(threading.Thread):
     def process_message(self, message):
         if message == '':
             self.sock.close()
-        print message
+        self.msgs.put(message)
         
-
     def send(self, message):
         self.sock.send(message[:255])
         
