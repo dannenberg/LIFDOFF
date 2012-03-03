@@ -73,6 +73,15 @@ class LobbyScreen(Screen):
         def to_main(scr, mpos):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
+        def ready_button_click(i):
+            def anon(scr, mpos):
+                if i == self.my_index:
+                    self.main.client.set_ready(int(not self.players[i][2]))
+                else:
+                    print "ready button clicked!!"
+            return anon
+        for x in xrange(10):
+            self.clickbox.append((37, 75+54*x, 48, 48), ready_button_click(x))
         
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
@@ -95,6 +104,7 @@ class LobbyScreen(Screen):
     
     def display(self, screen):
         Screen.display(self, screen)
+        # I feel like the following code is flipping me off...
         self.waves.display(screen, False)
         screen.blit(self.players_panel, (26,38))
         screen.blit(self.chat_panel, (545, 38))
@@ -155,6 +165,7 @@ class LobbyScreen(Screen):
         threading.Thread(target=get_server_msg).start()
     
     def ready_up(self, data):
+        print data
         index, ready  = int(data[0]), bool(int(data[2]))
         self.players[index][2] = ready
         self.redraw_players()

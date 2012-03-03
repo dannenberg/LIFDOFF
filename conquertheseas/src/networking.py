@@ -144,10 +144,7 @@ class Server(threading.Thread):
         message = "READY " + str(sender) + " " + message
         for x in self.slots:
             if x.has_key("conn"):
-                if x["conn"] == c:
-                    pass
-                else:
-                    x["conn"].send(message)
+                x["conn"].send(message)
                     
     def start_game(self, c, message):
         if self.slots[0]["conn"] == c:
