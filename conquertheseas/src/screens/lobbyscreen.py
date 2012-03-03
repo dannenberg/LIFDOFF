@@ -74,15 +74,6 @@ class LobbyScreen(Screen):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
         
-        """
-        self.main.client = networking.Client()
-        self.main.client.start()
-        
-        while self.main.client.msgs.empty():
-            pass
-        parse_server_output(self.main.clients.msgs.get())
-        """
-    
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
         for i,(name, surf, ready) in enumerate(self.players):
@@ -116,7 +107,7 @@ class LobbyScreen(Screen):
         msg = self.text_input
         if not (data is None):  # gotta parse the data
             data = data.split(" ")
-            index, msg = data[0], ' '.join(data[1:])
+            index, msg = int(data[0]), ' '.join(data[1:])
         if msg: # needs to like... say something.
             if isinstance(self.players[index][0], int):
                 print "Why is",self.players[index][0],"trying to talk?"
@@ -141,6 +132,7 @@ class LobbyScreen(Screen):
         # get that info somehow
         self.my_index = int(data[0])
         data = data.split("\n")[1:]
+        print data
         for i,d in enumerate(data):
             num = int(d[0])
             if num:
@@ -155,10 +147,13 @@ class LobbyScreen(Screen):
         self.main.client = networking.Client()
         self.main.client.start()
         
-        while self.main.client.msgs.empty():
-            pass
-        self.parse_server_output(self.main.client.msgs.get())
-
+        def get_server_msg():
+            while not self.main.done:
+                while self.main.client.msgs.empty():
+                    pass
+                self.parse_server_output(self.main.client.msgs.get())
+        threading.Thread(target=get_server_msg).start()
+    
     def ready_up(self, data):
         index, ready  = int(data[0]), bool(int(data[2]))
         self.players[index][2] = ready
