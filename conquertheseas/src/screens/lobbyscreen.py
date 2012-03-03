@@ -28,6 +28,9 @@ class LobbyScreen(Screen):
         
         self.waves = Waves()
         
+        self.player_menu = pygame.Surface((415, 120), pygame.SRCALPHA)
+        self.player_menu_pos = (0, 0)
+
         self.players_panel = pygame.Surface((496,578), pygame.SRCALPHA)
         self.players_panel.fill((0, 0, 0, 128))
         self.players = []
@@ -82,6 +85,23 @@ class LobbyScreen(Screen):
             return anon
         for x in xrange(10):
             self.clickbox.append((37, 75+54*x, 48, 48), ready_button_click(x))
+        def player_panel_click(i):
+            def anon(scr, mpos):
+                if self.my_index == 0:
+                    if i == self.my_index:
+                        print "this is me!!"
+                    elif isinstance(self.players[i][0], int):
+                        print "i was touched!!"
+                        self.player_menu_pos = (95, 75+54*i+48)
+                        options = ["Open", "Closed", "AI"]
+                        self.player_menu.fill((0,0,0,128))
+                        for j,option in enumerate(options):
+                            text = self.font.render(option, True, COLORS["white"])
+                            self.player_menu.blit(text, (5, 5+j*40))
+                        self.redraw_players()
+            return anon
+        for x in xrange(10):
+            self.clickbox.append((95, 75+54*x, 415, 48), player_panel_click(x))
         
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
@@ -101,6 +121,9 @@ class LobbyScreen(Screen):
                     name = "AI Player"
             surf.blit(self.font.render(name, True, color), (65,15))
             self.players_panel.blit(surf, (10,37+i*54))
+        if self.player_menu_pos != (0,0):
+            self.players_panel.blit(self.player_menu, (self.player_menu_pos[0] - 26, self.player_menu_pos[1] -38 ))
+
     
     def display(self, screen):
         Screen.display(self, screen)
