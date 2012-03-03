@@ -160,7 +160,7 @@ class LobbyScreen(Screen):
         self.redraw_players()
     
     def send_nick_change(self, nick):
-        self.main.client.send_nick(nick)
+        self.main.client.change_name(nick)
         self.recv_nick_change(str(self.my_index)+" "+nick)
         
     def recv_nick_change(self, data=None):
