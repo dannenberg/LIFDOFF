@@ -53,8 +53,8 @@ class MainScreen(Screen):
             def click_joingame(scr, mpos):
                 self.main.change_screen("join")
             def click_hostgame(scr, mpos):
-                #self.main.server = Server()
-                #self.main.server.start()
+                self.main.server = Server()
+                self.main.server.start()
                 self.main.change_screen("lobby")
             
             self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)

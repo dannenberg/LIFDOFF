@@ -74,12 +74,14 @@ class LobbyScreen(Screen):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
         
+        """
         self.main.client = networking.Client()
         self.main.client.start()
         
         while self.main.client.msgs.empty():
             pass
         parse_server_output(self.main.clients.msgs.get())
+        """
     
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))
@@ -149,6 +151,14 @@ class LobbyScreen(Screen):
                 self.players[i][2] = bool(int(d[2]))
         self.redraw_players()
     
+    def join_lobby(self):
+        self.main.client = networking.Client()
+        self.main.client.start()
+        
+        while self.main.client.msgs.empty():
+            pass
+        self.parse_server_output(self.main.client.msgs.get())
+
     def ready_up(self, data):
         index, ready  = int(data[0]), bool(int(data[2]))
         self.players[index][2] = ready
@@ -177,7 +187,7 @@ class LobbyScreen(Screen):
         self.redraw_players()
         
     def parse_server_output(self, msg):
-        actions = {"MSG":self.message, "NICK":self.nick_change, "JOIN":self.nick_change,
+        actions = {"MSG":self.message, "NICK":self.recv_nick_change, "JOIN":self.recv_nick_change,
                    "DATA":self.reload_server_data, "READY":self.ready_up, "KICK":self.recv_kick_player}
         msg = msg.split(" ")
         cmd,msg = msg[0],' '.join(msg[1:])
