@@ -17,7 +17,7 @@ class Server(threading.Thread):
         threading.Thread.__init__(self)
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(ADDR)
-        self.slots = [{"type":Server.CLOSED} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
+        self.slots = [{"type":Server.OPEN} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
         self.host = None
         self.commands = {
             "MSG" : self.send_message,
@@ -91,12 +91,12 @@ class Server(threading.Thread):
         self.server.close()
         
     def get_server_data(self, slot):
-        toR = "DATA " + str(slot) + "\n"
+        toR = "DATA " + str(slot)
         for x in self.slots:
+            toR += "\n"
             toR += str(x["type"])
             if x["type"] == Server.PLAYER:
                 toR += " " + str(int(x["ready"])) + " " + x["name"]
-            toR += "\n"
         return toR  
         
     def send_message(self, c, message):
