@@ -55,9 +55,7 @@ class Server(threading.Thread):
                             self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn}
                             conn.send(self.get_server_data(x))
                             print "it's a new connection!"
-                            for i in self.slots:
-                                if i.has_key("conn"):
-                                    i["conn"].send("JOIN " + str(x) + " Player " + str(x))
+                            self.send_to_all("JOIN " + str(x) + " Player " + str(x))
                         else:
                             conn, _ = c.accept()
                             conn.send("Sorry, server is full!")
