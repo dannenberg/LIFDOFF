@@ -103,50 +103,38 @@ class Server(threading.Thread):
             if x["type"] == Server.PLAYER:
                 toR += " " + str(int(x["ready"])) + " " + x["name"]
         return toR  
-        
-    def send_message(self, c, message):
-        sender = self.get_sender(c)
-        message = "MSG " + str(sender) + " " + message
-        for x in self.slots:
-            if x.has_key("conn"):
-                if x["conn"] == c:
-                    pass
-                else:
-                    x["conn"].send(message)
-                    
-    # TODO: DON'T USE ON PEOPLE. KICK EM FIRST
-    def set_slot(self, c, message):
-        if self.slots[0]["conn"] == c:
-            slot, setting = int(message[0]), int(message[2])
-            self.slots[slot]["type"] = setting
-            for x in self.slots:
-                if x.has_key("conn"):
-                    x["conn"].send("NICK "+str(slot)+" "+str(setting))
-    
+
     def get_sender(self, c):
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
                 if x["conn"] == c:
                     return i
 
+    def send_to_all(self, message, exempt = None):
+        for x in self.slots:
+            if x.has_key("conn"):
+                if x["conn"] != exempt:
+                    x["conn"].send(message)
+        
+    def send_message(self, c, message):
+        self.send_to_all("MSG " + str(self.get_sender(c)) + " " + message, c)
+                    
+    # TODO: DON'T USE ON PEOPLE. KICK EM FIRST
+    def set_slot(self, c, message):
+        if self.slots[0]["conn"] == c:
+            slot, setting = int(message[0]), int(message[2])
+            self.slots[slot]["type"] = setting
+            self.send_to_all("NICK "+str(slot)+" "+str(setting))
+    
     def change_name(self, c, message):
         sender = self.get_sender(c)
         self.slots[sender]["name"] = message
-        message = "NICK " + str(sender) + " " + message
-        for x in self.slots:
-            if x.has_key("conn"):
-                if x["conn"] == c:
-                    pass
-                else:
-                    x["conn"].send(message)
+        self.send_to_all("NICK " + str(sender) + " " + message, c)
                     
     def set_ready(self, c, message):
         sender = self.get_sender(c)
         self.slots[sender]["ready"] = int(message)
-        message = "READY " + str(sender) + " " + message
-        for x in self.slots:
-            if x.has_key("conn"):
-                x["conn"].send(message)
+        self.send_to_all("READY " + str(sender) + " " + message)
                     
     def start_game(self, c, message):
         if self.slots[0]["conn"] == c:
@@ -154,23 +142,16 @@ class Server(threading.Thread):
                 if x.has_key("ready"):
                     if not x["ready"]:
                         return
-        for x in self.slots:
-            if x.has_key("conn"):
-                x["conn"].send("START")
+        self.send_to_all("START")
                     
     def kick_player(self, c, message):
         if self.slots[0]["conn"] == c:
             if self.slots[int(message)]["type"] == Server.PLAYER:
                 self.slots[int(message)]["conn"].close()
                 self.slots[int(message)] = {"type":Server.OPEN}
-                for x in self.slots:
-                    if x.has_key("conn"):
-                        x["conn"].send("KICK " + message)
+                self.send_to_all("KICK" + message)
             elif self.slots[int(message)]["type"] == Server.AI:
-                for x in self.slots:
-                    if x.has_key("conn"):
-                        x["conn"].send("KICK " + message)
-                
+                self.send_to_all("KICK" + message)
 
 class Client(threading.Thread):
     def __init__(self):
