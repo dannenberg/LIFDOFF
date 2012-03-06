@@ -17,7 +17,7 @@ class Server(threading.Thread):
         threading.Thread.__init__(self)
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(ADDR)
-        self.slots = [{"type":Server.OPEN} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
+        self.slots = [{"type":Server.CLOSED} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
         self.host = None
         self.commands = {
             "MSG" : self.send_message,
@@ -49,21 +49,20 @@ class Server(threading.Thread):
                         print "it's a new connection!"
                     else:
                     # check slots
-                        for x in xrange(10):
-                            if self.slots[x]["type"] == Server.OPEN:
-                                conn, _ = c.accept()
-                                self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn}
-                                conn.send(self.get_server_data(x))
-                                print "it's a new connection!"
-                                for i in self.slots:
-                                    if i.has_key("conn"):
-                                        i["conn"].send("JOIN " + str(x) + " Player " + str(x))
-                                break
-                            if x == 9:
-                                conn, _ = c.accept()
-                                conn.send("Sorry, server is full!")
-                                print "it's a new connection!"
-                                conn.close()
+                        x = self.find_free_slot()
+                        if x:
+                            conn, _ = c.accept()
+                            self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn}
+                            conn.send(self.get_server_data(x))
+                            print "it's a new connection!"
+                            for i in self.slots:
+                                if i.has_key("conn"):
+                                    i["conn"].send("JOIN " + str(x) + " Player " + str(x))
+                        else:
+                            conn, _ = c.accept()
+                            conn.send("Sorry, server is full!")
+                            print "a player couldn't join due to lack of slots"
+                            conn.close()
                                         
                 else:
                     print "Message from a client"
@@ -90,6 +89,12 @@ class Server(threading.Thread):
     def stop(self):
         self.server.close()
         
+    def find_free_slot(self):
+        for x in xrange(10):
+            if self.slots[x]["type"] == Server.OPEN:
+                return x
+        return False
+
     def get_server_data(self, slot):
         toR = "DATA " + str(slot)
         for x in self.slots:
