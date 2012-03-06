@@ -30,7 +30,7 @@ class Server(threading.Thread):
         
     def run(self):
         print "listening"
-        self.server.listen(5)
+        self.server.listen(10)
         while 1:
             # list of socket objects from clients, plus the server socket
             inputs = [x["conn"] for x in self.slots if x.has_key("conn")] + [self.server]
@@ -100,10 +100,7 @@ class Server(threading.Thread):
         return toR  
         
     def send_message(self, c, message):
-        for i,x in enumerate(self.slots):
-            if x.has_key("conn"):
-                if x["conn"] == c:
-                    sender = i
+        sender = self.get_sender(c)
         message = "MSG " + str(sender) + " " + message
         for x in self.slots:
             if x.has_key("conn"):
@@ -121,12 +118,15 @@ class Server(threading.Thread):
                 if x.has_key("conn"):
                     x["conn"].send("NICK "+str(slot)+" "+str(setting))
     
-    def change_name(self, c, message):
+    def get_sender(self, c):
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
                 if x["conn"] == c:
-                    sender = i
-                    x["name"] = message
+                    return i
+
+    def change_name(self, c, message):
+        sender = self.get_sender(c)
+        self.slots[sender]["name"] = message
         message = "NICK " + str(sender) + " " + message
         for x in self.slots:
             if x.has_key("conn"):
@@ -136,11 +136,8 @@ class Server(threading.Thread):
                     x["conn"].send(message)
                     
     def set_ready(self, c, message):
-        for i,x in enumerate(self.slots):
-            if x.has_key("conn"):
-                if x["conn"] == c:
-                    sender = i
-                    x["ready"] = int(message)
+        sender = self.get_sender(c)
+        self.slots[sender]["ready"] = int(message)
         message = "READY " + str(sender) + " " + message
         for x in self.slots:
             if x.has_key("conn"):
