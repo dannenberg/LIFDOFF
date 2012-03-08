@@ -168,9 +168,9 @@ class LobbyScreen(Screen):
                         self.send_nick_change(newnick)
                     return
                 if msg[:6] == "/kick ":
-                    newkick = msg[6:]
+                    newkick = msg[6:].lower()
                     for i, (name, _, _) in enumerate(self.players):
-                        if name == newkick:
+                        if name.lower() == newkick:
                             self.recv_kick_player(str(i))
                     return
                 self.main.client.send_message(msg)
@@ -199,7 +199,6 @@ class LobbyScreen(Screen):
     
     def send_nick_change(self, nick):
         self.main.client.change_name(nick)
-        self.recv_nick_change(str(self.my_index)+" "+nick)
         
     def recv_nick_change(self, data=None):
         data = data.split(" ")

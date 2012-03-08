@@ -132,7 +132,7 @@ class Server(threading.Thread):
                     self.slots[sender]["conn"].send("That name is already taken")
                     return
         self.slots[sender]["name"] = message
-        self.send_to_all("NICK " + str(sender) + " " + message, c)
+        self.send_to_all("NICK " + str(sender) + " " + message)
                     
     def set_ready(self, c, message):
         sender = self.get_sender(c)
