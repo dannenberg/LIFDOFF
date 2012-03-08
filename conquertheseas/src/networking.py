@@ -126,6 +126,11 @@ class Server(threading.Thread):
     
     def change_name(self, c, message):
         sender = self.get_sender(c)
+        for x in self.slots:
+            if x["type"] == Server.PLAYER:
+                if x["name"] == message:
+                    self.slots[sender]["conn"].send("That name is already taken")
+                    return
         self.slots[sender]["name"] = message
         self.send_to_all("NICK " + str(sender) + " " + message, c)
                     
@@ -145,9 +150,9 @@ class Server(threading.Thread):
     def kick_player(self, c, message):
         if self.slots[0]["conn"] == c:
             if self.slots[int(message)]["type"] == Server.PLAYER:
+                self.send_to_all("KICK" + message)
                 self.slots[int(message)]["conn"].close()
                 self.slots[int(message)] = {"type":Server.OPEN}
-                self.send_to_all("KICK" + message)
             elif self.slots[int(message)]["type"] == Server.AI:
                 self.send_to_all("KICK" + message)
 
