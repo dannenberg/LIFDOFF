@@ -238,6 +238,8 @@ class LobbyScreen(Screen):
         elif inkey.key == pygame.K_TAB:
             try:
                 mname = self.text_input.split(' ')[-1].lower()
+                if mname == "":
+                    return
                 matches = []
                 for i,(name, _, _) in enumerate(self.players):
                     if not isinstance(name, int):
