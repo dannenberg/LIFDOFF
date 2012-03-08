@@ -2,6 +2,7 @@ from screens.screen import Screen
 from string import count
 from constants import COLORS
 from bg_waves import Waves
+import networking
 import pygame
 class JoinScreen(Screen):
     def __init__(self, main):
@@ -46,6 +47,8 @@ class JoinScreen(Screen):
         try:
             if count(self.ip, ".") == 3:
                 int(self.ip[-1:])   # what we're "try"ing
+                self.main.client = networking.Client(self.ip)
+                self.main.client.start()
                 self.main.change_screen("lobby") # TODO: yeah connecting things
                 return
         except ValueError:

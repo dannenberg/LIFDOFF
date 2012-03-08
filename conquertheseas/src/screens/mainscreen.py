@@ -4,7 +4,7 @@ from constants import COLORS
 from mousehitbox import MouseHitboxes
 from screen import Screen
 from bg_waves import Waves
-from networking import Server
+import networking
 
 class MainScreen(Screen):
     """ Main menu screen """
@@ -53,8 +53,10 @@ class MainScreen(Screen):
             def click_joingame(scr, mpos):
                 self.main.change_screen("join")
             def click_hostgame(scr, mpos):
-                self.main.server = Server()
+                self.main.server = networking.Server()
                 self.main.server.start()
+                self.main.client = networking.Client()
+                self.main.client.start()
                 self.main.change_screen("lobby")
             
             self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)

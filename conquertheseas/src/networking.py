@@ -152,7 +152,9 @@ class Server(threading.Thread):
                 self.send_to_all("KICK" + message)
 
 class Client(threading.Thread):
-    def __init__(self):
+    def __init__(self, host=None):
+        if host:
+            ADDR=(host, PORT)
         threading.Thread.__init__(self)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.msgs = Queue()
