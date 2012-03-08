@@ -1,7 +1,9 @@
 import pygame
+import networking
 import random
 import math
 import re
+import threading
 from constants import SIZE_X,SIZE_Y
 from screens.screen import *
 from screens.gamescreen import *
@@ -74,6 +76,17 @@ class Main():
             pygame.display.flip()
         pygame.quit()
     
+    def join_server(self, ip=None):
+        self.client = networking.Client(ip)
+        self.client.start()
+        
+        def get_server_msg():
+            while not self.done:
+                while self.client.msgs.empty():
+                    pass
+                self.screens["lobby"].parse_server_output(self.client.msgs.get())
+        threading.Thread(target=get_server_msg).start()
+            
     def change_screen(self, screen):
         self.mainscreen = self.screens[screen]
         self.mainscreen.abs_scale(self.scale)

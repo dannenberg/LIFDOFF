@@ -55,8 +55,7 @@ class MainScreen(Screen):
             def click_hostgame(scr, mpos):
                 self.main.server = networking.Server()
                 self.main.server.start()
-                self.main.client = networking.Client()
-                self.main.client.start()
+                self.main.join_server()
                 self.main.change_screen("lobby")
             
             self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)

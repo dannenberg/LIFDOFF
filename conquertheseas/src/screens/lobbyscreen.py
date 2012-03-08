@@ -191,17 +191,6 @@ class LobbyScreen(Screen):
                 self.players[i][2] = bool(int(d[2]))
         self.redraw_players()
     
-    def join_lobby(self):
-        self.main.client = networking.Client()
-        self.main.client.start()
-        
-        def get_server_msg():
-            while not self.main.done:
-                while self.main.client.msgs.empty():
-                    pass
-                self.parse_server_output(self.main.client.msgs.get())
-        threading.Thread(target=get_server_msg).start()
-    
     def ready_up(self, data):
         print data
         index, ready  = int(data[0]), bool(int(data[2]))
