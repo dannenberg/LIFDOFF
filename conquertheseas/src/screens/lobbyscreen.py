@@ -170,8 +170,9 @@ class LobbyScreen(Screen):
                 if msg[:6] == "/kick ":
                     newkick = msg[6:].lower()
                     for i, (name, _, _) in enumerate(self.players):
-                        if name.lower() == newkick:
-                            self.recv_kick_player(str(i))
+                        if not isinstance(name, int):
+                            if name.lower() == newkick:
+                                self.recv_kick_player(str(i))
                     return
                 self.main.client.send_message(msg)
             self.msgpanel.message(self.players[index][0], msg, self.player_colors[index])
