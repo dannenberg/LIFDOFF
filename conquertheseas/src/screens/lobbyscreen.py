@@ -236,9 +236,36 @@ class LobbyScreen(Screen):
     def notify_key(self, inkey):
         if inkey.key == pygame.K_BACKSPACE:
             self.text_input = self.text_input[:-1]
+        elif inkey.key == pygame.K_TAB:
+            try:
+                mname = self.text_input.split(' ')[-1].lower()
+                matches = []
+                for i,(name, _, _) in enumerate(self.players):
+                    if not isinstance(name, int):
+                        if mname == name[:len(mname)].lower():
+                            matches += [name]
+                if len(matches) == 1:
+                    self.text_input = self.text_input[:-len(mname)]+matches[0]
+                elif len(matches) > 1:
+                    def get_most_letters():
+                        text = ""
+                        for x in xrange(len(mname), 22):
+                            letter = None
+                            for i in matches:
+                                if letter is None:
+                                    letter = i[x:x+1]
+                                    if letter == "":
+                                        return text
+                                    continue
+                                if i[x:x+1] != letter:
+                                    return text
+                            text += letter
+                    self.text_input += get_most_letters()
+            except IndexError:
+                pass
         elif inkey.key == pygame.K_RETURN or inkey.key == pygame.K_KP_ENTER:
             self.message()
-        elif inkey.unicode and self.font.size(self.text_input+inkey.unicode)[0] <= self.textbox.get_width()-10:
+        elif inkey.unicode and self.font.size(self.text_input+inkey.unicode)[0] <= self.textbox.get_width()-10 and len(self.text_input)<250:
             self.text_input += inkey.unicode
         else:
             return  # if none of these things happened, no need to redraw
