@@ -76,8 +76,6 @@ class Main():
     
     def change_screen(self, screen):
         self.mainscreen = self.screens[screen]
-        if screen == "lobby":
-            self.screens[screen].join_lobby()
         self.mainscreen.abs_scale(self.scale)
 
     def exit(self):
