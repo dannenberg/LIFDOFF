@@ -172,6 +172,7 @@ class LobbyScreen(Screen):
                     for i, (name, _, _) in enumerate(self.players):
                         if not isinstance(name, int):
                             if name.lower() == newkick:
+                                self.client.kick_player(str(i))
                                 self.recv_kick_player(str(i))
                     return
                 self.main.client.send_message(msg)
