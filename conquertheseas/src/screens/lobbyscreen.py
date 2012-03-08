@@ -35,9 +35,9 @@ class LobbyScreen(Screen):
         self.players_panel.fill((0, 0, 0, 128))
         self.players = []
         
-        self.players.append(["Orez",pygame.Surface((474,48), pygame.SRCALPHA), False]) # TODO: bad
+        self.players.append(["Host",pygame.Surface((474,48), pygame.SRCALPHA), False])
         for _ in xrange(1,10):
-            self.players.append([CLOSED, pygame.Surface((474,48), pygame.SRCALPHA), True])
+            self.players.append([CLOSED, pygame.Surface((474,48), pygame.SRCALPHA), False])
         self.redraw_players()
         self.chat_panel = pygame.Surface((696, 578), pygame.SRCALPHA)
         self.chat_panel.fill((0,0,0,128))
@@ -93,12 +93,27 @@ class LobbyScreen(Screen):
                     elif isinstance(self.players[i][0], int):
                         print "i was touched!!"
                         self.player_menu_pos = (95, 75+54*i+48)
-                        options = ["Open", "Closed", "AI"]
+                        options = ["Closed", "Open", "AI"]
                         self.player_menu.fill((0,0,0,128))
+                        def clearworking(scr, mpos):
+                            self.player_menu_pos = (0,0)
+                            for k in xrange(3):
+                                self.clickbox.remove((95, 75+54*i+48+k*40+5))
+                            self.clickbox.remove((0,0))
+                        self.clickbox.append((0, 0, 1280, 800), clearworking, z=2)
                         for j,option in enumerate(options):
+                            def silly(billy):
+                                def changeto(scr, mpos):
+                                    self.main.client.set_slot(i, billy+1)
+                                    self.player_menu_pos = (0,0)
+                                    for k in xrange(3):
+                                        self.clickbox.remove((95, 75+54*i+48+k*40+5))
+                                    self.clickbox.remove((0,0))
+                                return changeto
+                            self.clickbox.append((95, 75+54*i+48+j*40+5, 415, 40), silly(j), z=3)
                             text = self.font.render(option, True, COLORS["white"])
                             self.player_menu.blit(text, (5, 5+j*40))
-                        self.redraw_players()
+                        #self.redraw_players()
             return anon
         for x in xrange(10):
             self.clickbox.append((95, 75+54*x, 415, 48), player_panel_click(x))
@@ -121,9 +136,6 @@ class LobbyScreen(Screen):
                     name = "AI Player"
             surf.blit(self.font.render(name, True, color), (65,15))
             self.players_panel.blit(surf, (10,37+i*54))
-        if self.player_menu_pos != (0,0):
-            self.players_panel.blit(self.player_menu, (self.player_menu_pos[0] - 26, self.player_menu_pos[1] -38 ))
-
     
     def display(self, screen):
         Screen.display(self, screen)
@@ -134,6 +146,9 @@ class LobbyScreen(Screen):
         screen.blit(self.textbox, (565,577), (min(self.textbox.get_width()-582, max(0,(self.font.size(self.text_input)[0])-582+10)),0,582,30))
         screen.blit(self.base_panel, (26, 681))
         screen.blit(self.msgpanel.view, (566,63))
+        
+        if self.player_menu_pos != (0,0):
+            screen.blit(self.player_menu, (self.player_menu_pos[0], self.player_menu_pos[1]))
         
     def message(self, data=None):
         index = self.my_index
@@ -200,6 +215,10 @@ class LobbyScreen(Screen):
     def recv_nick_change(self, data=None):
         data = data.split(" ")
         i, name = int(data[0]), ' '.join(data[1:])
+        try:
+            name = int(name)
+        except ValueError:
+            pass
         if not (isinstance(self.players[i][0], int) == isinstance(name, int) == False):
             self.ready_up(str(i)+" 0")
         self.players[i][0] = name
