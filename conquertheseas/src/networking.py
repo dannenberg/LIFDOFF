@@ -17,7 +17,7 @@ class Server(threading.Thread):
         threading.Thread.__init__(self)
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(ADDR)
-        self.slots = [{"type":Server.CLOSED} for _ in xrange(10)] # TODO: CHANGE THIS TO CLOSED
+        self.slots = [{"type":Server.CLOSED} for _ in xrange(10)]
         self.host = None
         self.commands = {
             "MSG" : self.send_message,
@@ -153,14 +153,16 @@ class Server(threading.Thread):
 
 class Client(threading.Thread):
     def __init__(self, host=None):
-        if host:
-            ADDR=(host, PORT)
+        if host is None:
+            self.ADDR=(HOST, PORT)
+        else:
+            self.ADDR=(host, PORT)
         threading.Thread.__init__(self)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.msgs = Queue()
         
     def run(self):
-        self.sock.connect(ADDR)
+        self.sock.connect(self.ADDR)
         while 1:
             message = self.sock.recv(255)
             if not message:
