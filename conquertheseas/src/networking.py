@@ -19,6 +19,7 @@ class Server(threading.Thread):
         self.server.bind(ADDR)
         self.slots = [{"type":Server.CLOSED} for _ in xrange(10)]
         self.host = None
+        self.done = False
         self.commands = {
             "MSG" : self.send_message,
             "NICK" : self.change_name,
@@ -31,11 +32,11 @@ class Server(threading.Thread):
     def run(self):
         print "listening"
         self.server.listen(10)
-        while 1:
+        while not self.done:
             # list of socket objects from clients, plus the server socket
             inputs = [x["conn"] for x in self.slots if x.has_key("conn")] + [self.server]
             # blocks until someone connects or a client sends a message
-            ready, _, _ = select.select(inputs, [], [])
+            ready, _, _ = select.select(inputs, [], [], 0.5)
             if ready:
                 print "ready: %s" % (ready,)
             for c in ready:
@@ -72,6 +73,10 @@ class Server(threading.Thread):
                         # an empty string indicates that the client has
                         # closed their connection
                         print "closed connection"
+                        for i,x in enumerate(self.slots):
+                            if x.has_key("conn"):
+                                if x["conn"] == c:
+                                    self.slots[i] = {"type":Server.OPEN}
                         c.close()
                     else:
                         # echoes actual message to all players   
@@ -165,22 +170,28 @@ class Client(threading.Thread):
         threading.Thread.__init__(self)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.msgs = Queue()
+        self.done = False
         
     def run(self):
         self.sock.connect(self.ADDR)
-        while 1:
-            message = self.sock.recv(255)
+        self.sock.settimeout(0.5)
+        while not self.done:
+            try:
+                message = self.sock.recv(255)
+            except socket.timeout:
+                continue
             if not message:
                 # an empty string indicates that the client has
                 # closed their connection
                 print "closed connection"
+                self.done = True
                 self.sock.close()
-                break
             else:
                 self.process_message(message)
 
     def process_message(self, message):
         if message == '':
+            self.done = True
             self.sock.close()
         self.msgs.put(message)
         
@@ -211,6 +222,7 @@ class Client(threading.Thread):
         self.send(message)
         
     def stop(self):
+        self.done = True
         self.sock.close()
         
 if __name__ == "__main__":
