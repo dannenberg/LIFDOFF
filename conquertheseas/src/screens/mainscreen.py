@@ -65,9 +65,9 @@ class MainScreen(Screen):
                 self.main.join_server()
                 self.main.change_screen("lobby")
             
-            self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)
-            self.clickbox.append((90+self.maxwid, 250, self.submaxwid+50, 50), click_joingame)
-            self.clickbox.append((90+self.maxwid, 300, self.submaxwid+50, 50), click_hostgame)
+            self.clickbox.append((90+self.maxwid, 215, self.submaxwid+50, 50), click_singleplayer)
+            self.clickbox.append((90+self.maxwid, 265, self.submaxwid+50, 50), click_joingame)
+            self.clickbox.append((90+self.maxwid, 315, self.submaxwid+50, 50), click_hostgame)
             
         def click_options(someone, mpos):
             self.entering_name = False
