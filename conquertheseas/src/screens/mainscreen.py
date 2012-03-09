@@ -13,13 +13,14 @@ class MainScreen(Screen):
         self.selectbox = [None, 15, 205, 50, True] #coords of the box (x, y, width, height) which highlights selected item
         self.gotobox = [12.5, 15, 205, 50] #coords of the desitination of the selectbox
         self.sel_accel = 3 #acceleration to new pos
-        self.sel_speed = 0 #currents speed
+        self.sel_speed = 0 #current speed
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items
         
         self.options = ["New Game", "Load Game", "Options", "Credits", "Exit"] # menu options
         self.submenuoptions = None
         self.submenu = 0    # submenu = 1 means one submenu is open
         self.maxwid = max([self.smallerfont.size(x)[0] for x in self.options])  # width of hitbox (highlighted area)
+        # it's the 
         
         self.textbox = None
         self.text_input = ""
@@ -77,9 +78,9 @@ class MainScreen(Screen):
             if self.submenu == 1:   # new game submenu is open
                 self.overbox.remove((90+self.maxwid, 200))
                 #self.clickbox.remove((90+self.maxwid, 200))
-                self.clickbox.remove((90+self.maxwid, 200))
-                self.clickbox.remove((90+self.maxwid, 250))
-                self.clickbox.remove((90+self.maxwid, 300))
+                self.clickbox.remove((90+self.maxwid, 215))
+                self.clickbox.remove((90+self.maxwid, 265))
+                self.clickbox.remove((90+self.maxwid, 315))
             self.submenu = 2
             self.submenuoptions = ["Multiplayer name:","________________","AI Level: 1 2 3","SFX:  "+("-"*9)+"|","Music:"+("-"*9)+"|"]
             self.submaxwid = self.maxwidth(self.submenuoptions)
