@@ -129,7 +129,6 @@ class LobbyScreen(Screen):
                         self.clickbox.append((95, 75+54*i+48, 415, 40), kickhim, z=3)
                         text = self.font.render("Kick", True, COLORS["white"])
                         self.player_menu.blit(text, (5, 5))
-                        "Kick"
             return anon
         for x in xrange(10):
             self.clickbox.append((95, 75+54*x, 415, 48), player_panel_click(x))
@@ -194,20 +193,20 @@ class LobbyScreen(Screen):
                 self.main.client.send_message(msg)
             self.msgpanel.message(self.players[index][0], msg, self.player_colors[index])
         
-    def reload_server_data(self, data="4\n0 0 Dickbob\n0 0 ChildToucher\n0 0 Despicable Human\n0 0 MurderTorture\n0 0 Orez\n2\n3\n1\n1\n1"):
+    def reload_server_data(self, data):
         # get that info somehow
-        self.my_index = int(data[0])
-        data = data.split("\n")[1:]
+        self.my_index = int(data[0])    # what slot should you get
+        data = data.split("\n")[1:]     # split on newlines (ignore the first slot)
         print data
-        for i,d in enumerate(data):
-            num = int(d[0])
-            if num:
-                self.players[i][0] = num
-                self.players[i][2] = False
-            else:
-                self.players[i][0] = d[4:]
-                self.players[i][2] = bool(int(d[2]))
-        self.redraw_players()
+        for i,d in enumerate(data):     # 
+            num = int(d[0])             # are you a player or a certain value
+            if num:                     # if a certain value
+                self.players[i][0] = num    # make my "name" that value
+                self.players[i][2] = False  # also i'm 'unready'
+            else:                           # 0 c Name (c is 0 if unready, 1 if ready)
+                self.players[i][0] = d[4:]  # the rest of the string after the first two characters and spaces is the name
+                self.players[i][2] = bool(int(d[2]))    # char space _char_ is readiness
+        self.redraw_players()           # redraw that board
     
     def ready_up(self, data):
         print data
@@ -244,9 +243,9 @@ class LobbyScreen(Screen):
         actions = {"MSG":self.message, "NICK":self.recv_nick_change, "JOIN":self.recv_nick_change,
                    "DATA":self.reload_server_data, "READY":self.ready_up, "KICK":self.recv_kick_player}
         msg = msg.split(" ")
-        cmd,msg = msg[0],' '.join(msg[1:])
+        cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
         if cmd not in actions:
-            print "Unknown action",cmd
+            print "Unknown action",cmd,msg
             return
         actions[cmd](msg)
         
@@ -254,15 +253,15 @@ class LobbyScreen(Screen):
         if inkey.key == pygame.K_BACKSPACE:
             self.text_input = self.text_input[:-1]
         elif inkey.key == pygame.K_TAB:
-            try:
+            try:    # tab complete
                 mname = self.text_input.split(' ')[-1].lower()
-                if mname == "":
+                if mname == "": # don't tab complete on nothing
                     return
-                matches = []
+                matches = []    # people whose names we've matched
                 for i,(name, _, _) in enumerate(self.players):
-                    if not isinstance(name, int):
-                        if mname == name[:len(mname)].lower():
-                            matches += [name]
+                    if not isinstance(name, int):   # don't check slots that aren't players
+                        if mname == name[:len(mname)].lower():  # if the first part of their name is what you've typed
+                            matches += [name]       # they're a match
                 if len(matches) == 1:
                     self.text_input = self.text_input[:-len(mname)]+matches[0]
                 elif len(matches) > 1:
@@ -283,9 +282,9 @@ class LobbyScreen(Screen):
             except IndexError:
                 pass
         elif inkey.key == pygame.K_RETURN or inkey.key == pygame.K_KP_ENTER:
-            self.message()
+            self.message()  # send my current message
         elif inkey.unicode and self.font.size(self.text_input+inkey.unicode)[0] <= self.textbox.get_width()-10 and len(self.text_input)<250:
-            self.text_input += inkey.unicode
+            self.text_input += inkey.unicode    # send the unicode character you pressed
         else:
             return  # if none of these things happened, no need to redraw
         self.textbox.fill((0,0,0,64))
