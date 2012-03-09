@@ -85,14 +85,18 @@ class Main():
         self.client = networking.Client(ip)
         self.reset_screen("lobby")
         self.client.start()
+        self.racism = False
         def get_server_msg():
-            while not self.done and self.client != None:
-                while not self.done and self.client != None and self.client.msgs.empty():
+            while not self.done and self.client is not None:
+                while not self.done and self.client is not None and self.client.msgs.empty():
                     pass
-                if self.client != None and not self.client.msgs.empty():
+                if self.client is not None and not self.client.msgs.empty():
                     self.screens["lobby"].parse_server_output(self.client.msgs.get(block = False))
-        threading.Thread(target=get_server_msg).start()
-        if self.client is not None and self.player_name is not None:
+                    self.racism = True
+        threading.Thread(target=get_server_msg).start()     
+        while not self.racism:
+            pass
+        if self.client is not None and self.player_name is not None and self.racism:
             self.client.change_name(self.player_name)
             
     def change_screen(self, screen):
