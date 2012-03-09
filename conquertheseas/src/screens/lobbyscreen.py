@@ -87,11 +87,10 @@ class LobbyScreen(Screen):
             self.clickbox.append((37, 75+54*x, 48, 48), ready_button_click(x))
         def player_panel_click(i):
             def anon(scr, mpos):
-                if self.my_index == 0:
+                if self.my_index == 0:      # only the host can kick
                     if i == self.my_index:
-                        print "this is me!!"
+                        pass
                     elif isinstance(self.players[i][0], int):
-                        print "i was touched!!"
                         self.player_menu_pos = (95, 75+54*i+48)
                         options = ["Closed", "Open", "AI"]
                         self.player_menu.fill((0,0,0,128))
@@ -113,7 +112,24 @@ class LobbyScreen(Screen):
                             self.clickbox.append((95, 75+54*i+48+j*40+5, 415, 40), silly(j), z=3)
                             text = self.font.render(option, True, COLORS["white"])
                             self.player_menu.blit(text, (5, 5+j*40))
-                        #self.redraw_players()
+                    else:   # it's a person
+                        self.player_menu_pos = (95, 75+54*i+48)
+                        self.player_menu.fill((0,0,0,0))
+                        pygame.draw.rect(self.player_menu, (0,0,0,128), (0,0,415,30))
+                        def clearworking(scr, mpos):
+                            self.player_menu_pos = (0,0)
+                            self.clickbox.remove((95, 75+54*i+48+5))
+                            self.clickbox.remove((0,0))
+                        self.clickbox.append((0, 0, 1280, 800), clearworking, z=2)
+                        def kickhim(scr, mpos):
+                            self.main.client.kick_player(str(i))
+                            self.player_menu_pos = (0,0)
+                            self.clickbox.remove((95, 75+54*i+48+5))
+                            self.clickbox.remove((0,0))
+                        self.clickbox.append((95, 75+54*i+48, 415, 40), kickhim, z=3)
+                        text = self.font.render("Kick", True, COLORS["white"])
+                        self.player_menu.blit(text, (5, 5))
+                        "Kick"
             return anon
         for x in xrange(10):
             self.clickbox.append((95, 75+54*x, 415, 48), player_panel_click(x))
