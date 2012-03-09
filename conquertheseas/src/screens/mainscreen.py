@@ -45,10 +45,6 @@ class MainScreen(Screen):
 
         def click_newgame(someone, mpos):
             self.entering_name = False
-            if self.main.valid_nick(self.text_input):
-                self.main.player_name = self.text_input
-            else:
-                self.main.player_name = None
             if self.submenu == 1:   # you've already clicked new game
                 return  
             if self.submenu != 0:   # you've clicked on options (or load)
@@ -75,10 +71,7 @@ class MainScreen(Screen):
             
         def click_options(someone, mpos):
             self.entering_name = False
-            if self.main.valid_nick(self.text_input):
-                self.main.player_name = self.text_input
-            else:
-                self.main.player_name = None
+            
             if self.submenu == 2:
                 return
             if self.submenu == 1:   # new game submenu is open
@@ -93,12 +86,12 @@ class MainScreen(Screen):
             self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
             self.textbox = pygame.Surface((750,40), pygame.SRCALPHA)
             if self.main.player_name is not None:
-                self.textbox.blit(self.smallerfont.render(self.main.player_name, True, COLORS["white"]),(5,5))
+                self.textbox.blit(self.smallerfont.render(self.main.player_name.strip(), True, COLORS["white"]),(5,5))
             
             def click_changename(someone, mpos):
                 self.entering_name = True
-                #if self.main.player_name is not None:
-                #    self.text_input = self.main.player_name
+                if self.main.player_name is not None:
+                    self.text_input = self.main.player_name
                 #if self.main.valid_nick(self.text_input):
                 #    self.main.player_name = self.text_input
                 #else:
@@ -108,8 +101,8 @@ class MainScreen(Screen):
 
         def click_credits(someone, mpos):
             self.entering_name = False
-            if self.main.valid_nick(self.text_input):
-                self.main.player_name = self.text_input
+            if self.main.valid_nick(self.text_input.strip()):
+                self.main.player_name = self.text_input.strip()
             else:
                 self.main.player_name = None
             self.main.change_screen("credits")            
@@ -179,11 +172,15 @@ class MainScreen(Screen):
             elif inkey.key == pygame.K_RETURN or inkey.key == pygame.K_KP_ENTER:
                 return 
             elif inkey.unicode:#self.smallerfont.size(self.text_input+inkey.unicode)[0] <= self.textbox.get_width()-10 and 
-                if len(self.text_input) < 2 or self.main.valid_nick(self.text_input+inkey.unicode):
+                if len(self.text_input) < 2 or self.main.valid_nick((self.text_input+inkey.unicode).strip()):
                     self.text_input += inkey.unicode
             else:
                 return  # if none of these things happened, no need to redraw
             self.textbox.fill((0,0,0,0))
             txt = self.smallerfont.render(self.text_input, True, COLORS["white"])
             self.textbox.blit(txt, (5,5))
+            if self.main.valid_nick(self.text_input.strip()):
+                self.main.player_name = self.text_input.strip()
+            else:
+                self.main.player_name = None
             
