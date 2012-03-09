@@ -35,10 +35,9 @@ class Main():
                         "join":JoinScreen(self)}
 
         pygame.display.set_caption("FRIENDS OF THE SEA")
-
         self.done=False
         clock = pygame.time.Clock()
-
+        self.player_name = None
         self.mainscreen = self.screens["main"]
 
         pygame.key.set_repeat(500,20)   # half second delay, 20 second interval
@@ -93,6 +92,8 @@ class Main():
                 if self.client != None and not self.client.msgs.empty():
                     self.screens["lobby"].parse_server_output(self.client.msgs.get(block = False))
         threading.Thread(target=get_server_msg).start()
+        if self.client is not None and self.player_name is not None:
+            self.client.change_name(self.player_name)
             
     def change_screen(self, screen):
         if screen == "main":
