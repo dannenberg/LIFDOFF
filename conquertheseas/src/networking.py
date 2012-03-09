@@ -161,11 +161,11 @@ class Server(threading.Thread):
     def kick_player(self, c, message):
         if self.slots[0]["conn"] == c:
             if self.slots[int(message)]["type"] == Server.PLAYER:
-                self.send_to_all("KICK" + message)
+                self.send_to_all("KICK " + message)
                 self.slots[int(message)]["conn"].close()
                 self.slots[int(message)] = {"type":Server.OPEN}
             elif self.slots[int(message)]["type"] == Server.AI:
-                self.send_to_all("KICK" + message)
+                self.send_to_all("KICK " + message)
 
 class Client(threading.Thread):
     def __init__(self, host=None):

@@ -84,6 +84,7 @@ class Main():
     
     def join_server(self, ip=None):
         self.client = networking.Client(ip)
+        self.reset_screen("lobby")
         self.client.start()
         def get_server_msg():
             while not self.done and self.client != None:
