@@ -84,7 +84,7 @@ class MainScreen(Screen):
             self.submenu = 2
             self.submenuoptions = ["Multiplayer name:","________________","AI Level: 1 2 3","SFX:  "+("-"*9)+"|","Music:"+("-"*9)+"|"]
             self.submaxwid = self.maxwidth(self.submenuoptions)
-            self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
+            self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 280), over(False), out)
             self.textbox = pygame.Surface((750,40), pygame.SRCALPHA)
             if self.main.player_name is not None:
                 self.textbox.blit(self.smallerfont.render(self.main.player_name.strip(), True, COLORS["white"]),(5,5))
