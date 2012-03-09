@@ -75,19 +75,32 @@ class Main():
             self.screen.blit(preblit2, (0,0))
             pygame.display.flip()
         pygame.quit()
+        if self.server != None:
+            self.server.stop()
+            self.server = None
+        if self.client != None:
+            self.client.stop()
+            self.client = None
     
     def join_server(self, ip=None):
         self.client = networking.Client(ip)
         self.client.start()
-        
         def get_server_msg():
-            while not self.done:
-                while self.client.msgs.empty():
+            while not self.done and self.client != None:
+                while not self.done and self.client != None and self.client.msgs.empty():
                     pass
-                self.screens["lobby"].parse_server_output(self.client.msgs.get())
+                if not self.client.msgs.empty():
+                    self.screens["lobby"].parse_server_output(self.client.msgs.get(block = False))
         threading.Thread(target=get_server_msg).start()
             
     def change_screen(self, screen):
+        if screen == "main":
+            if self.server != None:
+                self.server.stop()
+                self.server = None
+            if self.client != None:
+                self.client.stop()
+                self.client = None
         self.mainscreen = self.screens[screen]
         self.mainscreen.abs_scale(self.scale)
 

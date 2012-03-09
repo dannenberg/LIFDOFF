@@ -88,9 +88,14 @@ class Server(threading.Thread):
                         #message = str(self.connections.index(c)) + ": " + message
                         #for p in self.connections:
                         #    p.send(message)
+        self.server.close()
+        for i,x in enumerate(self.slots):
+            if x.has_key("conn"):
+                x["conn"].close()
+                self.slots[i] = {"type" : Server.CLOSED}
 
     def stop(self):
-        self.server.close()
+        self.done = True
         
     def find_free_slot(self):
         for x in xrange(10):
