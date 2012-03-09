@@ -16,6 +16,7 @@ class Server(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind(ADDR)
         self.slots = [{"type":Server.CLOSED} for _ in xrange(10)]
         self.host = None
