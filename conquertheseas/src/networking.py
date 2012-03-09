@@ -78,7 +78,9 @@ class Server(threading.Thread):
                             if x.has_key("conn"):
                                 if x["conn"] == c:
                                     self.slots[i] = {"type":Server.OPEN}
+                                    self.send_to_all("KICK " + str(i))
                         c.close()
+
                     else:
                         # echoes actual message to all players   
                         cmdend = message.find(' ')
