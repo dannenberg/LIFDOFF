@@ -89,7 +89,7 @@ class Main():
             while not self.done and self.client != None:
                 while not self.done and self.client != None and self.client.msgs.empty():
                     pass
-                if not self.client.msgs.empty():
+                if self.client != None and not self.client.msgs.empty():
                     self.screens["lobby"].parse_server_output(self.client.msgs.get(block = False))
         threading.Thread(target=get_server_msg).start()
             
