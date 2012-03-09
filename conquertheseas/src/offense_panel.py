@@ -11,7 +11,8 @@ class OffensePanel:
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # no units at start
         self.selected = None
         self.tileset = pygame.image.load("../img/enemy_tileset.png")
-        self.image_dict = {UnitFactory.TADPOLE:0, UnitFactory.YELLOW_SUB:3}
+        self.image_dict = {UnitFactory.TADPOLE:0, UnitFactory.MINE:1, UnitFactory.CRAB:2, UnitFactory.SQUIDDLE:3,
+                           UnitFactory.MERMAID:4}
     
     def on_click(self, (x, y)):
         if self.cells[x][y] != None:	# if there's something in the square you clicked on
@@ -22,11 +23,11 @@ class OffensePanel:
                 self.selected = (x, y)
                 return self.cells[x][y]
 
-    def add_unit(self, unitid):		# finds the first open spot in offense panel and adds 
-        for x in xrange(self._w):
-            for y in xrange(self._h):
-                if self.cells[y][x] == None:
-                    self.cells[y][x] = unitid
+    def add_unit(self, unitid):		# finds the first open spot in offense panel and adds
+        for y in xrange(self._h):
+            for x in xrange(self._w):
+                if self.cells[x][y] == None:
+                    self.cells[x][y] = unitid
                     return
 
     def draw_panel(self):

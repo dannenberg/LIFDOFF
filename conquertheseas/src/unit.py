@@ -3,31 +3,47 @@ from action import Action
 from constants import SQUARE_SIZE
 
 class UnitFactory(object):
-    TADPOLE = 1
-    YELLOW_SUB = 2
-    BULLET = 3
+    MINE = 1
+    CRAB = 2
+    SQUIDDLE = 3
+    MERMAID = 4
+    BULLET = 5
+    TADPOLE = 6
+    unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1)}
+    
     def __new__(_, idd, loc, fo_real = False):
         if idd == UnitFactory.TADPOLE:
             if fo_real:
-                return Unit(loc, (1,1), "../img/tadpole.png", Unit.OFFENSE, 5, 5)
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/tadpole.png", Unit.OFFENSE, 5, 5)
             else:
-                return Unit(loc, (1,1), "../img/tadpole.png", Unit.STAGING, 5, 5, token=idd)
-        if idd == UnitFactory.YELLOW_SUB:
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/tadpole.png", Unit.STAGING, 5, 5, token=idd)
+        if idd == UnitFactory.MINE:
             if fo_real:
-                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.OFFENSE, 5, 5)
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/mine.png", Unit.OFFENSE, 5, 5)
             else:
-                return Unit(loc, (2,2), "../img/yellow_sub.png", Unit.STAGING, 5, 5, token=idd)
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/mine.png", Unit.STAGING, 5, 5, token=idd)
+        if idd == UnitFactory.CRAB:
+            if fo_real:
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/crab.png", Unit.OFFENSE, 5, 5)
+            else:
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/crab.png", Unit.STAGING, 5, 5, token=idd)
+        if idd == UnitFactory.SQUIDDLE:
+            if fo_real:
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/squiddle.png", Unit.OFFENSE, 5, 5)
+            else:
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/squiddle.png", Unit.STAGING, 5, 5, token=idd)
+        if idd == UnitFactory.MERMAID:
+            if fo_real:
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/mermaid.png", Unit.OFFENSE, 10, 5)
+            else:
+                return Unit(loc, UnitFactory.unitsize[idd], "../img/mermaid.png", Unit.STAGING, 10, 5, token=idd)
         if idd == UnitFactory.BULLET:
-            return Unit(loc, (1,1), "../img/bullet.png", Unit.BULLET, 0, 0)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/bullet.png", Unit.BULLET, 0, 0)
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
     def get_shape_from_token(idd):	# returns the size of the unit (0,0),(0,1),(1,0),(1,1) for a 2x2 unit
-        if idd == UnitFactory.TADPOLE:
-            return [(0,0)]
-        if idd == UnitFactory.YELLOW_SUB:
-            return [(x,y) for x in xrange(2) for y in xrange(2)]
-        raise ValueError("Unknown unit id "+str(idd))
+        return [(x,y) for x in xrange(UnitFactory.unitsize[idd][0]) for y in xrange(UnitFactory.unitsize[idd][1])]
 
 class Unit(object):
     DEFENSE = 1
@@ -62,7 +78,7 @@ class Unit(object):
         self._spr_src = (x, self._spr_src[1])
         
     def draw_sprite(self, destsurface, loc = None):
-        self.advance_sprite() # TODO wrong
+        #self.advance_sprite() # TODO wrong
         if loc != None: # for drawing an addon using relative position
             loc = tuple(map(sum,zip(self._loc, loc))) #sum the tuples
         else:
