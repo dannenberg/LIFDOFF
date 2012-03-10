@@ -112,8 +112,8 @@ class Main():
     def exit(self):
         self.done = True
         
-    def reset_screen(self, screen):
-        self.screens[screen] = self.screens[screen].__class__(self)
+    def reset_screen(self, screen, *args):
+        self.screens[screen] = self.screens[screen].__class__(self, *args)
         
     def resize(self, w, h):
         if w==self.size[0]:  # width was constant

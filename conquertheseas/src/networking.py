@@ -160,7 +160,7 @@ class Server(threading.Thread):
                 if x.has_key("ready"):
                     if not x["ready"]:
                         return
-        self.send_to_all("START")
+        self.send_to_all("START " + str(count([x for x in self.slots if x["type"] in [Server.PLAYER, Server.AI]])))
         for x in self.slots:
             if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
                 self.game_slots.append({"type":x["type"], "conn":x["conn"], "data":self.generate_board_data()})
@@ -168,6 +168,7 @@ class Server(threading.Thread):
                     self.game_slots[-1]["name"] = x["name"]
                 else:
                     self.game_slots[-1]["name"] = "AI Player"
+        self.slots = self.game_slots
                     
     def generate_board_data(self):
         return {"board":Board(BOARD_WIDTH,BOARD_HEIGHT)}

@@ -16,9 +16,13 @@ class GameScreen(Screen):
     ACTION_MENU = 2
     MOVING = 3
     GAMEOVER = 4
-    def __init__(self, main):
+    def __init__(self, main, num_players=2, local=True):
         Screen.__init__(self, main)
+        print "local: ", local, "player numbers: ", num_players
         
+        self.num_players = num_players
+        self.local = local
+
         self.font = pygame.font.Font(None, 40) 
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
@@ -110,30 +114,31 @@ class GameScreen(Screen):
         self.clickbox.append((   MY_BOARD_X,    MY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), my_boardclick)
         
         def action_button(scr, mpos):
-            self.set_mode(GameScreen.NO_MODE)
-            self.enemy_board.remove_staging()
-            for unit in self.my_board.units:
-                self.my_board.move_unit(unit, unit._unaltered_loc)
-            # TODO removed staged units from enemy board
-            if self.last_turn == True:
-                self.enemy_board.take_turn()
-                self.my_board.take_turn()
-                self.enemy_board.store_cur_pos()
-                self.my_board.store_cur_pos()
-                lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
-                win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
-                if win or lose:
-                    self.set_mode(GameScreen.GAMEOVER)
-                    self.clickbox.clear()
-                    self.overbox.clear()
-                    def toMenu(scr, mpos):
-                        self.main.change_screen("main")
-                        self.main.reset_screen("game")
-                    self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
-                    self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
-                    
-            self.last_turn = not self.last_turn
-            self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
+            if self.local:
+                self.set_mode(GameScreen.NO_MODE)
+                self.enemy_board.remove_staging()
+                for unit in self.my_board.units:
+                    self.my_board.move_unit(unit, unit._unaltered_loc)
+                # TODO removed staged units from enemy board
+                if self.last_turn == True:
+                    self.enemy_board.take_turn()
+                    self.my_board.take_turn()
+                    self.enemy_board.store_cur_pos()
+                    self.my_board.store_cur_pos()
+                    lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
+                    win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
+                    if win or lose:
+                        self.set_mode(GameScreen.GAMEOVER)
+                        self.clickbox.clear()
+                        self.overbox.clear()
+                        def toMenu(scr, mpos):
+                            self.main.change_screen("main")
+                            self.main.reset_screen("game")
+                        self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
+                        self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
+                        
+                self.last_turn = not self.last_turn
+                self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
         def ui_action(token, curunit):
