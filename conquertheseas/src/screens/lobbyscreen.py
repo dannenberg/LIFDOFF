@@ -245,7 +245,8 @@ class LobbyScreen(Screen):
         
     def recv_start_game(self, num_players):
         print "game starting!!"
-        self.main.change_screen("game", num_players, False)
+        self.main.reset_screen("game", num_players, False)
+        self.main.change_screen("game")
         
     def parse_server_output(self, msg):
         actions = {"MSG":self.message, "NICK":self.recv_nick_change, "JOIN":self.recv_nick_change,
