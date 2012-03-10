@@ -1,4 +1,5 @@
 import pygame
+from unit import UnitFactory
 from screen import Screen
 from constants import COLORS
 from mousehitbox import MouseHitboxes
@@ -6,12 +7,12 @@ from mousehitbox import MouseHitboxes
 class ShopScreen(Screen):
     def __init__(self, main):
         Screen.__init__(self, main)
-        self.prices_and_values = [{"name":"Mine","desc":"Basic nautical weaponry, drop it off and hope for the best. These ones have seen better days.","flav":"During the American Civil War, hundreds of these mines were laid along various rivers. After the war, they were collected by legitimate businesses and put on the market, although almost no one has been crazy enough to buy them.", "highres":pygame.image.load("../img/mine_highres.png"), "rank":0, "prices":[(0,""),(10,"")]},
-                                  {"name":"Angry Fish","desc":"This angry fish will start moving slowly, but will charge forward when it sees an enemy ship.","flav":"Angry Fish were created by mad scientists, in order to stop those who would oppose them. Unfortunately, mad scientists do not have any allies, so Angry Fish have been conditioned to attack all ships.", "rank":0, "prices":[(0,""),(10,"")]},
-                                  {"name":"Mermaid","desc":"Mermaids are smarter than the average bear, and clearly more intelligent than the fish and mines you've been hiring thusfar. They'll actively seek out their prey!","flav":"In the past mermaids have not been seen as intimidating, but these ones have knives!", "rank":0, "prices":[(0,""),(10,"")]},
-                                  {"name":"Squiddle","desc":"Beware of this tanglebuddy's entangling tentacles!","flav":"Squiddles are the My Little Pony of the sea. They spread their joy and love to all that they see, whether they like it or not.","highres":pygame.image.load("../img/squiddle_highres.png"), "rank":0, "prices":[(0,""),(10,"")]},
-                                  {"name":"Pufferfish","desc":"The pufferfish will expand and contract its pointy quills. Timing is key!","flav":"Under normal circumstances, the puffer fish will puff out its spines when it is frightened or threatened. So let's just say that just offscreen there's something really scary that shows up every so often.", "rank":0, "prices":[(0,""),(10,"")]},
-        {"name":"Cthulhu","desc":"The Deep One. Walks slowly across the screen, but decimates everything in its path.","flav":"Did you know you could buy Cthulhus? Seriously. You can just go to the store and be like \"Hey do you have any Cthulhus for sale?\" and they'd be all \"Oh yeah of course we can't get rid of the damn (ha ha) things!\"", "highres":pygame.image.load("../img/cthulhu_highres.png"), "rank":0, "prices":[(0,""),(10,"")]}]
+        self.prices_and_values = [{"name":"Mine","desc":"Basic nautical weaponry, drop it off and hope for the best. These ones have seen better days.","flav":"During the American Civil War, hundreds of these mines were laid along various rivers. After the war, they were collected by legitimate businesses and put on the market, although almost no one has been crazy enough to buy them.", "highres":pygame.image.load("../img/mine_highres.png"), "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MINE},
+                                  {"name":"Angry Fish","desc":"This angry fish will start moving slowly, but will charge forward when it sees an enemy ship.","flav":"Angry Fish were created by mad scientists, in order to stop those who would oppose them. Unfortunately, mad scientists do not have any allies, so Angry Fish have been conditioned to attack all ships.", "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.TADPOLE},
+                                  {"name":"Mermaid","desc":"Mermaids are smarter than the average bear, and clearly more intelligent than the fish and mines you've been hiring thusfar. They'll actively seek out their prey!","flav":"In the past mermaids have not been seen as intimidating, but these ones have knives!", "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MERMAID},
+                                  {"name":"Squiddle","desc":"Beware of this tanglebuddy's entangling tentacles!","flav":"Squiddles are the My Little Pony of the sea. They spread their joy and love to all that they see, whether they like it or not.","highres":pygame.image.load("../img/squiddle_highres.png"), "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.SQUIDDLE},
+                                  {"name":"Pufferfish","desc":"The pufferfish will expand and contract its pointy quills. Timing is key!","flav":"Under normal circumstances, the puffer fish will puff out its spines when it is frightened or threatened. So let's just say that just offscreen there's something really scary that shows up every so often.", "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MINE},
+        {"name":"Cthulhu","desc":"The Deep One. Walks slowly across the screen, but decimates everything in its path.","flav":"Did you know you could buy Cthulhus? Seriously. You can just go to the store and be like \"Hey do you have any Cthulhus for sale?\" and they'd be all \"Oh yeah of course we can't get rid of the damn (ha ha) things!\"", "highres":pygame.image.load("../img/cthulhu_highres.png"), "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MINE}]
         self.index = None
         self.icons = pygame.image.load("../img/shop_imgs.png")
         def go_back(scr, mpos):
@@ -34,7 +35,6 @@ class ShopScreen(Screen):
         self.words = pygame.Surface((1280, 800), pygame.SRCALPHA)
         
         def purchase(scr, mpos):
-            money = 6000000000000
             try:
                 if self.index is None:
                     return
@@ -44,8 +44,10 @@ class ShopScreen(Screen):
                     return
             except ValueError:
                 return
-            if money >= x["prices"][x["rank"]][0]:  # TODO: MONEY
-                money -= x["prices"][x["rank"]][0]
+            if self.main.screens["game"].my_board.gold >= x["prices"][x["rank"]][0]:  # TODO: MONEY
+                self.main.screens["game"].my_board.gold -= x["prices"][x["rank"]][0]
+                if not x["rank"]:
+                    self.main.screens["game"].offense_panel.add_unit(x["token"])
                 x["rank"] += 1
                 self.draw_words()
                 # TODO: apply upgrades?

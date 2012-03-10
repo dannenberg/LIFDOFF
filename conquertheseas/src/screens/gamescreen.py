@@ -32,10 +32,6 @@ class GameScreen(Screen):
         
         self.offense_panel = OffensePanel(OFFENSIVE_PANEL_SQUARES_X, OFFENSIVE_PANEL_SQUARES_Y)
         self.offense_panel.add_unit(UnitFactory.TADPOLE)
-        self.offense_panel.add_unit(UnitFactory.MINE)
-        self.offense_panel.add_unit(UnitFactory.CRAB)
-        self.offense_panel.add_unit(UnitFactory.SQUIDDLE)
-        self.offense_panel.add_unit(UnitFactory.MERMAID)
         
         self.enemy_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
         self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, True)
