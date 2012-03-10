@@ -4,7 +4,7 @@ import random
 import math
 import re
 import threading
-from constants import SIZE_X,SIZE_Y
+from constants import SCREEN_WIDTH,SCREEN_HEIGHT
 from screens.screen import *
 from screens.gamescreen import *
 from screens.introscreen import *
@@ -21,7 +21,7 @@ class Main():
 
         self.server = None
         self.client = None
-        self.stdsize=(SIZE_X,SIZE_Y)
+        self.stdsize=(SCREEN_WIDTH,SCREEN_HEIGHT)
         self.size=self.stdsize
         self.scale = 1
         self.screen=pygame.display.set_mode(self.size, pygame.RESIZABLE)

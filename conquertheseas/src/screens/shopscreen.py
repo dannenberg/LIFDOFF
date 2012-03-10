@@ -1,7 +1,7 @@
 import pygame
 from unit import UnitFactory
 from screen import Screen
-from constants import COLORS
+from constants import *
 from mousehitbox import MouseHitboxes
 
 class ShopScreen(Screen):
@@ -17,7 +17,7 @@ class ShopScreen(Screen):
         self.icons = pygame.image.load("../img/shop_imgs.png")
         def go_back(scr, mpos):
             self.main.change_screen("game")
-        self.clickbox.append((1100,750,180,50), go_back)
+        self.clickbox.append((SHOP_BACK_X,SHOP_BACK_Y,SHOP_BACK_W,SHOP_BACK_H), go_back)
         def which(ik):
             def select(scr, mpos):
                 try:
@@ -27,12 +27,12 @@ class ShopScreen(Screen):
                 self.index = ik
                 self.draw_words()
             return select
-        for y in xrange(2):
-            for i in xrange(8):
-                self.clickbox.append((i*160, y*160, 160, 160), which(y*8+i))
+        for y in xrange(SHOP_PANEL_Y):
+            for i in xrange(SHOP_PANEL_X):
+                self.clickbox.append((i*SHOP_GRID_SIZE, y*SHOP_GRID_SIZE, SHOP_GRID_SIZE, SHOP_GRID_SIZE), which(y*SHOP_PANEL_X+i))
                 
-        self.background = pygame.Surface((1280, 800), pygame.SRCALPHA)
-        self.words = pygame.Surface((1280, 800), pygame.SRCALPHA)
+        self.background = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        self.words = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         
         def purchase(scr, mpos):
             try:
@@ -52,37 +52,37 @@ class ShopScreen(Screen):
                 self.draw_words()
                 # TODO: apply upgrades?
                 
-        self.clickbox.append((1125,340,145,36), purchase)
+        self.clickbox.append((SHOP_PURCH_X, SHOP_PURCH_Y, SHOP_PURCH_W, SHOP_PURCH_H), purchase)
         
         self.background.fill(COLORS["shopbg"])
-        pygame.draw.rect(self.background, COLORS["sand"], (0,0,1280,320))
-        for y in xrange(2):
-            for i in xrange(8):
-                self.background.blit(self.icons, (i*160, y*160), (i*160+y*1280, 0, 160, 160))
-        pygame.draw.rect(self.background, COLORS["water"], (0,320,560,480))
-        for x in xrange(-1,321,160):
-            pygame.draw.line(self.background, COLORS["black"], (0,x),(1280,x),2)
-        for x in xrange(-1,1281,160):
-            pygame.draw.line(self.background, COLORS["black"], (x,0),(x,320),2)
-        pygame.draw.line(self.background, COLORS["black"], (560,320),(560,800),2)
+        pygame.draw.rect(self.background, COLORS["sand"], (0,0,SCREEN_WIDTH,SHOP_PANEL_H))
+        for y in xrange(SHOP_PANEL_Y):
+            for i in xrange(SHOP_PANEL_X):
+                self.background.blit(self.icons, (i*SHOP_GRID_SIZE, y*SHOP_GRID_SIZE), (i*SHOP_GRID_SIZE+y*SCREEN_WIDTH, 0, SHOP_GRID_SIZE, SHOP_GRID_SIZE))
+        pygame.draw.rect(self.background, COLORS["water"], (0,SHOP_PANEL_H,SHOP_IMG_BORDER,SCREEN_HEIGHT-SHOP_PANEL_H))
+        for x in xrange(-1,SHOP_GRID_SIZE*SHOP_PANEL_Y+1,SHOP_GRID_SIZE):
+            pygame.draw.line(self.background, COLORS["black"], (0,x),(SCREEN_WIDTH,x),2)
+        for x in xrange(-1,SCREEN_WIDTH+1,SHOP_GRID_SIZE):
+            pygame.draw.line(self.background, COLORS["black"], (x,0),(x,SHOP_PANEL_H),2)
+        pygame.draw.line(self.background, COLORS["black"], (SHOP_IMG_BORDER,SHOP_PANEL_H),(SHOP_IMG_BORDER,SCREEN_HEIGHT),2)
     
     def draw_words(self):
         self.words.fill((0,0,0,0))
         font = pygame.font.Font(None, 72)
         text = font.render(self.prices_and_values[self.index]["name"], True, COLORS["black"])
-        self.words.blit(text, (616,345))
+        self.words.blit(text, (SHOP_TITLE_X,SHOP_TITLE_Y))
         
         font2 = pygame.font.Font(None, 50)
         font3 = pygame.font.Font(None, 40)
         
         if len(self.prices_and_values[self.index]["prices"]) > self.prices_and_values[self.index]["rank"]:
             text = font2.render("Cost: "+str(self.prices_and_values[self.index]["prices"][self.prices_and_values[self.index]["rank"]][0]),True,COLORS["black"])
-            self.words.blit(text, (626,386))
-            pygame.draw.rect(self.words, (0xC0,0xC0,0xC0), (1125,340,145,36))
-            pygame.draw.rect(self.words, COLORS["black"], (1125,340,145,36), 3)
+            self.words.blit(text, (SHOP_COST_X,SHOP_COST_Y))
+            pygame.draw.rect(self.words, (0xC0,0xC0,0xC0), (SHOP_PURCH_X,SHOP_PURCH_Y,SHOP_PURCH_W,SHOP_PURCH_H))
+            pygame.draw.rect(self.words, COLORS["black"], (SHOP_PURCH_X,SHOP_PURCH_Y,SHOP_PURCH_W,SHOP_PURCH_H), 2)
             
             text = font3.render("Purchase",True,COLORS["black"])
-            self.words.blit(text, (1125+7,340+5))
+            self.words.blit(text, (SHOP_PURCH_X+7,SHOP_PURCH_Y+5))
         
         textwidth = 664
         textlist = [""]
@@ -100,10 +100,10 @@ class ShopScreen(Screen):
         
         for i,x in enumerate(textlist):
             text = font3.render(x, True, COLORS["black"])
-            self.words.blit(text, (616, 420+i*30))
+            self.words.blit(text, (SHOP_TITLE_X, SHOP_TEXT_Y+i*SHOP_TEXT_SPACING))
             
         if "highres" in self.prices_and_values[self.index]:
-            self.words.blit(self.prices_and_values[self.index]["highres"], (0,320))
+            self.words.blit(self.prices_and_values[self.index]["highres"], (0,SHOP_GRID_SIZE*SHOP_PANEL_Y))
         
     def display(self, scr):
         Screen.display(self, scr)

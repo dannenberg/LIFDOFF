@@ -1,5 +1,5 @@
 import pygame
-from constants import COLORS, SIZE_X, SIZE_Y
+from constants import COLORS, SCREEN_WIDTH, SCREEN_HEIGHT
 from mousehitbox import MouseHitboxes
 
 class Screen(object):
@@ -8,7 +8,7 @@ class Screen(object):
     nominally abstract"""
     
     def __init__(self, main):
-        self.size = (SIZE_X, SIZE_Y)
+        self.size = (SCREEN_WIDTH, SCREEN_HEIGHT)
         self.scale = 1
         self.main = main
         self.clickbox = MouseHitboxes()
