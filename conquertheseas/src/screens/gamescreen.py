@@ -1,5 +1,6 @@
 import pygame
 import math
+import pickle
 from constants import *
 from offense_panel import OffensePanel
 from board import Board
@@ -139,6 +140,8 @@ class GameScreen(Screen):
                         
                 self.last_turn = not self.last_turn
                 self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
+            else:
+                
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
         def ui_action(token, curunit):

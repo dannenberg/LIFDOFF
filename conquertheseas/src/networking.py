@@ -48,7 +48,7 @@ class Server(threading.Thread):
                     if self.host == None:
                         conn, _ = c.accept()
                         self.host = conn
-                        self.slots[0] = {"type":Server.PLAYER, "name":"Host", "ready":False, "conn":conn}
+                        self.slots[0] = {"type":Server.PLAYER, "name":"Host", "ready":False, "conn":conn, "buffer":''}
                         conn.send(self.get_server_data(0))
                         print "it's a new connection!"
                     else:
@@ -56,7 +56,7 @@ class Server(threading.Thread):
                         x = self.find_free_slot()
                         if x:
                             conn, _ = c.accept()
-                            self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn}
+                            self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn, "buffer":''}
                             conn.send(self.get_server_data(x))
                             print "it's a new connection!"
                             self.send_to_all("JOIN " + str(x) + " Player " + str(x))
@@ -70,29 +70,31 @@ class Server(threading.Thread):
                     print "Message from a client"
                     # blocks on c (but select has told us that there's a
                     # message waiting, so there's no real blocking)
-                    message = c.recv(255)
-                    print "received message: '%s'" % (message,)
-                    if not message:
-                        # an empty string indicates that the client has
-                        # closed their connection
-                        print "closed connection"
-                        for i,x in enumerate(self.slots):
-                            if x.has_key("conn"):
-                                if x["conn"] == c:
-                                    self.slots[i] = {"type":Server.OPEN}
-                                    self.send_to_all("KICK " + str(i))
-                        c.close()
-
-                    else:
-                        # echoes actual message to all players   
-                        cmdend = message.find(' ')
-                        cmd = message[:cmdend]
-                        args = message[cmdend+1:]
-                        #print "\ncmd: "+cmd+"\nargs: "+args+"\n"
-                        self.commands[cmd](c, args)
-                        #message = str(self.connections.index(c)) + ": " + message
-                        #for p in self.connections:
-                        #    p.send(message)
+                    sender = self.get_sender(c)
+                    while self.slots[sender]["buffer"].find(RS) == -1:
+                        message = player["conn"].recv(MAX_PACKET_LENGTH)
+                        if not message:
+                            # an empty string indicates that the client has
+                            # closed their connection
+                            print "closed connection"
+                            for i,x in enumerate(self.slots):
+                                if x.has_key("conn"):
+                                    if x["conn"] == c:
+                                        self.slots[i] = {"type":Server.OPEN}
+                                        self.send_to_all("KICK " + str(i))
+                            c.close()
+                        else:
+                            self.slots[sender]["buffer"] += message
+                    message, _, self.slots[sender]["buffer"] = player["buffer"].partition(RS)
+                    # echoes actual message to all players   
+                    cmdend = message.find(' ')
+                    cmd = message[:cmdend]
+                    args = message[cmdend+1:]
+                    #print "\ncmd: "+cmd+"\nargs: "+args+"\n"
+                    self.commands[cmd](c, args)
+                    #message = str(self.connections.index(c)) + ": " + message
+                    #for p in self.connections:
+                    #    p.send(message)
         self.server.close()
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
@@ -124,10 +126,13 @@ class Server(threading.Thread):
                     return i
 
     def send_to_all(self, message, exempt = None):
-        for x in self.slots:
-            if x.has_key("conn"):
-                if x["conn"] != exempt:
-                    x["conn"].send(message)
+        buf = message + RS
+        while buf:
+            for x in self.slots:
+                if x.has_key("conn"):
+                    if x["conn"] != exempt:
+                        x["conn"].send(buf[:MAX_PACKET_LENGTH])
+            buf = buf[MAX_PACKET_LENGTH:]
         
     def send_message(self, c, message):
         self.send_to_all("MSG " + str(self.get_sender(c)) + " " + message, c)
@@ -163,7 +168,7 @@ class Server(threading.Thread):
         self.send_to_all("START " + str(len([x for x in self.slots if x["type"] in [Server.PLAYER, Server.AI]])))
         for x in self.slots:
             if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
-                self.game_slots.append({"type":x["type"], "conn":x["conn"], "data":self.generate_board_data()})
+                self.game_slots.append({"type":x["type"], "conn":x["conn"], "data":self.generate_board_data(), "buffer":''})
                 if x["type"] == Server.PLAYER:
                     self.game_slots[-1]["name"] = x["name"]
                 else:
@@ -192,23 +197,27 @@ class Client(threading.Thread):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.msgs = Queue()
         self.done = False
+        self.recv_buf = None
         
     def run(self):
         self.sock.connect(self.ADDR)
         self.sock.settimeout(0.5)
         while not self.done:
-            try:
-                message = self.sock.recv(255)
-            except socket.timeout:
-                continue
-            if not message:
-                # an empty string indicates that the client has
-                # closed their connection
-                print "closed connection"
-                self.done = True
-                self.sock.close()
-            else:
-                self.process_message(message)
+            while self.buf.find(RS) == -1:
+                try:
+                    message = self.sock.recv(MAX_PACKET_LENGTH)
+                except socket.timeout:
+                    continue
+                if not message:
+                    # an empty string indicates that the client has
+                    # closed their connection
+                    print "closed connection"
+                    self.done = True
+                    self.sock.close()
+                else:
+                    self.buf += message
+            term, -, self.buf = self.buf.parition(RS) 
+            self.process_message(term)
 
     def process_message(self, message):
         if message == '':
@@ -217,7 +226,10 @@ class Client(threading.Thread):
         self.msgs.put(message)
         
     def send(self, message):
-        self.sock.send(message[:255])
+        buf = messsage + RS
+        while buf:
+            self.send(buf[:MAX_PACKET_LENGTH])
+            buf = buf[MAX_PACKET_LENGTH:]
         
     def send_message(self, message):
         message = "MSG " + message
@@ -245,7 +257,7 @@ class Client(threading.Thread):
     def stop(self):
         self.done = True
         self.sock.close()
-        
+
 if __name__ == "__main__":
     if int(raw_input("Server? ")):
         s = Server()
