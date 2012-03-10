@@ -88,7 +88,7 @@ class Server(threading.Thread):
                         cmdend = message.find(' ')
                         cmd = message[:cmdend]
                         args = message[cmdend+1:]
-                        #print addr+"\ncmd: "+cmd+"\nargs: "+args+"\n"
+                        #print "\ncmd: "+cmd+"\nargs: "+args+"\n"
                         self.commands[cmd](c, args)
                         #message = str(self.connections.index(c)) + ": " + message
                         #for p in self.connections:
@@ -230,8 +230,8 @@ class Client(threading.Thread):
         message = "KICK " + message
         self.send(message)
     
-    def start_game(self, _):
-        self.send("START")
+    def start_game(self):
+        self.send("START ")
     
     def set_ready(self, message):
         message = "READY " + str(message)

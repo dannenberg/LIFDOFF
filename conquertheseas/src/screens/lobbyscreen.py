@@ -69,6 +69,9 @@ class LobbyScreen(Screen):
         txt_start_game = self.largefont.render("Start Game", True, COLORS["white"])
         self.button_start.blit(txt_start_game, (30,15))
         self.base_panel.blit(self.button_start, (870,10))
+        def start_game(scr, mpos):
+            self.main.client.start_game()
+        self.clickbox.append((900, 690, 331, 76), start_game)
         
         self.text_input = ""
         self.msgpanel = MessagePanel((652,509), 23, self.font)
@@ -240,9 +243,14 @@ class LobbyScreen(Screen):
         self.players[kickme][2] = False
         self.redraw_players()
         
+    def recv_start_game(self, _):
+        print "game starting!!"
+        self.main.change_screen("game")
+        
     def parse_server_output(self, msg):
         actions = {"MSG":self.message, "NICK":self.recv_nick_change, "JOIN":self.recv_nick_change,
-                   "DATA":self.reload_server_data, "READY":self.ready_up, "KICK":self.recv_kick_player}
+                   "DATA":self.reload_server_data, "READY":self.ready_up, "KICK":self.recv_kick_player,
+                   "START":self.recv_start_game}
         msg = msg.split(" ")
         cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
         if cmd not in actions:
