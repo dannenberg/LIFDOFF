@@ -195,6 +195,7 @@ class LobbyScreen(Screen):
         
     def reload_server_data(self, data):
         # get that info somehow
+        self.main.race_cond = True
         self.my_index = int(data[0])    # what slot should you get
         data = data.split("\n")[1:]     # split on newlines (ignore the first slot)
         print data

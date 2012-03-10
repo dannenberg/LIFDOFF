@@ -49,7 +49,7 @@ class Server(threading.Thread):
                         conn, _ = c.accept()
                         self.host = conn
                         self.slots[0] = {"type":Server.PLAYER, "name":"Host", "ready":False, "conn":conn}
-                        conn.send("Welcome to the game, you're the host!")
+                        conn.send(self.get_server_data(0))
                         print "it's a new connection!"
                     else:
                     # check slots

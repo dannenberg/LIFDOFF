@@ -13,13 +13,14 @@ class MainScreen(Screen):
         self.selectbox = [None, 15, 205, 50, True] #coords of the box (x, y, width, height) which highlights selected item
         self.gotobox = [12.5, 15, 205, 50] #coords of the desitination of the selectbox
         self.sel_accel = 3 #acceleration to new pos
-        self.sel_speed = 0 #currents speed
+        self.sel_speed = 0 #current speed
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items
         
         self.options = ["New Game", "Load Game", "Options", "Credits", "Exit"] # menu options
         self.submenuoptions = None
         self.submenu = 0    # submenu = 1 means one submenu is open
         self.maxwid = max([self.smallerfont.size(x)[0] for x in self.options])  # width of hitbox (highlighted area)
+        # it's the 
         
         self.textbox = None
         self.text_input = ""
@@ -45,10 +46,6 @@ class MainScreen(Screen):
 
         def click_newgame(someone, mpos):
             self.entering_name = False
-            if self.main.valid_nick(self.text_input):
-                self.main.player_name = self.text_input
-            else:
-                self.main.player_name = None
             if self.submenu == 1:   # you've already clicked new game
                 return  
             if self.submenu != 0:   # you've clicked on options (or load)
@@ -69,36 +66,33 @@ class MainScreen(Screen):
                 self.main.join_server()
                 self.main.change_screen("lobby")
             
-            self.clickbox.append((90+self.maxwid, 200, self.submaxwid+50, 50), click_singleplayer)
-            self.clickbox.append((90+self.maxwid, 250, self.submaxwid+50, 50), click_joingame)
-            self.clickbox.append((90+self.maxwid, 300, self.submaxwid+50, 50), click_hostgame)
+            self.clickbox.append((90+self.maxwid, 215, self.submaxwid+50, 50), click_singleplayer)
+            self.clickbox.append((90+self.maxwid, 265, self.submaxwid+50, 50), click_joingame)
+            self.clickbox.append((90+self.maxwid, 315, self.submaxwid+50, 50), click_hostgame)
             
         def click_options(someone, mpos):
             self.entering_name = False
-            if self.main.valid_nick(self.text_input):
-                self.main.player_name = self.text_input
-            else:
-                self.main.player_name = None
+            
             if self.submenu == 2:
                 return
             if self.submenu == 1:   # new game submenu is open
                 self.overbox.remove((90+self.maxwid, 200))
                 #self.clickbox.remove((90+self.maxwid, 200))
-                self.clickbox.remove((90+self.maxwid, 200))
-                self.clickbox.remove((90+self.maxwid, 250))
-                self.clickbox.remove((90+self.maxwid, 300))
+                self.clickbox.remove((90+self.maxwid, 215))
+                self.clickbox.remove((90+self.maxwid, 265))
+                self.clickbox.remove((90+self.maxwid, 315))
             self.submenu = 2
             self.submenuoptions = ["Multiplayer name:","________________","AI Level: 1 2 3","SFX:  "+("-"*9)+"|","Music:"+("-"*9)+"|"]
             self.submaxwid = self.maxwidth(self.submenuoptions)
-            self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
+            self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 280), over(False), out)
             self.textbox = pygame.Surface((750,40), pygame.SRCALPHA)
             if self.main.player_name is not None:
-                self.textbox.blit(self.smallerfont.render(self.main.player_name, True, COLORS["white"]),(5,5))
+                self.textbox.blit(self.smallerfont.render(self.main.player_name.strip(), True, COLORS["white"]),(5,5))
             
             def click_changename(someone, mpos):
                 self.entering_name = True
-                #if self.main.player_name is not None:
-                #    self.text_input = self.main.player_name
+                if self.main.player_name is not None:
+                    self.text_input = self.main.player_name
                 #if self.main.valid_nick(self.text_input):
                 #    self.main.player_name = self.text_input
                 #else:
@@ -108,8 +102,8 @@ class MainScreen(Screen):
 
         def click_credits(someone, mpos):
             self.entering_name = False
-            if self.main.valid_nick(self.text_input):
-                self.main.player_name = self.text_input
+            if self.main.valid_nick(self.text_input.strip()):
+                self.main.player_name = self.text_input.strip()
             else:
                 self.main.player_name = None
             self.main.change_screen("credits")            
@@ -179,11 +173,15 @@ class MainScreen(Screen):
             elif inkey.key == pygame.K_RETURN or inkey.key == pygame.K_KP_ENTER:
                 return 
             elif inkey.unicode:#self.smallerfont.size(self.text_input+inkey.unicode)[0] <= self.textbox.get_width()-10 and 
-                if len(self.text_input) < 2 or self.main.valid_nick(self.text_input+inkey.unicode):
+                if len(self.text_input) < 2 or self.main.valid_nick((self.text_input+inkey.unicode).strip()):
                     self.text_input += inkey.unicode
             else:
                 return  # if none of these things happened, no need to redraw
             self.textbox.fill((0,0,0,0))
             txt = self.smallerfont.render(self.text_input, True, COLORS["white"])
             self.textbox.blit(txt, (5,5))
+            if self.main.valid_nick(self.text_input.strip()):
+                self.main.player_name = self.text_input.strip()
+            else:
+                self.main.player_name = None
             
