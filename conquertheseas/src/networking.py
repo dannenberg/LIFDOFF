@@ -216,7 +216,7 @@ class Client(threading.Thread):
                     self.sock.close()
                 else:
                     self.buf += message
-            term, -, self.buf = self.buf.partition(RS) 
+            term, _, self.buf = self.buf.partition(RS) 
             self.process_message(term)
 
     def process_message(self, message):
