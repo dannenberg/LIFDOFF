@@ -141,6 +141,7 @@ class GameScreen(Screen):
                 self.last_turn = not self.last_turn
                 self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
             else:
+                pass
                 
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
