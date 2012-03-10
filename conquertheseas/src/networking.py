@@ -72,7 +72,7 @@ class Server(threading.Thread):
                     # message waiting, so there's no real blocking)
                     sender = self.get_sender(c)
                     while self.slots[sender]["buffer"].find(RS) == -1:
-                        message = player["conn"].recv(MAX_PACKET_LENGTH)
+                        message = self.slots[sender]["conn"].recv(MAX_PACKET_LENGTH)
                         if not message:
                             # an empty string indicates that the client has
                             # closed their connection
@@ -85,7 +85,7 @@ class Server(threading.Thread):
                             c.close()
                         else:
                             self.slots[sender]["buffer"] += message
-                    message, _, self.slots[sender]["buffer"] = player["buffer"].partition(RS)
+                    message, _, self.slots[sender]["buffer"] = self.slots[sender]["buffer"].partition(RS)
                     # echoes actual message to all players   
                     cmdend = message.find(' ')
                     cmd = message[:cmdend]
@@ -203,7 +203,7 @@ class Client(threading.Thread):
         self.sock.connect(self.ADDR)
         self.sock.settimeout(0.5)
         while not self.done:
-            while self.recv_buf.find(RS) == -1:
+            while not self.done and self.recv_buf.find(RS) == -1:
                 try:
                     message = self.sock.recv(MAX_PACKET_LENGTH)
                 except socket.timeout:
@@ -214,6 +214,7 @@ class Client(threading.Thread):
                     print "closed connection"
                     self.done = True
                     self.sock.close()
+                    break
                 else:
                     self.recv_buf += message
             term, _, self.recv_buf = self.recv_buf.partition(RS) 
@@ -226,9 +227,9 @@ class Client(threading.Thread):
         self.msgs.put(message)
         
     def send(self, message):
-        buf = messsage + RS
+        buf = message + RS
         while buf:
-            self.send(buf[:MAX_PACKET_LENGTH])
+            self.sock.send(buf[:MAX_PACKET_LENGTH])
             buf = buf[MAX_PACKET_LENGTH:]
         
     def send_message(self, message):
