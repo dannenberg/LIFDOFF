@@ -1,6 +1,6 @@
 from screens.screen import Screen
 from string import count
-from constants import COLORS
+from constants import *
 from bg_waves import Waves
 import networking
 import pygame
@@ -8,21 +8,21 @@ class JoinScreen(Screen):
     def __init__(self, main):
         Screen.__init__(self, main)
         self.waves = Waves()
-        self.inputblock = pygame.Surface((245,130), pygame.SRCALPHA)
+        self.inputblock = pygame.Surface((JOIN_BOX_W, JOIN_BOX_H), pygame.SRCALPHA)
         self.inputblock.fill((0,0,0,128))
-        self.textbox = pygame.Surface((225, 30), pygame.SRCALPHA)
+        self.textbox = pygame.Surface((JOIN_TEXT_W, JOIN_TEXT_H), pygame.SRCALPHA)
         self.textbox.fill((0,0,0,64))
         self.font = pygame.font.Font(None, 40)
-        okbutton = pygame.Surface((80,40), pygame.SRCALPHA)
+        okbutton = pygame.Surface((JOIN_BUTT_W,JOIN_BUTT_H), pygame.SRCALPHA)
         okbutton.fill((0,0,0,64))
         oktxt = self.font.render("Join", True, COLORS["white"])
         okbutton.blit(oktxt, (10,8))
-        backbutton = pygame.Surface((80,40), pygame.SRCALPHA)
+        backbutton = pygame.Surface((JOIN_BUTT_W,JOIN_BUTT_H), pygame.SRCALPHA)
         backbutton.fill((0,0,0,64))
         backtxt = self.font.render("Back", True, COLORS["white"])
         backbutton.blit(backtxt, (5,8))
-        self.inputblock.blit(backbutton, (10,80))
-        self.inputblock.blit(okbutton, (self.inputblock.get_width()-10-okbutton.get_width(),80))
+        self.inputblock.blit(backbutton, (JOIN_BUTT_BUF_X,JOIN_BUTT_BUF_Y))
+        self.inputblock.blit(okbutton, (self.inputblock.get_width()-JOIN_BUTT_BUF_X-okbutton.get_width(),JOIN_BUTT_BUF_Y))
         instruction = self.font.render("Server Address", True, COLORS["white"])
         self.inputblock.blit(instruction, (int(((self.inputblock.get_width()-instruction.get_width())/2.0)),10))
         self.ip = ""
@@ -30,14 +30,14 @@ class JoinScreen(Screen):
         
         def go_back(scr, mpos):
             self.main.change_screen("main")
-        self.clickbox.append((525,415, 80,40), go_back)
-        self.clickbox.append((675,415, 80,40), self.connect_ip)
+        self.clickbox.append((JOIN_BACK_X,JOIN_BUTT_Y, JOIN_BUTT_W,JOIN_BUTT_H), go_back)
+        self.clickbox.append((JOIN_OK_X,JOIN_BUTT_Y, JOIN_BUTT_W,JOIN_BUTT_H), self.connect_ip)
         
     def display(self, screen):
         Screen.display(self, screen)
         self.waves.display(screen)
-        screen.blit(self.inputblock, (517,335))
-        screen.blit(self.textbox, (527,380))
+        screen.blit(self.inputblock, (JOIN_BOX_X,JOIN_BOX_Y))
+        screen.blit(self.textbox, (JOIN_TEXT_X,JOIN_TEXT_Y))
         if self.countdown > 0:
             self.countdown -= 1
             if not self.countdown:
