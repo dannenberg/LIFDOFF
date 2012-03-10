@@ -2,6 +2,8 @@ import socket
 import select
 import threading
 from Queue import Queue
+from board import Board
+from constants import *
 
 HOST = socket.gethostname()
 PORT = 11173
@@ -159,7 +161,17 @@ class Server(threading.Thread):
                     if not x["ready"]:
                         return
         self.send_to_all("START")
+        for x in self.slots:
+            if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
+                self.game_slots.append({"type":x["type"], "conn":x["conn"], "data":self.generate_board_data()})
+                if x["type"] == Server.PLAYER:
+                    self.game_slots[-1]["name"] = x["name"]
+                else:
+                    self.game_slots[-1]["name"] = "AI Player"
                     
+    def generate_board_data(self):
+        return {"board":Board(BOARD_WIDTH,BOARD_HEIGHT)}
+    
     def kick_player(self, c, message):
         if self.slots[0]["conn"] == c:
             if self.slots[int(message)]["type"] == Server.PLAYER:
