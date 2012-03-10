@@ -49,7 +49,7 @@ class Server(threading.Thread):
                         conn, _ = c.accept()
                         self.host = conn
                         self.slots[0] = {"type":Server.PLAYER, "name":"Host", "ready":False, "conn":conn, "buffer":''}
-                        conn.send(self.get_server_data(0))
+                        conn.send(self.get_server_data(0) + RS)
                         print "it's a new connection!"
                     else:
                     # check slots
@@ -57,12 +57,12 @@ class Server(threading.Thread):
                         if x:
                             conn, _ = c.accept()
                             self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn, "buffer":''}
-                            conn.send(self.get_server_data(x))
+                            conn.send(self.get_server_data(x) + RS)
                             print "it's a new connection!"
                             self.send_to_all("JOIN " + str(x) + " Player " + str(x))
                         else:
                             conn, _ = c.accept()
-                            conn.send("Sorry, server is full!")
+                            conn.send("Sorry, server is full!" + RS)
                             print "a player couldn't join due to lack of slots"
                             conn.close()
                                         
@@ -117,7 +117,7 @@ class Server(threading.Thread):
             toR += str(x["type"])
             if x["type"] == Server.PLAYER:
                 toR += " " + str(int(x["ready"])) + " " + x["name"]
-        return toR  
+        return toR
 
     def get_sender(self, c):
         for i,x in enumerate(self.slots):
@@ -149,7 +149,7 @@ class Server(threading.Thread):
         for x in self.slots:
             if x["type"] == Server.PLAYER:
                 if x["name"] == message:
-                    self.slots[sender]["conn"].send("That name is already taken")
+                    self.slots[sender]["conn"].send("That name is already taken" + RS)
                     return
         self.slots[sender]["name"] = message
         self.send_to_all("NICK " + str(sender) + " " + message)
@@ -197,13 +197,13 @@ class Client(threading.Thread):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.msgs = Queue()
         self.done = False
-        self.recv_buf = None
+        self.recv_buf = ''
         
     def run(self):
         self.sock.connect(self.ADDR)
         self.sock.settimeout(0.5)
         while not self.done:
-            while self.buf.find(RS) == -1:
+            while self.recv_buf.find(RS) == -1:
                 try:
                     message = self.sock.recv(MAX_PACKET_LENGTH)
                 except socket.timeout:
@@ -215,8 +215,8 @@ class Client(threading.Thread):
                     self.done = True
                     self.sock.close()
                 else:
-                    self.buf += message
-            term, _, self.buf = self.buf.partition(RS) 
+                    self.recv_buf += message
+            term, _, self.recv_buf = self.recv_buf.partition(RS) 
             self.process_message(term)
 
     def process_message(self, message):
