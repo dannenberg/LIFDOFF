@@ -103,13 +103,13 @@ class Server(threading.Thread):
 
     def stop(self):
         self.done = True
-        
+    
     def find_free_slot(self):
         for x in xrange(10):
             if self.slots[x]["type"] == Server.OPEN:
                 return x
         return False
-
+    
     def get_server_data(self, slot):
         toR = "DATA " + str(slot)
         for x in self.slots:
@@ -118,13 +118,13 @@ class Server(threading.Thread):
             if x["type"] == Server.PLAYER:
                 toR += " " + str(int(x["ready"])) + " " + x["name"]
         return toR
-
+    
     def get_sender(self, c):
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
                 if x["conn"] == c:
                     return i
-
+    
     def send_to_all(self, message, exempt = None):
         buf = message + RS
         while buf:
@@ -133,10 +133,10 @@ class Server(threading.Thread):
                     if x["conn"] != exempt:
                         x["conn"].send(buf[:MAX_PACKET_LENGTH])
             buf = buf[MAX_PACKET_LENGTH:]
-        
+    
     def send_message(self, c, message):
         self.send_to_all("MSG " + str(self.get_sender(c)) + " " + message, c)
-                    
+    
     # TODO: DON'T USE ON PEOPLE. KICK EM FIRST
     def set_slot(self, c, message):
         if self.slots[0]["conn"] == c:
@@ -153,12 +153,25 @@ class Server(threading.Thread):
                     return
         self.slots[sender]["name"] = message
         self.send_to_all("NICK " + str(sender) + " " + message)
-                    
+    
     def set_ready(self, c, message):
         sender = self.get_sender(c)
         self.slots[sender]["ready"] = int(message)
         self.send_to_all("READY " + str(sender) + " " + message)
-                    
+    
+    def recv_actions(self, c, message):
+        sender = self.get_sender(c)
+        actions = pickle.loads(message)
+        
+        # TODO: this goes in another method, right now we're just unpickling, but we need everyone's data before we can go
+        """b = self.slots[sender]["board"]
+        cmds = {"BUY":b.buy_item, "UPGRADE":b.buy_upgrade, "SENT":b.send_offensive, "MOVE":b.move_peon, "SHOOT":b.shoot_unit, "SPECIAL":b.special_unit}
+        for x in actions:
+            splitter = x.find(" ")
+            cmd,args = x[:splitter], x[splitters:]
+            cmds[cmd](args)
+        self.slots[sender]["return_actions"] = """
+        
     def start_game(self, c, message):
         if self.slots[0]["conn"] == c:
             for x in self.slots:
@@ -249,6 +262,10 @@ class Client(threading.Thread):
     
     def set_ready(self, message):
         message = "READY " + str(message)
+        self.send(message)
+        
+    def send_board(self, board):
+        message = "BOARD " + board
         self.send(message)
         
     def change_name(self, message):

@@ -4,12 +4,17 @@
 - Lobby screen
 
 =================
+--    BUGS     -- 
+=================
+- No IP checking for like validness at all
+- No IP checking for "i'm looking to join a server that's actually open"
+
+=================
 -- SMALL TODOS -- 
 If you're bored and looking for something to add to this fix deez things.
 =================
 - Unit highlight size not reset until mousemove :(
 - Stop shooting yourself. Stop shooting yourself. Stop shooting yourself. Stop shooting yourself
-- IP on-click should copy IP
 
 =================
 -- LARGE TODOS --

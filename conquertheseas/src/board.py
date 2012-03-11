@@ -145,3 +145,9 @@ class Board:
     def remove_unit(self, unit):
         self.units.remove(unit)
         self.lift_unit(unit)
+        
+    def __getattr__(self, name):
+        def anon(*args):
+            print name,"didn't exist"
+            return None
+        return anon
