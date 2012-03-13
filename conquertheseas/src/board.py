@@ -121,9 +121,10 @@ class Board:
                 self._actions.append(Action(Action.CREATE, unit._loc, unit._token))
                 self.remove_unit(unit)
     
-    def store_cur_pos(self):
+    def initialize_turn(self):
         for unit in self.units:
             unit._unaltered_loc = unit._loc
+            unit.move_remaining = unit._move_speed
 
     def move_unit(self, unit, loc=None):
         if loc == None:

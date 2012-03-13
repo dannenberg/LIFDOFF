@@ -4,6 +4,7 @@ import random
 import math
 import re
 import threading
+import os
 from constants import SCREEN_WIDTH,SCREEN_HEIGHT
 from screens.screen import *
 from screens.gamescreen import *
@@ -17,8 +18,8 @@ from screens.joinscreen import *
 
 class Main():
     def __init__(self):
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
         pygame.init()
-
         self.server = None
         self.client = None
         self.stdsize=(SCREEN_WIDTH,SCREEN_HEIGHT)

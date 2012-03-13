@@ -16,7 +16,7 @@ def clear():
 class Arrows:
     def __init__(self, movespd):
         self.movespd = movespd
-        self.arrow_locs = [[0,0,0,0]]   # x,y,in,out
+        self.arrow_locs = [[0,0,0,0]]   # [x,y,in,out]. The list should always at least contain this entry
         
     def reverse(self, bit):
         if bit < 4:
@@ -42,7 +42,7 @@ class Arrows:
             while pq:
                 x = heapq.heappop(pq)[1]
                 seen.add(x)
-                if x == (nx,ny):    # reconstruct
+                if x == (nx,ny):    # reconstruct (you've made it)
                     nextpath = []
                     while x != tuple(cut[-1]):
                         nextpath = [tuple(x[:])]+nextpath
@@ -62,19 +62,22 @@ class Arrows:
     def direct_arrows(self, arrowlist, last):
         toR = []
         for x in arrowlist:
-            back = 8 if last[0]<x[0] else (2 if last[0]>x[0] else (1 if last[1]<x[1] else 4))
+            back = 8 if last[0]<x[0] else (2 if last[0]>x[0] else (1 if last[1]<x[1] else 4))   # get the direction
             toR += [list(x)+[back,0]]
             last[3] = self.reverse(back)
             last = toR[-1]
         return toR
         
     def cut_arrows(self, index=None):
-        if index is None:
+        """ Cut the arrow-snake at index. If no index is given, cut off the last arrow """
+        if index is None:   # cut the last one
             index = len(self.arrow_locs)-2
-        self.arrow_locs[index][3] = 0   # empty out
+        self.arrow_locs[index][3] = 0   # make the last arrow a point
         self.arrow_locs = self.arrow_locs[:index+1]       # slice
         
     def get_adj(self, (x,y), arrows):
+        """ Get the locations adjacent to (x,y), as long as they don't intersect
+        any existing arrows """
         cut = self.coords(arrows)
         return (z for z in ((x+1,y), (x,y+1), (x-1,y), (x,y-1)) if z not in cut)
         
@@ -83,9 +86,10 @@ class Arrows:
         return abs(ex-x)+abs(ey-y)+len(arrows)-1    # h+g
         
     def coords(self, arrows):
+        """ Get the arrows without direction information """
         return [a[:2] for a in arrows]
         
-    def __iter__(self):
+    def __iter__(self): # iterater skips the first (always (0,0))
         return self.arrow_locs[1:].__iter__()
 
 def print_board(board):

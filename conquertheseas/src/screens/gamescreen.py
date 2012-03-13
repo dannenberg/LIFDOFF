@@ -1,6 +1,7 @@
 import pygame
 import math
 import pickle
+import heapq
 from constants import *
 from offense_panel import OffensePanel
 from board import Board
@@ -24,7 +25,7 @@ class GameScreen(Screen):
         self.num_players = num_players
         self.local = local
 
-        self.font = pygame.font.Font(None, 40) 
+        self.font = pygame.font.Font(None, 40)
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
         self.last_turn = False
@@ -43,7 +44,7 @@ class GameScreen(Screen):
         
         self.action_imgs = pygame.image.load("../img/action_choices.png")
         self.arrows = pygame.image.load("../img/arrow_formatted.png")
-        self.arrow_locs = []
+        self.arrow_locs = Arrows((0,0), 0)
         self.arrow_offset = (0,0)
         
         def to_shop(scr, mpos):
@@ -57,7 +58,7 @@ class GameScreen(Screen):
         def enemy_boardclick(scr, mpos):
             gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
-            print "gamescreen.boardclick "+str(gpos)
+            print "gamescreen.enemy_boardclick (gpos)"+str(gpos)
             
             if self.mode == GameScreen.DEPLOYING:
                 #if not isinstance(self.held, Unit):
@@ -81,33 +82,45 @@ class GameScreen(Screen):
                 self.set_mode(GameScreen.NO_MODE)
                 curunit = clicked_unit
                 
-            print "gamescreen.boardclick "+str(gpos)
+            print "gamescreen.my_boardclick (gpos) "+str(gpos)
             
             self.held = curunit
             if self.mode == GameScreen.MOVING:
                 if gpos in self.movement_locs:
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
-                    self.my_board.move_unit(self.held, self.arrow_locs[-1][:2])
-                    print "gamescreen.boardclick "+str(self.held._actions)
+                    self.my_board.move_unit(self.held, self.arrow_locs.get_loc())
+                    print "gamescreen.my_boardclick (the gentleman's actions) "+str(self.held._actions)
                     self.set_mode(GameScreen.NO_MODE)
             
             elif curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE: # TODO make a action menu creator for action mode!
-                    options = curunit.get_abilities()   # get his possible actions
-                    if len(options) == 1: # skip selection: do only action
-                        ui_action(options[0], curunit)
-                    elif len(options):  # more than no actions
+                    options = curunit.get_abilities() # get his possible actions
+                    if len(curunit._actions): # if something is queued, allow reset
+                        options += [Action.UNDO]
+                    if curunit.moves_remaining:
                         self.set_mode(GameScreen.ACTION_MENU)
                         self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
                         for i,o in enumerate(options):
                             self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
                         def action_click(scr, mpos):
-                            ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
+                            ui_action(options[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
                         try:
                             self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
                             self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
                             #self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
                             #self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
+                        except AttributeError:
+                            print "TODO: avoid double placing this hitbox"
+                    else:
+                        # he is out of moves so only allow him to reset
+                        self.set_mode(GameScreen.ACTION_MENU)
+                        self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE))
+                        self.action_surface.blit(self.action_imgs, (0,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[Action.UNDO],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
+                        def action_click(scr, mpos):
+                            ui_action(Action.UNDO, curunit)  # show the ui for that action
+                        try:
+                            self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE, ACTION_BUTTON_SIZE), action_click, z=2)
+                            self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
                         except AttributeError:
                             print "TODO: avoid double placing this hitbox"
             
@@ -124,8 +137,8 @@ class GameScreen(Screen):
                 if self.last_turn == True:
                     self.enemy_board.take_turn()
                     self.my_board.take_turn()
-                    self.enemy_board.store_cur_pos()
-                    self.my_board.store_cur_pos()
+                    self.enemy_board.initialize_turn()
+                    self.my_board.initialize_turn()
                     lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
                     win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
                     if win or lose:
@@ -147,13 +160,18 @@ class GameScreen(Screen):
         
         def ui_action(token, curunit):
             if token == Action.MOVE:
-                movespd = curunit._move_speed
+                movespd = curunit.moves_remaining
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.arrow_offset = (int(((curunit._size[0]-1)/2.0)*SQUARE_SIZE), int(((curunit._size[1]-1)/2.0)*SQUARE_SIZE))
                 self.set_mode(GameScreen.MOVING)
                 self.held = curunit
+                self.arrow_locs = Arrows(self.held._loc, self.held.moves_remaining)
+                print "gamescreen.ui_action: Created a new arrows of length",self.held._move_speed
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
+                self.set_mode(GameScreen.NO_MODE)
+            elif token == Action.UNDO:
+                curunit.reset_moves(self.my_board)
                 self.set_mode(GameScreen.NO_MODE)
             else:
                 raise AttributeError("Unrecognized token "+str(token))
@@ -245,45 +263,10 @@ class GameScreen(Screen):
                             self.arrow_locs.append((gpos[0], gpos[1], 1))
                     """
                     
-                    # HIDEOUS CHUNK OF BAD ARROW DRAWING
-                    if self.mode == GameScreen.MOVING:
+                    if self.mode == GameScreen.MOVING and player == 1:
                         gpos = ((mpos[0]-self.arrow_offset[0])//SQUARE_SIZE, (mpos[1]-self.arrow_offset[1])//SQUARE_SIZE)
-                        movespd = 3
+                        self.arrow_locs.update_arrows(*gpos)
                         
-                        lastloc = self.arrow_locs[-1] if len(self.arrow_locs)>0 else self.held._loc
-                        if lastloc[:2] == gpos:
-                            return
-                        if len(self.arrow_locs) >= movespd:
-                            scr.arrow_locs = []
-                            xran,yran = (abs(gpos[i]-self.held._loc[i]) for i in xrange(2))
-                            xdir,ydir = (1 if gpos[i]-self.held._loc[i]>0 else -1 for i in xrange(2))
-                            for x in xrange(1,xran):  # xdir
-                                scr.arrow_locs += [(self.held._loc[0]+x*xdir, self.held._loc[1], 10)]
-                            if xran and yran:   # turn
-                                val = 0
-                                val |= 4 if ydir>0 else 1
-                                val |= 8 if xdir>0 else 2
-                                scr.arrow_locs += [(gpos[0],self.held._loc[1],val)]
-                            for y in xrange(1,yran):  # ydir
-                                scr.arrow_locs += [(gpos[0],self.held._loc[1]+y*ydir,5)]
-                            scr.arrow_locs += [(gpos[0], gpos[1], (1 if ydir>0 else 4) if yran else (8 if xdir>0 else 2))]  # bellend
-                        else:
-                            xran,yran = (abs(gpos[i]-lastloc[i]) for i in xrange(2))
-                            xdir,ydir = (1 if gpos[i]-lastloc[i]>0 else -1 for i in xrange(2))
-                            direction = (1 if ydir>0 else 4) if yran else (8 if xdir>0 else 2)
-                            if len(scr.arrow_locs)>0:
-                                if self.arrow_locs[-1][2] == reverse(direction):
-                                    del self.arrow_locs[-1]
-                                    try:
-                                        self.arrow_locs[-1] = self.arrow_locs[-1][:2]+(self.arrow_locs[-1][2]&~direction,)
-                                    except IndexError:
-                                        print "OH NOOOOOOO FIX THIS"
-                                    return
-                                self.arrow_locs[-1] = self.arrow_locs[-1][:2]+(self.arrow_locs[-1][2]|reverse(direction),)
-                            self.arrow_locs += [(gpos[0],gpos[1],direction)]
-                            print len(self.arrow_locs)
-                    # END HIDEOUS CHUNK OF BAD ARROW DRAWING
-                    
                     scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in self.held.get_shape()]
                 else:
                     scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in UnitFactory.get_shape_from_token(self.held)]
@@ -329,7 +312,7 @@ class GameScreen(Screen):
             self.my_board.surface.blit(self.highlight, (x[0]*SQUARE_SIZE+2, x[1]*SQUARE_SIZE+2))
         
         for x in self.arrow_locs:
-            self.my_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2+self.arrow_offset[0], x[1]*SQUARE_SIZE+2+self.arrow_offset[1]), ((SQUARE_SIZE*x[2],0),(SQUARE_SIZE,SQUARE_SIZE)))
+            self.my_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2+self.arrow_offset[0], x[1]*SQUARE_SIZE+2+self.arrow_offset[1]), ((SQUARE_SIZE*(x[2]|x[3]),0),(SQUARE_SIZE,SQUARE_SIZE)))
         
         if self.mode == GameScreen.DEPLOYING:
             self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*11)), ((35-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))
@@ -376,3 +359,87 @@ class GameScreen(Screen):
         
         if self.mode == GameScreen.GAMEOVER:
             screen.blit(self.victoryimg, (0,0))
+            
+class Arrows:
+    def __init__(self, (x,y), movespd):
+        self.movespd = movespd
+        self.arrow_locs = [[x,y,0,0]]   # [x,y,in,out]. The list should always at least contain this entry
+        
+    def reverse(self, bit):
+        if bit < 4:
+            return bit*4
+        return bit//4
+        
+    def get_arrow_type(self, data):
+        return data[2]|data[3]
+        
+    def get_loc(self):
+        return self.arrow_locs[-1][:2]
+        
+    def update_arrows(self, nx, ny):
+        if(abs(nx-self.arrow_locs[0][0]) + abs(ny-self.arrow_locs[0][1]) > self.movespd):   # OOB
+            return False
+        cut = self.coords(self.arrow_locs)
+        if [nx, ny] in cut: # cut the start
+            self.cut_arrows(cut.index([nx, ny]))
+            return True
+        hold = self.arrow_locs[:]
+        
+        while self.arrow_locs:
+            cut = self.coords(self.arrow_locs)
+            paths = {}
+            seen = set([tuple(x[:2]) for x in self.arrow_locs])
+            x = tuple(self.arrow_locs[-1][:2])
+            pq = [(self.heuristic(x,self.arrow_locs), x)]
+            while pq:
+                x = heapq.heappop(pq)[1]
+                seen.add(x)
+                if x == (nx,ny):    # reconstruct (you've made it)
+                    nextpath = []
+                    while x != tuple(cut[-1]):
+                        nextpath = [tuple(x[:])]+nextpath
+                        x = paths[x]
+                    self.arrow_locs += self.direct_arrows(nextpath, self.arrow_locs[-1])
+                    return True
+                for y in self.get_adj(x, seen):
+                    if y not in pq: # ???
+                        h = self.heuristic(y, self.arrow_locs)
+                        if h<=self.movespd:
+                            heapq.heappush(pq, (h, y))
+                            paths[y] = x
+            self.cut_arrows()   # cut the tail
+        self.arrow_locs = hold
+        return False    # found no path
+        
+    def direct_arrows(self, arrowlist, last):
+        toR = []
+        for x in arrowlist:
+            back = 8 if last[0]<x[0] else (2 if last[0]>x[0] else (1 if last[1]<x[1] else 4))   # get the direction
+            toR += [list(x)+[back,0]]
+            last[3] = self.reverse(back)
+            last = toR[-1]
+        return toR
+        
+    def cut_arrows(self, index=None):
+        """ Cut the arrow-snake at index. If no index is given, cut off the last arrow """
+        if index is None:   # cut the last one
+            index = len(self.arrow_locs)-2
+        self.arrow_locs[index][3] = 0   # make the last arrow a point
+        self.arrow_locs = self.arrow_locs[:index+1]       # slice
+        
+    def get_adj(self, (x,y), arrows):
+        """ Get the locations adjacent to (x,y), as long as they don't intersect
+        any existing arrows """
+        cut = self.coords(arrows)
+        return (z for z in ((x+1,y), (x,y+1), (x-1,y), (x,y-1)) if z not in cut)
+        
+    def heuristic(self, (x,y), arrows):
+        ex,ey = arrows[-1][:2]
+        return abs(ex-x)+abs(ey-y)+len(arrows)-1    # h+g
+        
+    def coords(self, arrows):
+        """ Get the arrows without direction information """
+        return [a[:2] for a in arrows]
+        
+    def __iter__(self): # iterater skips the first (always (0,0))
+        return self.arrow_locs[1:].__iter__()

@@ -68,7 +68,7 @@ class Unit(object):
         self.exp_value = val
         self.cash_value = gold
         self._move_speed = 3
-        self.moved = False
+        self.moves_remaining = self._move_speed
         self.health = 1
         
     def advance_sprite(self):
@@ -103,11 +103,19 @@ class Unit(object):
     
     def queue_movements(self, dests):
         for d in dests:
+            self.moves_remaining -= 1
             self._actions.append(Action(Action.MOVE, d))
             
     def queue_shoot(self):
+        self.moves_remaining -= 1
         self._actions.append(Action(Action.SHOOT))
     
+    def reset_moves(self, board):
+        board.move_unit(self, self._unaltered_loc)
+        self.moves_remaining = self._move_speed
+        self._loc = self._unaltered_loc
+        self._actions = []
+
     def take_damage(self, board, dmg=None):
         """ Returns remaining health """
         print "unit.take_damage: Taking",dmg,"damage"
