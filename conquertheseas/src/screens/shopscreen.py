@@ -9,7 +9,7 @@ class ShopScreen(Screen):
         Screen.__init__(self, main)
         self.prices_and_values = [{"name":"Mine","desc":"Basic nautical weaponry, drop it off and hope for the best. These ones have seen better days.","flav":"During the American Civil War, hundreds of these mines were laid along various rivers. After the war, they were collected by legitimate businesses and put on the market, although almost no one has been crazy enough to buy them.", "highres":pygame.image.load("../img/mine_highres.png"), "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MINE},
                                   {"name":"Angry Fish","desc":"This angry fish will start moving slowly, but will charge forward when it sees an enemy ship.","flav":"Angry Fish were created by mad scientists, in order to stop those who would oppose them. Unfortunately, mad scientists do not have any allies, so Angry Fish have been conditioned to attack all ships.", "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.TADPOLE},
-                                  {"name":"Mermaid","desc":"Mermaids are smarter than the average bear, and clearly more intelligent than the fish and mines you've been hiring thusfar. They'll actively seek out their prey!","flav":"In the past mermaids have not been seen as intimidating, but these ones have knives!", "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MERMAID},
+                                  {"name":"Mermaid","desc":"Mermaids are smarter than the average bear, and clearly more intelligent than the fish and mines you've been hiring thusfar. They'll actively seek out their prey!","flav":"In the past mermaids have not been seen as intimidating, but these ones have knives!", "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MERMAID, "highres":pygame.image.load("../img/mermaid_highres.png")},
                                   {"name":"Squiddle","desc":"Beware of this tanglebuddy's entangling tentacles!","flav":"Squiddles are the My Little Pony of the sea. They spread their joy and love to all that they see, whether they like it or not.","highres":pygame.image.load("../img/squiddle_highres.png"), "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.SQUIDDLE},
                                   {"name":"Pufferfish","desc":"The pufferfish will expand and contract its pointy quills. Timing is key!","flav":"Under normal circumstances, the puffer fish will puff out its spines when it is frightened or threatened. So let's just say that just offscreen there's something really scary that shows up every so often.", "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MINE},
                                   {"name":"Cthulhu","desc":"The Deep One. Walks slowly across the screen, but decimates everything in its path.","flav":"Did you know you could buy Cthulhus? Seriously. You can just go to the store and be like \"Hey do you have any Cthulhus for sale?\" and they'd be all \"Oh yeah of course we can't get rid of the damn (ha ha) things!\"", "highres":pygame.image.load("../img/cthulhu_highres.png"), "rank":0, "prices":[(0,""),(10,"")], "token":UnitFactory.MINE}]
@@ -65,6 +65,13 @@ class ShopScreen(Screen):
         for x in xrange(-1,SCREEN_WIDTH+1,SHOP_GRID_SIZE):
             pygame.draw.line(self.background, COLORS["black"], (x,0),(x,SHOP_PANEL_H),2)
         pygame.draw.line(self.background, COLORS["black"], (SHOP_IMG_BORDER,SHOP_PANEL_H),(SHOP_IMG_BORDER,SCREEN_HEIGHT),2)
+        
+        pygame.draw.rect(self.background, (0xC0, 0xC0, 0xC0), (SHOP_BACK_X, SHOP_BACK_Y, SHOP_BACK_W, SHOP_BACK_H))
+        pygame.draw.rect(self.background, COLORS["black"], (SHOP_BACK_X, SHOP_BACK_Y, SHOP_BACK_W, SHOP_BACK_H), 2)
+        
+        font = pygame.font.Font(None, 60)
+        text = font.render("Back", True, COLORS["black"])
+        self.background.blit(text, (SHOP_BACK_X+45,SHOP_BACK_Y+7))
     
     def draw_words(self):
         self.words.fill((0,0,0,0))
