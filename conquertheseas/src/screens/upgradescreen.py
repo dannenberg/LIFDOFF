@@ -21,8 +21,6 @@ class UpgradeScreen(Screen):
     def display(self, screen):
         Screen.display(self, screen)
         
-        
-        
         for i,x in enumerate((self.tree_one, self.tree_two, self.tree_three, self.info_sfc)):
             screen.blit(x, (SCREEN_WIDTH/4*i, 0))
             pygame.draw.line(screen, (0,0,0), (i*SCREEN_WIDTH/4,0), (i*SCREEN_WIDTH/4, SCREEN_HEIGHT), 2)
@@ -39,13 +37,17 @@ class UpgradeScreen(Screen):
         pygame.draw.line(self.info_sfc, (0,0,0), (SCREEN_WIDTH/12, SCREEN_HEIGHT*11/12), (SCREEN_WIDTH/12, SCREEN_HEIGHT),2)
         pygame.draw.line(self.info_sfc, (0,0,0), (SCREEN_WIDTH/6, SCREEN_HEIGHT*11/12), (SCREEN_WIDTH/6, SCREEN_HEIGHT),2)
         
+        
+        # text 
         font = pygame.font.Font(None, 50)
-        font2 = pygame.font.Font(None, 40)        
+        font2 = pygame.font.Font(None, 40)  
+        font3 = pygame.font.Font(None, 35)          
         
         shopButton = font.render("Shop", True, COLORS["black"])
-        self.info_sfc.blit(shopButton, (0+33, SCREEN_HEIGHT*5/6+20))    # TODO: fix these magic nums
+        self.info_sfc.blit(shopButton, (0+33, SCREEN_HEIGHT*5/6+15))    # TODO: fix these magic nums
         backButton = font.render("Back", True, COLORS["black"])
-        self.info_sfc.blit(backButton, (SCREEN_WIDTH/8 + 33, SCREEN_HEIGHT*5/6+20))
+        self.info_sfc.blit(backButton, (SCREEN_WIDTH/8 + 33, SCREEN_HEIGHT*5/6+15))
+        
         ship1Button = font2.render("Ship 1", True, COLORS["black"])
         ship2Button = font2.render("Ship 2", True, COLORS["black"])
         ship3Button = font2.render("Ship 3", True, COLORS["black"])
@@ -53,6 +55,13 @@ class UpgradeScreen(Screen):
         self.info_sfc.blit(ship2Button, (SCREEN_WIDTH/12 + 10, SCREEN_HEIGHT*11/12 + 20))
         self.info_sfc.blit(ship3Button, (SCREEN_WIDTH/6 + 10, SCREEN_HEIGHT*11/12 + 20))
         
+        resourceOverview = font2.render("Resource Overview", True, COLORS["black"])
+        self.info_sfc.blit(resourceOverview, (0 + 25, SCREEN_HEIGHT*2/3 + 5))
+        dollars = font3.render("$$:", True, COLORS["black"])
+        exp = font3.render("xp:", True, COLORS["black"])
+        self.info_sfc.blit(dollars, (0 + 10, SCREEN_HEIGHT*2/3 + 45))
+        self.info_sfc.blit(exp, (0 + 10, SCREEN_HEIGHT*2/3 + 85))
+        # end of text
         
         def click_back(someone, mpos):
             self.main.change_screen("game")
