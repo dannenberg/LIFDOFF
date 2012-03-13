@@ -248,7 +248,7 @@ class GameScreen(Screen):
                             self.arrow_locs.append((gpos[0], gpos[1], 1))
                     """
                     
-                    if self.mode == GameScreen.MOVING:
+                    if self.mode == GameScreen.MOVING and player == 1:
                         gpos = ((mpos[0]-self.arrow_offset[0])//SQUARE_SIZE, (mpos[1]-self.arrow_offset[1])//SQUARE_SIZE)
                         self.arrow_locs.update_arrows(*gpos)
                         
