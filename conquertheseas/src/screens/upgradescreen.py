@@ -46,8 +46,38 @@ class UpgradeScreen(Screen):
         self.info_sfc.blit(shopButton, (0+33, SCREEN_HEIGHT*5/6+20))    # TODO: fix these magic nums
         backButton = font.render("Back", True, COLORS["black"])
         self.info_sfc.blit(backButton, (SCREEN_WIDTH/8 + 33, SCREEN_HEIGHT*5/6+20))
+        ship1Button = font2.render("Ship 1", True, COLORS["black"])
+        ship2Button = font2.render("Ship 2", True, COLORS["black"])
+        ship3Button = font2.render("Ship 3", True, COLORS["black"])
+        self.info_sfc.blit(ship1Button, (0 + 10, SCREEN_HEIGHT*11/12 + 20))
+        self.info_sfc.blit(ship2Button, (SCREEN_WIDTH/12 + 10, SCREEN_HEIGHT*11/12 + 20))
+        self.info_sfc.blit(ship3Button, (SCREEN_WIDTH/6 + 10, SCREEN_HEIGHT*11/12 + 20))
+        
         
         def click_back(someone, mpos):
             self.main.change_screen("game")
         
+        def click_shop(someone, mpos):
+            self.main.change_screen("shop")
+        
+        def click_ship1(someone, mpos):
+            #do something
+            for x in (self.tree_one, self.tree_two, self.tree_three):
+                x.fill((0xCC,0xCC,0xFF))
+        def click_ship2(someone, mpos):
+            for x in (self.tree_one, self.tree_two, self.tree_three):
+                x.fill((0xCC,0xFF,0xCC))
+        def click_ship3(someone, mpos):
+            for x in (self.tree_one, self.tree_two, self.tree_three):
+                x.fill((0xFF,0xCC,0xCC))
+        
+        self.clickbox.append((SCREEN_WIDTH*6/8, SCREEN_HEIGHT*5/6, SCREEN_WIDTH/8, SCREEN_HEIGHT/12), click_shop)
         self.clickbox.append((SCREEN_WIDTH*7/8, SCREEN_HEIGHT*5/6, SCREEN_WIDTH/8, SCREEN_HEIGHT/12), click_back)
+        
+        self.clickbox.append((SCREEN_WIDTH*9/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship1)
+        self.clickbox.append((SCREEN_WIDTH*10/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship2)
+        self.clickbox.append((SCREEN_WIDTH*11/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship3)
+
+
+        
+        
