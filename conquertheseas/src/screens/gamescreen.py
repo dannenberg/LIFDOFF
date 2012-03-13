@@ -95,22 +95,26 @@ class GameScreen(Screen):
             elif curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE: # TODO make a action menu creator for action mode!
                     options = curunit.get_abilities()   # get his possible actions
-                    if len(options) == 1: # skip selection: do only action
-                        ui_action(options[0], curunit)
-                    elif len(options):  # more than no actions
-                        self.set_mode(GameScreen.ACTION_MENU)
-                        self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
-                        for i,o in enumerate(options):
-                            self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
-                        def action_click(scr, mpos):
-                            ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
-                        try:
-                            self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
-                            self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
-                            #self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
-                            #self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
-                        except AttributeError:
-                            print "TODO: avoid double placing this hitbox"
+                    if curunit.moves_remaining:
+                        if len(options) == 1: # skip selection: do only action
+                            ui_action(options[0], curunit)
+                        elif len(options):  # more than no actions
+                            self.set_mode(GameScreen.ACTION_MENU)
+                            self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
+                            for i,o in enumerate(options):
+                                self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
+                            def action_click(scr, mpos):
+                                ui_action(curunit.get_abilities()[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
+                            try:
+                                self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
+                                self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
+                                #self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
+                                #self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
+                            except AttributeError:
+                                print "TODO: avoid double placing this hitbox"
+                    else:
+                        # TODO this should create an action menu with only reset as an option
+                        self.held = None
             
         self.clickbox.append((ENEMY_BOARD_X, ENEMY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), enemy_boardclick)
         self.clickbox.append((   MY_BOARD_X,    MY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), my_boardclick)
@@ -125,8 +129,8 @@ class GameScreen(Screen):
                 if self.last_turn == True:
                     self.enemy_board.take_turn()
                     self.my_board.take_turn()
-                    self.enemy_board.store_cur_pos()
-                    self.my_board.store_cur_pos()
+                    self.enemy_board.initialize_turn()
+                    self.my_board.initialize_turn()
                     lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
                     win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
                     if win or lose:
@@ -148,12 +152,12 @@ class GameScreen(Screen):
         
         def ui_action(token, curunit):
             if token == Action.MOVE:
-                movespd = curunit._move_speed
+                movespd = curunit.moves_remaining
                 self.movement_locs = set((x+z[0], y+z[1]) for z in curunit.get_cells() for y in xrange(-movespd,movespd+1) for x in xrange(-movespd+abs(y), movespd-abs(y)+1))
                 self.arrow_offset = (int(((curunit._size[0]-1)/2.0)*SQUARE_SIZE), int(((curunit._size[1]-1)/2.0)*SQUARE_SIZE))
                 self.set_mode(GameScreen.MOVING)
                 self.held = curunit
-                self.arrow_locs = Arrows(self.held._loc, self.held._move_speed)
+                self.arrow_locs = Arrows(self.held._loc, self.held.moves_remaining)
                 print "gamescreen.ui_action: Created a new arrows of length",self.held._move_speed
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
@@ -248,7 +252,7 @@ class GameScreen(Screen):
                             self.arrow_locs.append((gpos[0], gpos[1], 1))
                     """
                     
-                    if self.mode == GameScreen.MOVING:
+                    if self.mode == GameScreen.MOVING and player == 1:
                         gpos = ((mpos[0]-self.arrow_offset[0])//SQUARE_SIZE, (mpos[1]-self.arrow_offset[1])//SQUARE_SIZE)
                         self.arrow_locs.update_arrows(*gpos)
                         
