@@ -148,6 +148,8 @@ class GameScreen(Screen):
                         def toMenu(scr, mpos):
                             self.main.change_screen("main")
                             self.main.reset_screen("game")
+                            self.main.reset_screen("shop")
+                            self.main.reset_screen("upgrade")
                         self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
                         self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
                         
