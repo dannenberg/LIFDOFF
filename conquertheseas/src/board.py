@@ -93,11 +93,12 @@ class Board:
                                 # TODO : Take some damage: may i suggest len(collided.get_shape())*c
                                 return False
                             else:   # if he's gonna move into you dats bad
-                                cloc = collided._actions[0].loc
-                                for cx,cy in collided.get_shape():
-                                    if (cx+cloc[0], cy+cloc[1]) in nextlocs:    # onoz!
-                                        unit.take_damage(self, 0)   # same as prev TODO
-                                        return False
+                                if collided._actions and collided._actions[0].action == Action.MOVE:
+                                    cloc = collided._actions[0].loc
+                                    for cx,cy in collided.get_shape():
+                                        if (cx+cloc[0], cy+cloc[1]) in nextlocs:    # onoz!
+                                            unit.take_damage(self, 0)   # same as prev TODO
+                                            return False
                                 # otherwise he'll resolve the collision on his turn
                         else: # collided._class < unit._class
                             collided.on_collision(unit, self)   # TODO: probably wrong
