@@ -9,34 +9,24 @@ class UnitFactory(object):
     MERMAID = 4
     BULLET = 5
     TADPOLE = 6
-    unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1)}
+    ANGRYFISH = 7
+    unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1), ANGRYFISH:(1,1)}
     
-    def __new__(_, idd, loc, fo_real = False):
+    def __new__(_, idd, loc, fo_real=False):
+        utype = Unit.OFFENSE if fo_real else Unit.STAGING
+        utoken = None if fo_real else idd
         if idd == UnitFactory.TADPOLE:
-            if fo_real:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/tadpole.png", Unit.OFFENSE, 5, 5)
-            else:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/tadpole.png", Unit.STAGING, 5, 5, token=idd)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/tadpole.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.MINE:
-            if fo_real:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/mine.png", Unit.OFFENSE, 5, 5)
-            else:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/mine.png", Unit.STAGING, 5, 5, token=idd)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/mine.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.CRAB:
-            if fo_real:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/crab.png", Unit.OFFENSE, 5, 5)
-            else:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/crab.png", Unit.STAGING, 5, 5, token=idd)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/crab.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.SQUIDDLE:
-            if fo_real:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/squiddle.png", Unit.OFFENSE, 5, 5)
-            else:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/squiddle.png", Unit.STAGING, 5, 5, token=idd)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/squiddle.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.MERMAID:
-            if fo_real:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/mermaid.png", Unit.OFFENSE, 10, 5)
-            else:
-                return Unit(loc, UnitFactory.unitsize[idd], "../img/mermaid.png", Unit.STAGING, 10, 5, token=idd)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/mermaid.png", utype, 10, 5, token=utoken)
+        if idd == UnitFactory.ANGRYFISH:
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/angryfish.png", utype, 10, 5, token=utoken)
         if idd == UnitFactory.BULLET:
             return Unit(loc, UnitFactory.unitsize[idd], "../img/bullet.png", Unit.BULLET, 0, 0)
         raise ValueError("Unknown unit id "+str(idd))

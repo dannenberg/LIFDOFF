@@ -12,7 +12,7 @@ class OffensePanel:
         self.selected = None
         self.tileset = pygame.image.load("../img/enemy_tileset.png")
         self.image_dict = {UnitFactory.TADPOLE:0, UnitFactory.MINE:1, UnitFactory.CRAB:2, UnitFactory.SQUIDDLE:3,
-                           UnitFactory.MERMAID:4}
+                           UnitFactory.MERMAID:4, UnitFactory.ANGRYFISH:5}
     
     def on_click(self, (x, y)):
         if self.cells[x][y] != None:	# if there's something in the square you clicked on
