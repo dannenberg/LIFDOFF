@@ -5,7 +5,7 @@ from constants import *
 class DefensiveUnit(Unit):
     def __init__(self, idd, purple=False):
         #self.upgrades = ()[idd]()
-        (x,y) = ((0,0),(5,5),(0,9))[idd]
+        (x,y) = ((0,3),(5,6),(0,9))[idd]
         (w,h) = ((2,2),(2,2),(2,2))[idd]
         if purple:
             imgsrc = ("../img/purple_sub.png","../img/purple_sub.png","../img/purple_sub.png")[idd]
