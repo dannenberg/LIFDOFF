@@ -1,0 +1,27 @@
+unit holds list of lists - each list is an upgrade
+
+[
+[level: int, name:str, cost:int, lineTo: index of other ability, description:str, active:method]
+]
+
+example:
+
+[
+[level: 1, name:poop, cost:50, lineTo: 3]
+[level: 1, name:butts, cost:50, lineTo: None]
+[level: 1, name:shit, cost:50, lineTo: None]
+[level: 2, name:SUPERpoop, cost:50, lineTo: None]
+]
+
+this draws
+
+[ ] [ ] [ ]
+ | 
+[ ] 
+
+duh
+
+
+i'm not quite sure how to store what the ability actually DOES, or where it will be displayed, etc
+or the picture
+
