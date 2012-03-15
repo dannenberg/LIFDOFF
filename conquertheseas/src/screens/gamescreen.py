@@ -11,6 +11,8 @@ from screen import Screen
 from mousehitbox import MouseHitboxes
 from action import Action
 
+from screens.shopscreen import ShopScreen   # :(
+
 class GameScreen(Screen):
     """in game screen"""
     NO_MODE = 0
@@ -38,6 +40,9 @@ class GameScreen(Screen):
         
         self.offense_panel = OffensePanel(OFFENSIVE_PANEL_SQUARES_X, OFFENSIVE_PANEL_SQUARES_Y)
         self.offense_panel.add_unit(UnitFactory.TADPOLE)
+        self.local_opanel = OffensePanel(OFFENSIVE_PANEL_SQUARES_X, OFFENSIVE_PANEL_SQUARES_Y)
+        self.local_opanel.add_unit(UnitFactory.TADPOLE)
+        self.local_shop = ShopScreen(self.main)
         
         self.enemy_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
         self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, True)
@@ -148,11 +153,16 @@ class GameScreen(Screen):
                         def toMenu(scr, mpos):
                             self.main.change_screen("main")
                             self.main.reset_screen("game")
+                            self.main.reset_screen("shop")
+                            self.main.reset_screen("upgrade")
                         self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
                         self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
                         
                 self.last_turn = not self.last_turn
                 self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
+                
+                self.local_shop, self.main.screens["shop"] = self.main.screens["shop"], self.local_shop
+                self.local_opanel, self.offense_panel = self.offense_panel, self.local_opanel
             else:
                 pass
                 
