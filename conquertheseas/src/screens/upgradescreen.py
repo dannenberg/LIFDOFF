@@ -47,10 +47,6 @@ class UpgradeScreen(Screen):
             for upgrade in tree:    # lines first
                 for prereqs in tree[upgrade]["next"]:
                     pygame.draw.line(surfs[t], (0,0,0), (tree[upgrade]["x"],tree[upgrade]["y"]), (tree[prereqs]["x"],tree[prereqs]["y"]), 2)
-                    # p+tr = q+us
-                    # p = (tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2)
-                    # r = (0, UPGRADE_ICON_SIZE)
-                    #
                     q = (tree[upgrade]["x"], tree[upgrade]["y"])
                     s = (tree[prereqs]["x"]-tree[upgrade]["x"], tree[prereqs]["y"]-tree[upgrade]["y"])
                     def cross(v,w):
@@ -64,8 +60,9 @@ class UpgradeScreen(Screen):
                                 ((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2), (UPGRADE_ICON_SIZE, 0)),
                                 ((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]+UPGRADE_ICON_SIZE/2), (UPGRADE_ICON_SIZE, 0))):
                         q_p = (q[0]-p[0], q[1]-p[1])
-                        u = float(cross(q_p, r)) / cross(r, s)
-                        if u < lstu and 0<=float(cross(q_p, s))/ cross(r,s)<=1: # lol @ the second part mattering
+                        rxs = cross(r,s)
+                        u = float(cross(q_p, r)) / rxs
+                        if u < lstu and 0<=float(cross(q_p, s))/ rxs<=1: # lol @ the second part mattering
                             lstu = u
                             pt = (q[0]+u*s[0], q[1]+u*s[1])
                             ourhero = (p,r)
