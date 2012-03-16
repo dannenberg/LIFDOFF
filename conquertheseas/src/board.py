@@ -12,7 +12,7 @@ class Board:
         self.cells = [[None for _ in xrange(h)] for _ in xrange(w)]    # initialize the board size
         self.units = []
         self._actions = []
-        self.exp = 0
+        self.exp = 20
         self.gold = 0
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i, purple))
