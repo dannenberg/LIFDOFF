@@ -10,13 +10,52 @@ class UpgradeScreen(Screen):
         self.tree_three = pygame.Surface((SCREEN_WIDTH/4, SCREEN_HEIGHT))
         self.info_sfc = pygame.Surface((SCREEN_WIDTH/4, SCREEN_HEIGHT))
         
-        
+        self.upgrades = [[{"First":{"row":0, "order":0, "next":["Second","Third"], "cost":5},
+                           "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":10},
+                           "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15},
+                           "Ultimate":{"row":2,"order":0, "next":[], "cost":30}},
+                          {},{}],[{},{},{}],[{},{},{}]]
+        self.init_upgrades()
         
         for x in (self.tree_one, self.tree_two, self.tree_three):
             x.fill((0xCC,0xCC,0xFF))
         self.info_sfc.fill((0x99,0xCC,0xCC))
         
         self.setup()
+        
+    def init_upgrades(self):
+        rows = {}
+        maxrow = 0
+        for s,ship in enumerate(self.upgrades):
+            for tree in ship:
+                for upgrade in tree:    # find how many there are in each row
+                    if tree[upgrade]["row"] not in rows:
+                        rows[tree[upgrade]["row"]] = 0  # intentional
+                    rows[tree[upgrade]["row"]] += 1
+                    maxrow = max(maxrow, tree[upgrade]["row"]+1)
+                for upgrade in tree:    # actually assign them to locations
+                    xspacing = (SCREEN_WIDTH/4.0)/rows[tree[upgrade]["row"]]
+                    yspacing = SCREEN_HEIGHT/maxrow
+                    tree[upgrade]["x"] = (tree[upgrade]["order"]+.5)*xspacing
+                    tree[upgrade]["y"] = (tree[upgrade]["row"]+.5)*yspacing
+        
+    def switch_ship(self, which):
+        surfs = (self.tree_one, self.tree_two, self.tree_three)
+        self.clickbox.clear(2)
+        for t,tree in enumerate(self.upgrades[which]):
+            for upgrade in tree:    # lines first
+                for prereqs in tree[upgrade]["next"]:
+                    pygame.draw.line(surfs[t], (0,0,0), (tree[upgrade]["x"],tree[upgrade]["y"]), (tree[prereqs]["x"],tree[prereqs]["y"]), 2)
+            for upgrade in tree:
+                rectloc = (tree[upgrade]["x"]-UPGRADE_ICON_SIZE/2, tree[upgrade]["y"]-UPGRADE_ICON_SIZE/2, UPGRADE_ICON_SIZE, UPGRADE_ICON_SIZE)
+                pygame.draw.rect(surfs[t], (0xCC,0xCC,0xCC), rectloc)
+                pygame.draw.rect(surfs[t], (0,0,0), rectloc, 2)
+                def what(tree, upgrade):
+                    def onclick(scr, mpos):
+                        print upgrade+": "+str(tree[upgrade]["cost"])
+                    return onclick
+                self.clickbox.append(rectloc, what(tree, upgrade), z=2)
+                
         
     def display(self, screen):
         Screen.display(self, screen)
@@ -40,8 +79,8 @@ class UpgradeScreen(Screen):
         
         # text 
         font = pygame.font.Font(None, 50)
-        font2 = pygame.font.Font(None, 40)  
-        font3 = pygame.font.Font(None, 35)          
+        font2 = pygame.font.Font(None, 40)
+        font3 = pygame.font.Font(None, 35)
         
         shopButton = font.render("Shop", True, COLORS["black"])
         self.info_sfc.blit(shopButton, (0+33, SCREEN_HEIGHT*5/6+15))    # TODO: fix these magic nums
@@ -63,30 +102,25 @@ class UpgradeScreen(Screen):
         self.info_sfc.blit(exp, (0 + 10, SCREEN_HEIGHT*2/3 + 85))
         # end of text
         
-        def click_back(someone, mpos):
+        def click_back(scr, mpos):
             self.main.change_screen("game")
         
-        def click_shop(someone, mpos):
+        def click_shop(scr, mpos):
             self.main.change_screen("shop")
         
-        def click_ship1(someone, mpos):
-            #do something
-            for x in (self.tree_one, self.tree_two, self.tree_three):
-                x.fill((0xCC,0xCC,0xFF))
-        def click_ship2(someone, mpos):
-            for x in (self.tree_one, self.tree_two, self.tree_three):
-                x.fill((0xCC,0xFF,0xCC))
-        def click_ship3(someone, mpos):
-            for x in (self.tree_one, self.tree_two, self.tree_three):
-                x.fill((0xFF,0xCC,0xCC))
+        def click_ship(which):
+            def anon(scr, mpos):
+                color = [0xCC, 0xCC, 0xCC]
+                color[which] = 0xFF
+                for x in (self.tree_one, self.tree_two, self.tree_three):
+                    x.fill(color)
+                self.switch_ship(which)
+            return anon
         
         self.clickbox.append((SCREEN_WIDTH*6/8, SCREEN_HEIGHT*5/6, SCREEN_WIDTH/8, SCREEN_HEIGHT/12), click_shop)
         self.clickbox.append((SCREEN_WIDTH*7/8, SCREEN_HEIGHT*5/6, SCREEN_WIDTH/8, SCREEN_HEIGHT/12), click_back)
         
-        self.clickbox.append((SCREEN_WIDTH*9/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship1)
-        self.clickbox.append((SCREEN_WIDTH*10/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship2)
-        self.clickbox.append((SCREEN_WIDTH*11/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship3)
-
-
-        
+        self.clickbox.append((SCREEN_WIDTH*9/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(0))
+        self.clickbox.append((SCREEN_WIDTH*10/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(1))
+        self.clickbox.append((SCREEN_WIDTH*11/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(2))
         
