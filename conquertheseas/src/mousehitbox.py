@@ -63,9 +63,12 @@ class MouseHitboxes:
             return None
         return self._data[x]
         
-    def clear(self):
-        self._data = []
-        self._last = None
+    def clear(self, z=None):
+        self._last = None   # either way you could get some wonky behaviour
+        if z is None:
+            self._data = []
+        else:
+            self._data = [x for x in self._data if x["z"]!=z]
         
     def __repr__(self):
         toR = []
