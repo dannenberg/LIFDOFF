@@ -54,6 +54,7 @@ SHOP_BACK_Y = 750
 SHOP_BACK_W = 180
 SHOP_BACK_H = 50
 UPGRADE_ICON_SIZE = 26
+UPGRADE_PURCHASE_INDENT = 35
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
 COLORS = {"black"     :(0x00, 0x00, 0x00),
@@ -67,4 +68,5 @@ COLORS = {"black"     :(0x00, 0x00, 0x00),
           "sky"       :(0xCC, 0xFF, 0xFF),
           "sand"      :(0xFF, 0xCC, 0x66),
           "attackbut" :(0xCC, 0xCC, 0xCC),
-          "shopbg"    :(0x99, 0xCC, 0xFF)}
+          "shopbg"    :(0x99, 0xCC, 0xFF),
+          "gray"      :(0xAA, 0xAA, 0xAA),}

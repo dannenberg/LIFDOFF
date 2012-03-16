@@ -89,7 +89,10 @@ class ShopScreen(Screen):
             pygame.draw.rect(self.words, (0xC0,0xC0,0xC0), (SHOP_PURCH_X,SHOP_PURCH_Y,SHOP_PURCH_W,SHOP_PURCH_H))
             pygame.draw.rect(self.words, COLORS["black"], (SHOP_PURCH_X,SHOP_PURCH_Y,SHOP_PURCH_W,SHOP_PURCH_H), 2)
             
-            text = font3.render("Purchase",True,COLORS["black"])
+            if self.main.screens["game"].my_board.gold >= self.prices_and_values[self.index]["prices"][self.prices_and_values[self.index]["rank"]][0]: 
+                text = font3.render("Purchase",True,COLORS["black"])
+            else:
+                text = font3.render("Purchase",True,COLORS["gray"])
             self.words.blit(text, (SHOP_PURCH_X+7,SHOP_PURCH_Y+5))
         
         textwidth = 664
