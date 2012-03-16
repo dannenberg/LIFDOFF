@@ -1,4 +1,5 @@
 import pygame
+import math
 from constants import *
 from screen import Screen
 
@@ -46,6 +47,36 @@ class UpgradeScreen(Screen):
             for upgrade in tree:    # lines first
                 for prereqs in tree[upgrade]["next"]:
                     pygame.draw.line(surfs[t], (0,0,0), (tree[upgrade]["x"],tree[upgrade]["y"]), (tree[prereqs]["x"],tree[prereqs]["y"]), 2)
+                    # p+tr = q+us
+                    # p = (tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2)
+                    # r = (0, UPGRADE_ICON_SIZE)
+                    #
+                    q = (tree[upgrade]["x"], tree[upgrade]["y"])
+                    s = (tree[prereqs]["x"]-tree[upgrade]["x"], tree[prereqs]["y"]-tree[upgrade]["y"])
+                    def cross(v,w):
+                        return v[0]*w[1]-v[1]*w[0]
+                        
+                    pt = (0,0)
+                    lstu = 1    # we want a value less than this
+                    ourhero = None
+                    for p,r in (((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2), (0, UPGRADE_ICON_SIZE)),
+                                ((tree[prereqs]["x"]+UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2), (0, UPGRADE_ICON_SIZE)),
+                                ((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2), (UPGRADE_ICON_SIZE, 0)),
+                                ((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]+UPGRADE_ICON_SIZE/2), (UPGRADE_ICON_SIZE, 0))):
+                        q_p = (q[0]-p[0], q[1]-p[1])
+                        u = float(cross(q_p, r)) / cross(r, s)
+                        if u < lstu and 0<=float(cross(q_p, s))/ cross(r,s)<=1: # lol @ the second part mattering
+                            lstu = u
+                            pt = (q[0]+u*s[0], q[1]+u*s[1])
+                            ourhero = (p,r)
+                    print "u",lstu
+                    print "our hero",ourhero
+                    # and now we have the point
+                    
+                    angle = math.atan(s[0]/s[1])    # backwards
+                    pygame.draw.line(surfs[t], (0,0,0), pt, (pt[0]-math.sin(angle+math.pi/5)*10, pt[1]-math.cos(angle+math.pi/5)*10), 2)  # arrowheads
+                    pygame.draw.line(surfs[t], (0,0,0), pt, (pt[0]-math.sin(angle-math.pi/5)*10, pt[1]-math.cos(angle-math.pi/5)*10), 2)
+
             for upgrade in tree:
                 rectloc = (tree[upgrade]["x"]-UPGRADE_ICON_SIZE/2, tree[upgrade]["y"]-UPGRADE_ICON_SIZE/2, UPGRADE_ICON_SIZE, UPGRADE_ICON_SIZE)
                 pygame.draw.rect(surfs[t], (0xCC,0xCC,0xCC), rectloc)
