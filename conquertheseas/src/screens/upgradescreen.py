@@ -10,10 +10,10 @@ class UpgradeScreen(Screen):
         self.tree_three = pygame.Surface((SCREEN_WIDTH/4, SCREEN_HEIGHT))
         self.info_sfc = pygame.Surface((SCREEN_WIDTH/4, SCREEN_HEIGHT))
         
-        self.upgrades = [[{"First":{"row":0, "order":1, "next":["Second","Third"], "cost":5},
-                           "Second":{"row":1, "order":1, "next":["Ultimate"], "cost":10},
-                           "Third":{"row":1, "order":2, "next":["Ultimate"], "cost":15},
-                           "Ultimate":{"row":2,"order":1, "next":[], "cost":30}},
+        self.upgrades = [[{"First":{"row":0, "order":0, "next":["Second","Third"], "cost":5},
+                           "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":10},
+                           "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15},
+                           "Ultimate":{"row":2,"order":0, "next":[], "cost":30}},
                           {},{}],[{},{},{}],[{},{},{}]]
         self.init_upgrades()
         
@@ -30,12 +30,14 @@ class UpgradeScreen(Screen):
             for tree in ship:
                 for upgrade in tree:    # find how many there are in each row
                     if tree[upgrade]["row"] not in rows:
-                        rows[tree[upgrade]["row"]] = 1  # intentional
+                        rows[tree[upgrade]["row"]] = 0  # intentional
                     rows[tree[upgrade]["row"]] += 1
-                    maxrow = max(maxrow, tree[upgrade]["row"]+2)
+                    maxrow = max(maxrow, tree[upgrade]["row"]+1)
                 for upgrade in tree:    # actually assign them to locations
-                    tree[upgrade]["x"] = SCREEN_WIDTH*tree[upgrade]["order"]/4/rows[tree[upgrade]["row"]]
-                    tree[upgrade]["y"] = SCREEN_HEIGHT*(tree[upgrade]["row"]+1)/maxrow
+                    xspacing = (SCREEN_WIDTH/4.0)/rows[tree[upgrade]["row"]]
+                    yspacing = SCREEN_HEIGHT/maxrow
+                    tree[upgrade]["x"] = (tree[upgrade]["order"]+.5)*xspacing
+                    tree[upgrade]["y"] = (tree[upgrade]["row"]+.5)*yspacing
         
     def switch_ship(self, which):
         surfs = (self.tree_one, self.tree_two, self.tree_three)
@@ -48,11 +50,11 @@ class UpgradeScreen(Screen):
                 rectloc = (tree[upgrade]["x"]-UPGRADE_ICON_SIZE/2, tree[upgrade]["y"]-UPGRADE_ICON_SIZE/2, UPGRADE_ICON_SIZE, UPGRADE_ICON_SIZE)
                 pygame.draw.rect(surfs[t], (0xCC,0xCC,0xCC), rectloc)
                 pygame.draw.rect(surfs[t], (0,0,0), rectloc, 2)
-                def what(thef):
+                def what(tree, upgrade):
                     def onclick(scr, mpos):
-                        print thef["cost"]
+                        print upgrade+": "+str(tree[upgrade]["cost"])
                     return onclick
-                self.clickbox.append(rectloc, what(tree[upgrade]), z=2)
+                self.clickbox.append(rectloc, what(tree, upgrade), z=2)
                 
         
     def display(self, screen):
