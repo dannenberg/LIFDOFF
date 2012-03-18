@@ -109,6 +109,7 @@ class Main():
                 self.client = None
         if screen == "upgrade":
             self.screens["upgrade"].redraw_right_panel()
+            self.screens["upgrade"].switch_ship()
         self.mainscreen = self.screens[screen]
         self.mainscreen.abs_scale(self.scale)
 

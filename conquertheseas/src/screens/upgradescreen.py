@@ -10,16 +10,14 @@ class UpgradeScreen(Screen):
         self.tree_two = pygame.Surface((SCREEN_WIDTH/4, SCREEN_HEIGHT))
         self.tree_three = pygame.Surface((SCREEN_WIDTH/4, SCREEN_HEIGHT))
         self.info_sfc = pygame.Surface((SCREEN_WIDTH/4, SCREEN_HEIGHT))
-        self.current_upgrade_name = ""
-        self.current_upgrade_cost = ""
-        self.current_upgrade_desc = ""
-        #self.ship = 0
+        
+        self.ship = 0
         self.current_upgrade = None
         self.current_tree = None
-        self.upgrades = [[{"First":{"row":0, "order":0, "next":["Second","Third"], "cost":5,"name":"dberg upgrade 1", "desc":"makes dannenberg less shitty at games. now he's actually not the worst in the world."},
-                           "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":10,"name":"dberg upgrade 2",  "desc":"makes dannenberg almost decent at games. now he can beat little crippled girls half the time."},
-                           "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15, "name":"dberg upgrade 3", "desc":"makes dannenberg good at games. he can hold his own against asian 10 year olds."},
-                           "Ultimate":{"row":2,"order":0, "next":[], "cost":30,"name":"dberg ult upgrade",  "desc":"makes dannenberg great at games. he can finally win a game against someone his age."}},
+        self.upgrades = [[{"First":{"row":0, "order":0, "next":["Second","Third"], "cost":5, "desc":"makes dannenberg less shitty at games. now he's actually not the worst in the world."},
+                           "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":10, "desc":"makes dannenberg almost decent at games. now he can beat little crippled girls half the time."},
+                           "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15, "desc":"makes dannenberg good at games. he can hold his own against asian 10 year olds."},
+                           "Ultimate":{"row":2,"order":0, "next":[], "cost":30, "desc":"makes dannenberg great at games. he can finally win a game against someone his age."}},
                           {},{}],[{},{},{}],[{},{},{}]]
         self.init_upgrades()
         
@@ -33,6 +31,13 @@ class UpgradeScreen(Screen):
         
         self.redraw_right_panel(True)
         self.right_buttons()
+        
+    def purchasable(self, tree=None, upgrade=None):
+        if tree is None and self.current_tree is not None:
+            tree = self.current_tree
+        if upgrade is None and self.current_upgrade is not None:
+            upgrade = self.current_upgrade
+        return self.main.screens["game"].my_board.exp >= tree[upgrade]["cost"] and all([tree[p]["purchased"] for p in tree[upgrade]["prereqs"]]) and not tree[upgrade]["purchased"]
         
     def init_upgrades(self):
         rows = {}
@@ -53,11 +58,18 @@ class UpgradeScreen(Screen):
                     tree[upgrade]["x"] = (tree[upgrade]["order"]+.5)*xspacing
                     tree[upgrade]["y"] = (tree[upgrade]["row"]+.5)*yspacing
                     for next in tree[upgrade]["next"]:
-                        # if "prereqs" not in tree[next]:
                         tree[next]["prereqs"].append(upgrade)
         
-    def switch_ship(self, which):
+    def switch_ship(self, which=None):
+        if which is None:
+            which = self.ship
         self.ship = which
+        
+        color = [0xCC, 0xCC, 0xCC]
+        color[which] = 0xFF
+        for x in (self.tree_one, self.tree_two, self.tree_three):
+            x.fill(color)
+        
         surfs = (self.tree_one, self.tree_two, self.tree_three)
         self.clickbox.clear(2)
         for t,tree in enumerate(self.upgrades[which]):
@@ -71,7 +83,6 @@ class UpgradeScreen(Screen):
                         
                     pt = (0,0)
                     lstu = 1    # we want a value less than this
-                    ourhero = None
                     for p,r in (((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2), (0, UPGRADE_ICON_SIZE)),
                                 ((tree[prereqs]["x"]+UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2), (0, UPGRADE_ICON_SIZE)),
                                 ((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]-UPGRADE_ICON_SIZE/2), (UPGRADE_ICON_SIZE, 0)),
@@ -82,9 +93,6 @@ class UpgradeScreen(Screen):
                         if u < lstu and 0<=float(cross(q_p, s))/ rxs<=1: # lol @ the second part mattering
                             lstu = u
                             pt = (q[0]+u*s[0], q[1]+u*s[1])
-                            ourhero = (p,r)
-                    print "u",lstu
-                    print "our hero",ourhero
                     # and now we have the point
                     
                     angle = math.atan(s[0]/s[1])    # backwards
@@ -93,26 +101,23 @@ class UpgradeScreen(Screen):
 
             for upgrade in tree:
                 rectloc = (tree[upgrade]["x"]-UPGRADE_ICON_SIZE/2, tree[upgrade]["y"]-UPGRADE_ICON_SIZE/2, UPGRADE_ICON_SIZE, UPGRADE_ICON_SIZE)
-                pygame.draw.rect(surfs[t], (0xCC,0xCC,0xCC), rectloc)
+                color = (COLORS["upg_unav"], COLORS["upg_av"], COLORS["upg_purc"])[max(self.purchasable(tree, upgrade), tree[upgrade]["purchased"]*2)]
+                pygame.draw.rect(surfs[t], color, rectloc)
                 pygame.draw.rect(surfs[t], (0,0,0), rectloc, 2)
                 def what(tree, upgrade):
                     def onclick(scr, mpos):
-                        self.current_upgrade = tree[upgrade]
+                        self.current_upgrade = upgrade
                         self.current_tree = tree
-                        print upgrade+": "+str(tree[upgrade]["cost"])
-                        self.current_upgrade_name = upgrade
-                        self.current_upgrade_cost = tree[upgrade]["cost"]
-                        self.current_upgrade_desc = "Description: " + str(tree[upgrade]["desc"])
-                        
                         
                         self.redraw_right_panel()
                             
                         def buy(scr, mpos):
-                            if self.main.screens["game"].my_board.exp >= tree[upgrade]["cost"] and all([tree[p]["purchased"] for p in tree[upgrade]["prereqs"]]) and not tree[upgrade]["purchased"]: 
+                            if self.purchasable(tree, upgrade):
                                 tree[upgrade]["purchased"] = True
                                 self.main.screens["game"].my_board.exp -= tree[upgrade]["cost"]
                                 self.redraw_right_panel()
                                 text = self.font3.render("Purchase",True,COLORS["gray"])
+                                self.switch_ship(which) # redraw the upgrades
                                 #pygame.draw.rect(self.info_sfc, (0xC0,0xC0,0xC0), (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H))
                                 #pygame.draw.rect(self.info_sfc, COLORS["black"], (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), 2)
                                 #self.info_sfc.blit(text, (UPGRADE_PURCHASE_INDENT+70, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10+7))
@@ -173,15 +178,8 @@ class UpgradeScreen(Screen):
             
             if self.current_upgrade is not None:    
                 # sets color of purchase button text
-                print "my current xp: ", self.main.screens["game"].my_board.exp
-                print "cost of this upgrade: " ,self.current_upgrade_cost
-                print self.main.screens["game"].my_board.exp >= self.current_upgrade_cost
-                if self.main.screens["game"].my_board.exp >= self.current_upgrade_cost and all([self.current_tree[p]["purchased"] for p in self.current_upgrade["prereqs"]]) and not self.current_upgrade["purchased"]: 
-                    print "10 is more than 5!"
-                    text = self.font3.render("Purchase",True,COLORS["black"])
-                else:
-                    print "10 is less than 5 lol"
-                    text = self.font3.render("Purchase",True,COLORS["gray"])
+                
+                text = self.font3.render("Purchase"+("d" if self.current_tree[self.current_upgrade]["purchased"] else ""),True,COLORS["black" if self.purchasable() else "gray"])
                 
                 # draws purchase button
                 pygame.draw.rect(self.info_sfc, (0xC0,0xC0,0xC0), (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H))
@@ -190,8 +188,8 @@ class UpgradeScreen(Screen):
                 # put clickbox on purchase button
    
                 # prepares name, cost for current upgrade    
-                upgrade_name = self.font2.render(self.current_upgrade_name, True, COLORS["black"])
-                upgrade_cost = self.font2.render("Cost: " + str(self.current_upgrade_cost) + " xp", True, COLORS["black"])
+                upgrade_name = self.font2.render(self.current_upgrade, True, COLORS["black"])
+                upgrade_cost = self.font2.render("Cost: " + str(self.current_tree[self.current_upgrade]["cost"]) + " xp", True, COLORS["black"])
                 # draws name, cost 
                 self.info_sfc.blit(upgrade_name, (5,5))
                 self.info_sfc.blit(upgrade_cost, (5, SHOP_TEXT_SPACING+5))
@@ -199,7 +197,7 @@ class UpgradeScreen(Screen):
                 # prepares desc for current upgrade
                 textwidth = SCREEN_WIDTH/4 - 10
                 textlist = [""]
-                for x in self.current_upgrade_desc.split(" "):
+                for x in self.current_tree[self.current_upgrade]["desc"].split(" "):
                     if self.font3.size(textlist[-1]+" "+x)[0] > textwidth:
                         textlist.append("")
                     textlist[-1] += x+" "
@@ -217,10 +215,6 @@ class UpgradeScreen(Screen):
         
         def click_ship(which):
             def anon(scr, mpos):
-                color = [0xCC, 0xCC, 0xCC]
-                color[which] = 0xFF
-                for x in (self.tree_one, self.tree_two, self.tree_three):
-                    x.fill(color)
                 self.switch_ship(which)
             return anon
         
