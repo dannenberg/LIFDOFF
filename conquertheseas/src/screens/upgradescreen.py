@@ -103,14 +103,15 @@ class UpgradeScreen(Screen):
                 rectloc = (tree[upgrade]["x"]-UPGRADE_ICON_SIZE/2, tree[upgrade]["y"]-UPGRADE_ICON_SIZE/2, UPGRADE_ICON_SIZE, UPGRADE_ICON_SIZE)
                 color = (COLORS["upg_unav"], COLORS["upg_av"], COLORS["upg_purc"])[max(self.purchasable(tree, upgrade), tree[upgrade]["purchased"]*2)]
                 pygame.draw.rect(surfs[t], color, rectloc)
-                pygame.draw.rect(surfs[t], (0,0,0), rectloc, 2)
+                pygame.draw.rect(surfs[t], (0xFF if tree==self.current_tree and upgrade==self.current_upgrade else 0,0,0), rectloc, 2)
                 def what(tree, upgrade):
                     def onclick(scr, mpos):
                         self.current_upgrade = upgrade
                         self.current_tree = tree
                         
                         self.redraw_right_panel()
-                            
+                        self.switch_ship()
+                        
                         def buy(scr, mpos):
                             if self.purchasable(tree, upgrade):
                                 tree[upgrade]["purchased"] = True
