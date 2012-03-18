@@ -11,7 +11,7 @@ class CreditsScreen(Screen):
         Screen.__init__(self, main)
         self.waves = Waves()
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items
-        def go_back(someone, mpos):
+        def go_back(mpos):
             self.main.change_screen("main")
         self.clickbox.append((30,650,102,50), go_back)
         

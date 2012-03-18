@@ -52,15 +52,15 @@ class GameScreen(Screen):
         self.arrow_locs = Arrows((0,0), 0)
         self.arrow_offset = (0,0)
         
-        def to_shop(scr, mpos):
+        def to_shop(mpos):
             self.main.change_screen("shop")
         self.clickbox.append((660,742,122,57), to_shop) # SO MAGICAL!
         
-        def to_upgrade(scr, mpos):
+        def to_upgrade(mpos):
             self.main.change_screen("upgrade")
         self.clickbox.append((785,742,230,57), to_upgrade) # SO MAGICAL!
 
-        def enemy_boardclick(scr, mpos):
+        def enemy_boardclick(mpos):
             gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
             print "gamescreen.enemy_boardclick (gpos)"+str(gpos)
@@ -74,7 +74,7 @@ class GameScreen(Screen):
                 if pygame.K_LSHIFT not in self.main.keys:
                     self.set_mode(GameScreen.NO_MODE)
                 
-        def my_boardclick(scr, mpos):
+        def my_boardclick(mpos):
             gpos = (mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.held
             clicked_unit = self.my_board.get_cell_content(gpos)   # grab the unit @ this pos
@@ -107,7 +107,7 @@ class GameScreen(Screen):
                         self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
                         for i,o in enumerate(options):
                             self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
-                        def action_click(scr, mpos):
+                        def action_click(mpos):
                             ui_action(options[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
                         try:
                             self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
@@ -121,7 +121,7 @@ class GameScreen(Screen):
                         self.set_mode(GameScreen.ACTION_MENU)
                         self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE))
                         self.action_surface.blit(self.action_imgs, (0,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[Action.UNDO],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
-                        def action_click(scr, mpos):
+                        def action_click(mpos):
                             ui_action(Action.UNDO, curunit)  # show the ui for that action
                         try:
                             self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE, ACTION_BUTTON_SIZE), action_click, z=2)
@@ -132,7 +132,7 @@ class GameScreen(Screen):
         self.clickbox.append((ENEMY_BOARD_X, ENEMY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), enemy_boardclick)
         self.clickbox.append((   MY_BOARD_X,    MY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), my_boardclick)
         
-        def action_button(scr, mpos):
+        def action_button(mpos):
             if self.local:
                 self.set_mode(GameScreen.NO_MODE)
                 self.enemy_board.remove_staging()
@@ -150,7 +150,7 @@ class GameScreen(Screen):
                         self.set_mode(GameScreen.GAMEOVER)
                         self.clickbox.clear()
                         self.overbox.clear()
-                        def toMenu(scr, mpos):
+                        def toMenu(mpos):
                             self.main.change_screen("main")
                             self.main.reset_screen("game")
                             self.main.reset_screen("shop")
@@ -186,7 +186,7 @@ class GameScreen(Screen):
             else:
                 raise AttributeError("Unrecognized token "+str(token))
             
-        def offense_panel_click(scr, mpos):
+        def offense_panel_click(mpos):
             if self.mode != GameScreen.DEPLOYING:
                 self.set_mode(GameScreen.DEPLOYING)
             gpos = (mpos[0]//PANEL_SQUARE_SIZE, mpos[1]//PANEL_SQUARE_SIZE)
@@ -235,13 +235,13 @@ class GameScreen(Screen):
         def limit_by_multiple(x,y,s):
             return ((x-y)//s)*s+y
         
-        def mouseout(scr):
-            scr.mouseover_highlight = []
-            scr.highlight_panel_square = None
+        def mouseout():
+            self.mouseover_highlight = []
+            self.highlight_panel_square = None
         
         # offensive panel mouse over
-        def hold(scr, mpos):
-            scr.highlight_panel_square = (limit_by_multiple(mpos[0],0,PANEL_SQUARE_SIZE)+2,limit_by_multiple(mpos[1],0,PANEL_SQUARE_SIZE)+2)
+        def hold(mpos):
+            self.highlight_panel_square = (limit_by_multiple(mpos[0],0,PANEL_SQUARE_SIZE)+2,limit_by_multiple(mpos[1],0,PANEL_SQUARE_SIZE)+2)
         self.overbox.append((OFFENSIVE_PANEL_X, OFFENSIVE_PANEL_Y, OFFENSIVE_PANEL_WIDTH, OFFENSIVE_PANEL_HEIGHT),hold,mouseout)
         
         # enemy board mouse over
@@ -250,7 +250,7 @@ class GameScreen(Screen):
                 if num < 3:
                     return num*4
                 return num//4
-            def hold(scr, mpos):
+            def hold(mpos):
                 if self.mode == GameScreen.ACTION_MENU:
                     return
                 if player:
@@ -262,9 +262,9 @@ class GameScreen(Screen):
                 curunit = whichboard.get_cell_content(gpos)
                 if not self.held:
                     if not curunit: # no unit mouseover'd
-                        scr.mouseover_highlight = [gpos]
+                        self.mouseover_highlight = [gpos]
                     else:
-                        scr.mouseover_highlight = curunit.get_cells()
+                        self.mouseover_highlight = curunit.get_cells()
                 elif isinstance(self.held,Unit):
                     """
                     if gpos in self.movement_locs:
@@ -277,10 +277,10 @@ class GameScreen(Screen):
                         gpos = ((mpos[0]-self.arrow_offset[0])//SQUARE_SIZE, (mpos[1]-self.arrow_offset[1])//SQUARE_SIZE)
                         self.arrow_locs.update_arrows(*gpos)
                         
-                    scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in self.held.get_shape()]
+                    self.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in self.held.get_shape()]
                 else:
-                    scr.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in UnitFactory.get_shape_from_token(self.held)]
-                scr.highlit_board = player
+                    self.mouseover_highlight = [(loc[0]+gpos[0],loc[1]+gpos[1]) for loc in UnitFactory.get_shape_from_token(self.held)]
+                self.highlit_board = player
             return hold
         self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(0),mouseout)
         self.overbox.append((MY_BOARD_X, MY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(1),mouseout)

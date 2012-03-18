@@ -105,14 +105,14 @@ class UpgradeScreen(Screen):
                 pygame.draw.rect(surfs[t], color, rectloc)
                 pygame.draw.rect(surfs[t], (0xFF if tree==self.current_tree and upgrade==self.current_upgrade else 0,0,0), rectloc, 2)
                 def what(tree, upgrade):
-                    def onclick(scr, mpos):
+                    def onclick(mpos):
                         self.current_upgrade = upgrade
                         self.current_tree = tree
                         
                         self.redraw_right_panel()
                         self.switch_ship()
                         
-                        def buy(scr, mpos):
+                        def buy(mpos):
                             if self.purchasable(tree, upgrade):
                                 tree[upgrade]["purchased"] = True
                                 self.main.screens["game"].my_board.exp -= tree[upgrade]["cost"]
@@ -208,14 +208,14 @@ class UpgradeScreen(Screen):
                 # end of text
             
     def right_buttons(self):
-        def click_back(scr, mpos):
+        def click_back(mpos):
             self.main.change_screen("game")
         
-        def click_shop(scr, mpos):
+        def click_shop(mpos):
             self.main.change_screen("shop")
         
         def click_ship(which):
-            def anon(scr, mpos):
+            def anon(mpos):
                 self.switch_ship(which)
             return anon
         

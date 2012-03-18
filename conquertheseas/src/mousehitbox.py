@@ -5,7 +5,7 @@ class MouseHitboxes:
         self._data = []
         self._last = None   # the index of the last element you saw; used for mouseout
         
-    def append(self, rect, on, off=lambda x:None, z=0):
+    def append(self, rect, on, off=lambda:None, z=0):
         k = {"left":rect[0], "top":rect[1], "width":rect[2], "height":rect[3], "right":rect[0] + rect[2], "bottom":rect[1] + rect[3], "on":on, "off":off, "z":z}
         i = 0
         for i,x in enumerate(self._data):
@@ -24,7 +24,7 @@ class MouseHitboxes:
             x = self._data[self._last]
             if not (x["left"]<=key[0]<x["right"] and x["top"]<=key[1]<x["bottom"]):
                 return x["off"]
-        return lambda x:None
+        return lambda:None
         
     def remove(self, key):
         """ Remove the hitbox at coordinates specified. Does not 'out'."""

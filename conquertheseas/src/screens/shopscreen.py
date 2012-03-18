@@ -16,11 +16,11 @@ class ShopScreen(Screen):
                                   {"name":"Cthulhu","desc":"The Deep One. Walks slowly across the screen, but decimates everything in its path.","flav":"Did you know you could buy Cthulhus? Seriously. You can just go to the store and be like \"Hey do you have any Cthulhus for sale?\" and they'd be all \"Oh yeah of course we can't get rid of the damn (ha ha) things!\"", "highres":pygame.image.load("../img/cthulhu_highres.png"), "rank":0, "prices":[(666,""),(10,"")], "token":UnitFactory.MINE}]
         self.index = None
         self.icons = pygame.image.load("../img/shop_imgs.png")
-        def go_back(scr, mpos):
+        def go_back(mpos):
             self.main.change_screen("game")
         self.clickbox.append((SHOP_BACK_X,SHOP_BACK_Y,SHOP_BACK_W,SHOP_BACK_H), go_back)
         def which(ik):
-            def select(scr, mpos):
+            def select(mpos):
                 try:
                     self.prices_and_values[ik]
                 except IndexError:
@@ -35,7 +35,7 @@ class ShopScreen(Screen):
         self.background = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         self.words = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         
-        def purchase(scr, mpos):
+        def purchase(mpos):
             try:
                 if self.index is None:
                     return
@@ -116,8 +116,8 @@ class ShopScreen(Screen):
         if "highres" in self.prices_and_values[self.index]:
             self.words.blit(self.prices_and_values[self.index]["highres"], (0,SHOP_GRID_SIZE*SHOP_PANEL_Y))
         
-    def display(self, scr):
-        Screen.display(self, scr)
+    def display(self, screen):
+        Screen.display(self, screen)
         
-        scr.blit(self.background, (0,0))
-        scr.blit(self.words, (0,0))
+        screen.blit(self.background, (0,0))
+        screen.blit(self.words, (0,0))

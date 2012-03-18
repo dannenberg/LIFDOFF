@@ -29,7 +29,7 @@ class MainScreen(Screen):
         self.waves = Waves()
         
         def over(setbit):
-            def anon(scr, mpos): # picks new location for gotobox
+            def anon(mpos): # picks new location for gotobox
                 self.selectbox[4] = setbit
                 self.selectbox[2] = (self.maxwid if setbit else self.submaxwid)+25
                 wait = (mpos[1] - 13)//50
@@ -39,12 +39,12 @@ class MainScreen(Screen):
                         self.selectbox[0:2] = self.gotobox[:]
             return anon
 
-        def out(scr): #removes box since we have left menu
+        def out(): #removes box since we have left menu
             self.selectbox[0] = None
             
         self.overbox.append((30, 200, self.maxwid+50, 280), over(True), out)    # makes entire menu mouse-over-able
 
-        def click_newgame(someone, mpos):
+        def click_newgame(mpos):
             self.entering_name = False
             if self.submenu == 1:   # you've already clicked new game
                 return  
@@ -56,11 +56,11 @@ class MainScreen(Screen):
             self.submaxwid = self.maxwidth(self.submenuoptions)
             self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
             
-            def click_singleplayer(scr,mpos):
+            def click_singleplayer(mpos):
                 self.main.change_screen("game")
-            def click_joingame(scr, mpos):
+            def click_joingame(mpos):
                 self.main.change_screen("join")
-            def click_hostgame(scr, mpos):
+            def click_hostgame(mpos):
                 self.main.server = networking.Server()
                 self.main.server.start()
                 self.main.join_server()
@@ -70,7 +70,7 @@ class MainScreen(Screen):
             self.clickbox.append((90+self.maxwid, 265, self.submaxwid+50, 50), click_joingame)
             self.clickbox.append((90+self.maxwid, 315, self.submaxwid+50, 50), click_hostgame)
             
-        def click_options(someone, mpos):
+        def click_options(mpos):
             self.entering_name = False
             
             if self.submenu == 2:
@@ -89,7 +89,7 @@ class MainScreen(Screen):
             if self.main.player_name is not None:
                 self.textbox.blit(self.smallerfont.render(self.main.player_name.strip(), True, COLORS["white"]),(5,5))
             
-            def click_changename(someone, mpos):
+            def click_changename(mpos):
                 self.entering_name = True
                 if self.main.player_name is not None:
                     self.text_input = self.main.player_name
@@ -100,7 +100,7 @@ class MainScreen(Screen):
                 
             self.clickbox.append((90+self.maxwid, 250, self.submaxwid+50, 50), click_changename)
 
-        def click_credits(someone, mpos):
+        def click_credits(mpos):
             self.entering_name = False
             if self.main.valid_nick(self.text_input.strip()):
                 self.main.player_name = self.text_input.strip()
@@ -108,7 +108,7 @@ class MainScreen(Screen):
                 self.main.player_name = None
             self.main.change_screen("credits")            
             
-        def click_exit(someone, mpos): #ideally this will close the game
+        def click_exit(mpos): #ideally this will close the game
             self.main.exit()
         
         for i,x in enumerate([click_newgame, lambda x,y:x, click_options, click_credits, click_exit]):

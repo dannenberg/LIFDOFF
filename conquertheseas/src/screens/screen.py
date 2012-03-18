@@ -27,17 +27,17 @@ class Screen(object):
         result = self.clickbox[mpos]
         if result != None:
             print "screen.click: "+str(mpos) + " " + str((mpos[0] - result["left"], mpos[1] - result["top"]))
-            result["on"](self, (mpos[0] - result["left"], mpos[1] - result["top"]))
+            result["on"]((mpos[0] - result["left"], mpos[1] - result["top"]))
         else:
             print "screen.click: "+str(mpos)+": No item found"
     
     def over(self, mpos):
         """handles mouseover events"""
         mpos = (int(mpos[0]/self.scale), int(mpos[1]/self.scale))
-        self.overbox.out(mpos)(self)
+        self.overbox.out(mpos)()
         result = self.overbox[mpos]
         if result != None:
-            result["on"](self, (mpos[0] - result["left"], mpos[1] - result["top"]))
+            result["on"]((mpos[0] - result["left"], mpos[1] - result["top"]))
             
     def notify_key(self, key):
         pass    # implementation is subclass-specific

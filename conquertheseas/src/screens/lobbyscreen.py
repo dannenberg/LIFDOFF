@@ -56,7 +56,7 @@ class LobbyScreen(Screen):
                 ip = urllib.urlopen('http://whatismyip.org').read()    # yes, this is actually the accepted way to do this
                 txt_ip = self.largefont.render(ip, True, COLORS["white"])
                 self.base_panel.blit(txt_ip, (450, 25))
-                def copy_ip(scr, mpos):
+                def copy_ip(mpos):
                     pygame.scrap.init()
                     pygame.scrap.put(pygame.SCRAP_TEXT, ip)
                 self.clickbox.append((476,706,txt_ip.get_width(), txt_ip.get_height()), copy_ip)
@@ -69,18 +69,18 @@ class LobbyScreen(Screen):
         txt_start_game = self.largefont.render("Start Game", True, COLORS["white"])
         self.button_start.blit(txt_start_game, (30,15))
         self.base_panel.blit(self.button_start, (870,10))
-        def start_game(scr, mpos):
+        def start_game(mpos):
             self.main.client.start_game()
         self.clickbox.append((900, 690, 331, 76), start_game)
         
         self.text_input = ""
         self.msgpanel = MessagePanel((652,509), 23, self.font)
         self.startable = False
-        def to_main(scr, mpos):
+        def to_main(mpos):
             self.main.change_screen("main")
         self.clickbox.append((37,692,329,74), to_main)
         def ready_button_click(i):
-            def anon(scr, mpos):
+            def anon(mpos):
                 if i == self.my_index:
                     self.main.client.set_ready(int(not self.players[i][2]))
                 else:
@@ -89,7 +89,7 @@ class LobbyScreen(Screen):
         for x in xrange(10):
             self.clickbox.append((37, 75+54*x, 48, 48), ready_button_click(x))
         def player_panel_click(i):
-            def anon(scr, mpos):
+            def anon(mpos):
                 if self.my_index == 0:      # only the host can kick
                     if i == self.my_index:
                         pass
@@ -97,34 +97,34 @@ class LobbyScreen(Screen):
                         self.player_menu_pos = (95, 75+54*i+48)
                         options = ["Closed", "Open", "AI"]
                         self.player_menu.fill((0,0,0,128))
-                        def clearworking(scr, mpos):
+                        def clearworking(mpos):
                             self.player_menu_pos = (0,0)
                             for k in xrange(3):
                                 self.clickbox.remove((95, 75+54*i+48+k*40+5))
                             self.clickbox.remove((0,0))
                         self.clickbox.append((0, 0, 1280, 800), clearworking, z=2)
                         for j,option in enumerate(options):
-                            def silly(billy):
-                                def changeto(scr, mpos):
-                                    self.main.client.set_slot(i, billy+1)
+                            def wrapper(toWhat):
+                                def changeto(mpos):
+                                    self.main.client.set_slot(i, toWhat+1)
                                     self.player_menu_pos = (0,0)
                                     for k in xrange(3):
                                         self.clickbox.remove((95, 75+54*i+48+k*40+5))
                                     self.clickbox.remove((0,0))
                                 return changeto
-                            self.clickbox.append((95, 75+54*i+48+j*40+5, 415, 40), silly(j), z=3)
+                            self.clickbox.append((95, 75+54*i+48+j*40+5, 415, 40), wrapper(j), z=3)
                             text = self.font.render(option, True, COLORS["white"])
                             self.player_menu.blit(text, (5, 5+j*40))
                     else:   # it's a person
                         self.player_menu_pos = (95, 75+54*i+48)
                         self.player_menu.fill((0,0,0,0))
                         pygame.draw.rect(self.player_menu, (0,0,0,128), (0,0,415,30))
-                        def clearworking(scr, mpos):
+                        def clearworking(mpos):
                             self.player_menu_pos = (0,0)
                             self.clickbox.remove((95, 75+54*i+48+5))
                             self.clickbox.remove((0,0))
                         self.clickbox.append((0, 0, 1280, 800), clearworking, z=2)
-                        def kickhim(scr, mpos):
+                        def kickhim(mpos):
                             self.main.client.kick_player(str(i))
                             self.player_menu_pos = (0,0)
                             self.clickbox.remove((95, 75+54*i+48+5))

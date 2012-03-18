@@ -28,7 +28,7 @@ class JoinScreen(Screen):
         self.ip = ""
         self.countdown = 0
         
-        def go_back(scr, mpos):
+        def go_back(mpos):
             self.main.change_screen("main")
         self.clickbox.append((JOIN_BACK_X,JOIN_BUTT_Y, JOIN_BUTT_W,JOIN_BUTT_H), go_back)
         self.clickbox.append((JOIN_OK_X,JOIN_BUTT_Y, JOIN_BUTT_W,JOIN_BUTT_H), self.connect_ip)
@@ -43,7 +43,7 @@ class JoinScreen(Screen):
             if not self.countdown:
                 self.redraw_textbox(False)
         
-    def connect_ip(self, scr=None, mpos=None):
+    def connect_ip(self, mpos=None):
         try:
             if count(self.ip, ".") == 3:
                 int(self.ip[-1:])   # what we're "try"ing
