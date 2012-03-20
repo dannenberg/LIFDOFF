@@ -15,6 +15,7 @@ from screens.shopscreen import *
 from screens.upgradescreen import *
 from screens.lobbyscreen import *
 from screens.joinscreen import *
+from screens.saveloadscreen import *
 
 class Main():
     def __init__(self):
@@ -33,7 +34,8 @@ class Main():
                         "upgrade":UpgradeScreen(self),
                         "shop":ShopScreen(self),
                         "lobby":LobbyScreen(self),
-                        "join":JoinScreen(self)}
+                        "join":JoinScreen(self),
+                        "saveload":SaveLoadScreen(self)}
 
         pygame.display.set_caption("FRIENDS OF THE SEA")
         self.done=False
@@ -108,16 +110,7 @@ class Main():
         return True
     
     def change_screen(self, screen):
-        if screen == "main":
-            if self.server != None:
-                self.server.stop()
-                self.server = None
-            if self.client != None:
-                self.client.stop()
-                self.client = None
-        if screen == "upgrade":
-            self.screens["upgrade"].redraw_right_panel()
-            self.screens["upgrade"].switch_ship()
+        self.screens[screen].on_switch_in()
         self.mainscreen = self.screens[screen]
         self.mainscreen.abs_scale(self.scale)
     

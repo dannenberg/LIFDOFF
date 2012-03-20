@@ -226,3 +226,6 @@ class UpgradeScreen(Screen):
         self.clickbox.append((SCREEN_WIDTH*10/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(1))
         self.clickbox.append((SCREEN_WIDTH*11/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(2))
         
+    def on_switch_in(self):
+        self.redraw_right_panel()
+        self.switch_ship()

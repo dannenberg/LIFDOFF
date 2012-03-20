@@ -70,6 +70,11 @@ class MainScreen(Screen):
             self.clickbox.append((90+self.maxwid, 265, self.submaxwid+50, 50), click_joingame)
             self.clickbox.append((90+self.maxwid, 315, self.submaxwid+50, 50), click_hostgame)
             
+        def click_loadgame(mpos):
+            self.entering_name = False
+            self.main.change_screen("saveload")
+            #self.main.screens["saveload"].redraw_save_load(False)
+            
         def click_options(mpos):
             self.entering_name = False
             
@@ -111,7 +116,7 @@ class MainScreen(Screen):
         def click_exit(mpos): #ideally this will close the game
             self.main.exit()
         
-        for i,x in enumerate([click_newgame, lambda x,y:x, click_options, click_credits, click_exit]):
+        for i,x in enumerate([click_newgame, click_loadgame, click_options, click_credits, click_exit]):
             self.clickbox.append((30, 215+50*i, self.maxwid, 45), x)
     
     def display(self, screen):
@@ -185,3 +190,10 @@ class MainScreen(Screen):
             else:
                 self.main.player_name = None
             
+    def on_switch_in():
+        if self.main.server != None:
+            self.main.server.stop()
+            self.main.server = None
+        if self.main.client != None:
+            self.main.client.stop()
+            self.main.client = None

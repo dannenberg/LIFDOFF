@@ -21,6 +21,10 @@ class Screen(object):
     def abs_scale(self, size):
         self.scale = size
     
+    def on_switch_in(self):
+        """when this screen is switched to, do this"""
+        pass
+    
     def click(self, mpos):
         """handles click events"""
         mpos = (int(mpos[0]/self.scale), int(mpos[1]/self.scale))
