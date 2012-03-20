@@ -92,12 +92,23 @@ class Main():
                 while not self.done and self.client is not None and self.client.msgs.empty():
                     pass
                 if self.client is not None and not self.client.msgs.empty():
-                    self.screens["lobby"].parse_server_output(self.client.msgs.get(block = False))
+                    poo = self.client.msgs.get(block = False)
+                    print poo
+                    if "DIE!" in poo:
+                        print "clearly this works"
+                        self.client = None
+                        self.race_cond = 2
+                        return
+                    self.screens["lobby"].parse_server_output(poo)
         threading.Thread(target=get_server_msg).start()     
         while not self.race_cond:
             pass
+        if self.race_cond == 2: #HOLYSHIT SO HOOD
+            return False
         if self.client is not None and self.player_name is not None and self.race_cond:
             self.client.change_name(self.player_name)
+        return True
+
             
     def change_screen(self, screen):
         if screen == "main":

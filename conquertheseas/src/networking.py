@@ -213,7 +213,11 @@ class Client(threading.Thread):
         self.recv_buf = ''
         
     def run(self):
-        self.sock.connect(self.ADDR)
+        try:
+            self.sock.connect(self.ADDR)
+        except IOError:
+            self.msgs.put("DIE!")
+            return
         self.sock.settimeout(0.5)
         while not self.done:
             while not self.done and self.recv_buf.find(RS) == -1:
