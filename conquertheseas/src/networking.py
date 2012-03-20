@@ -62,7 +62,7 @@ class Server(threading.Thread):
                             self.send_to_all("JOIN " + str(x) + " Player " + str(x))
                         else:
                             conn, _ = c.accept()
-                            conn.send("Sorry, server is full!" + RS)
+                            conn.send("DIE!" + RS)  # little harsh but alright
                             print "a player couldn't join due to lack of slots"
                             conn.close()
                                         
@@ -71,7 +71,7 @@ class Server(threading.Thread):
                     # blocks on c (but select has told us that there's a
                     # message waiting, so there's no real blocking)
                     sender = self.get_sender(c)
-                    while self.slots[sender]["buffer"].find(RS) == -1:
+                    while "buffer" in self.slots[sender] and self.slots[sender]["buffer"].find(RS) == -1:
                         message = self.slots[sender]["conn"].recv(MAX_PACKET_LENGTH)
                         if not message:
                             # an empty string indicates that the client has
@@ -85,6 +85,8 @@ class Server(threading.Thread):
                             c.close()
                         else:
                             self.slots[sender]["buffer"] += message
+                    if "buffer" not in self.slots[sender]:
+                        continue
                     message, _, self.slots[sender]["buffer"] = self.slots[sender]["buffer"].partition(RS)
                     # echoes actual message to all players   
                     cmdend = message.find(' ')
