@@ -43,4 +43,8 @@ class DefensiveUnit(Unit):
         return hold
 
     def get_abilities(self):
+        if not self.moves_remaining:
+            return [Action.UNDO]
+        if self._actions:
+            return self._abilities + [Action.UNDO]
         return self._abilities

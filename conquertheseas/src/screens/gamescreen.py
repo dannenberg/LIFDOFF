@@ -100,35 +100,20 @@ class GameScreen(Screen):
             elif curunit != None: # clicked on a unit: do as he wants
                 if curunit._class == Unit.DEFENSE: # TODO make a action menu creator for action mode!
                     options = curunit.get_abilities() # get his possible actions
-                    if len(curunit._actions): # if something is queued, allow reset
-                        options += [Action.UNDO]
-                    if curunit.moves_remaining:
-                        self.set_mode(GameScreen.ACTION_MENU)
-                        self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
-                        for i,o in enumerate(options):
-                            self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
-                        def action_click(mpos):
-                            ui_action(options[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
-                        try:
-                            self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
-                            self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
-                            #self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
-                            #self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
-                        except AttributeError:
-                            print "TODO: avoid double placing this hitbox"
-                    else:
-                        # he is out of moves so only allow him to reset
-                        self.set_mode(GameScreen.ACTION_MENU)
-                        self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE))
-                        self.action_surface.blit(self.action_imgs, (0,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[Action.UNDO],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
-                        def action_click(mpos):
-                            ui_action(Action.UNDO, curunit)  # show the ui for that action
-                        try:
-                            self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE, ACTION_BUTTON_SIZE), action_click, z=2)
-                            self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
-                        except AttributeError:
-                            print "TODO: avoid double placing this hitbox"
-            
+                    self.set_mode(GameScreen.ACTION_MENU)
+                    self.action_surface = pygame.Surface((ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE))
+                    for i,o in enumerate(options):
+                        self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
+                    def action_click(mpos):
+                        ui_action(options[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
+                    try:
+                        self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
+                        self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
+                        #self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
+                        #self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
+                    except AttributeError:
+                        print "TODO: avoid double placing this hitbox"
+        
         self.clickbox.append((ENEMY_BOARD_X, ENEMY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), enemy_boardclick)
         self.clickbox.append((   MY_BOARD_X,    MY_BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT), my_boardclick)
         
