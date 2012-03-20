@@ -125,7 +125,7 @@ class Board:
     def initialize_turn(self):
         for unit in self.units:
             unit._unaltered_loc = unit._loc
-            unit.move_remaining = unit._move_speed
+            unit.moves_remaining = unit._move_speed
 
     def move_unit(self, unit, loc=None):
         if loc == None:

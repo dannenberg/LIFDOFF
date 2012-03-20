@@ -8,6 +8,9 @@
 =================
 - No IP checking for like validness at all
 - No IP checking for "i'm looking to join a server that's actually open"
+- If moving maximum amount of spaces, have to undo moves on next turn to be able to move again
+- Two units in a row, second will stop if the first one collides with something
+- Undo button does not go away after undoing - then you get stuck with lots of undo buttons
 
 =================
 -- SMALL TODOS -- 
