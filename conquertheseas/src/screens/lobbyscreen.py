@@ -14,7 +14,7 @@ OPEN = 2
 AI = 3
 
 class LobbyScreen(Screen):
-    def __init__(self, main):
+    def __init__(self, main, host=True):
         Screen.__init__(self, main)
         
         self.my_index = 0
@@ -30,7 +30,7 @@ class LobbyScreen(Screen):
         
         self.player_menu = pygame.Surface((415, 120), pygame.SRCALPHA)
         self.player_menu_pos = (0, 0)
-
+        
         self.players_panel = pygame.Surface((496,578), pygame.SRCALPHA)
         self.players_panel.fill((0, 0, 0, 128))
         self.players = []
@@ -51,18 +51,19 @@ class LobbyScreen(Screen):
         self.button_leave_lobby.blit(txt_leave_lobby, (15,15))
         self.base_panel.blit(self.button_leave_lobby, (10,10))
         
-        def get_ip():
-            try:
-                ip = urllib.urlopen('http://whatismyip.org').read()    # yes, this is actually the accepted way to do this
-                txt_ip = self.largefont.render(ip, True, COLORS["white"])
-                self.base_panel.blit(txt_ip, (450, 25))
-                def copy_ip(mpos):
-                    pygame.scrap.init()
-                    pygame.scrap.put(pygame.SCRAP_TEXT, ip)
-                self.clickbox.append((476,706,txt_ip.get_width(), txt_ip.get_height()), copy_ip)
-            except (urllib2.URLError, urllib2.HTTPError):
-                print "Error fetching IP"
-        threading.Thread(target=get_ip).start()
+        if host:
+            def get_ip():
+                try:
+                    ip = urllib.urlopen('http://whatismyip.org').read()    # yes, this is actually the accepted way to do this
+                    txt_ip = self.largefont.render(ip, True, COLORS["white"])
+                    self.base_panel.blit(txt_ip, (450, 25))
+                    def copy_ip(mpos):
+                        pygame.scrap.init()
+                        pygame.scrap.put(pygame.SCRAP_TEXT, ip)
+                    self.clickbox.append((476,706,txt_ip.get_width(), txt_ip.get_height()), copy_ip)
+                except (urllib2.URLError, urllib2.HTTPError):
+                    print "Error fetching IP"
+            threading.Thread(target=get_ip).start()
         
         self.button_start = pygame.Surface((331,76), pygame.SRCALPHA)
         self.button_start.fill((0,0,0,64))
