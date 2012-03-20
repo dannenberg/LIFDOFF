@@ -99,7 +99,7 @@ class Main():
                         self.client = None
                         self.race_cond = 2
                         return
-                    self.screens["lobby"].parse_server_output(msgs)
+                    self.screens["lobby"].parse_server_output(msg)
         threading.Thread(target=get_server_msg).start()
         while not self.race_cond:
             pass
