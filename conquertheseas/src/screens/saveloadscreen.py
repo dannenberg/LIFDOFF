@@ -51,6 +51,9 @@ class SaveLoadScreen(Screen):
         self.save_load_button.blit(txt, (12,8))
         
     def redraw_files(self):
+        d = os.path.dirname("../saves/")
+        if not os.path.exists(d):
+            os.makedirs(d)
         self.files = ['.'.join(f.split(".")[:-1]) for f in os.listdir("../saves/") if "sav"==f.split(".")[-1]]
         self.disp_area.fill((0,0,0,64))
         for i,f in enumerate(self.files):
