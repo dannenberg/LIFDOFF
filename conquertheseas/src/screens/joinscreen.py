@@ -48,7 +48,6 @@ class JoinScreen(Screen):
             if count(self.ip, ".") == 3:
                 int(self.ip[-1:])   # what we're "try"ing
                 if self.main.join_server(self.ip):
-                    self.main.reset_screen("lobby", False)
                     self.main.change_screen("lobby") # TODO: yeah connecting things
                 return
         except ValueError:
