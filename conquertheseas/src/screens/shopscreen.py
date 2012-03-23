@@ -47,6 +47,7 @@ class ShopScreen(Screen):
                 return
             if self.main.screens["game"].my_board.gold >= x["prices"][x["rank"]][0]:  # TODO: MONEY
                 self.main.screens["game"].my_board.gold -= x["prices"][x["rank"]][0]
+                self.main.screens["game"].to_server.append("BUY " + str(self.index))
                 if not x["rank"]:
                     self.main.screens["game"].offense_panel.add_unit(x["token"])
                 x["rank"] += 1

@@ -119,6 +119,7 @@ class UpgradeScreen(Screen):
                             if self.purchasable(tree, upgrade):
                                 tree[upgrade]["purchased"] = True
                                 self.main.screens["game"].my_board.exp -= tree[upgrade]["cost"]
+                                self.main.screens["game"].to_server.append("UPGRADE " + str(tree[upgrade]["id"]))
                                 self.redraw_right_panel()
                                 text = self.font3.render("Purchase",True,COLORS["gray"])
                                 self.switch_ship(which) # redraw the upgrades
