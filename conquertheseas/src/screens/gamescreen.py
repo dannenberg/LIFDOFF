@@ -32,6 +32,8 @@ class GameScreen(Screen):
         self.num_players = num_players
         self.local = local
 
+        self.to_server = []
+
         self.font = pygame.font.Font(None, 40)
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
@@ -150,7 +152,7 @@ class GameScreen(Screen):
                 # send everything to server
                 # server does take_turn
                 # sends results back
-                pass
+                self.to_server = []
                 
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
