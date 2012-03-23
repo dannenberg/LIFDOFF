@@ -17,6 +17,18 @@ class Board:
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i, purple))
     
+    def __getstate__(self):
+        # !!!! CRITICALLY IMPORTANT !!!!
+        # If we need to change the order or contents of the items in this function,
+        # or the accompanying __setstate__, or really any sort of save/load helper
+        # function, increment the VERSION number in constants.py
+        return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
+        
+    def __setstate__(self, data):
+        # !!!! CRITICALLY IMPORTANT !!!!
+        # See above
+        self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
+    
     def draw_board(self):
         for x in self.units:
             x.draw_sprite(self.surface)

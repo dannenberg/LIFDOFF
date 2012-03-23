@@ -73,7 +73,8 @@ class MainScreen(Screen):
         def click_loadgame(mpos):
             self.entering_name = False
             self.main.change_screen("saveload")
-            #self.main.screens["saveload"].redraw_save_load(False)
+            self.main.screens["saveload"].redraw_save_load(False)
+            self.main.screens["saveload"].return_to = "main"
             
         def click_options(mpos):
             self.entering_name = False

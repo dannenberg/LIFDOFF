@@ -22,18 +22,29 @@ class SaveLoadScreen(Screen):
         self.highlight_click_box.fill((0,0,0,64))
         self.highlight_click_loc = None
         self.redraw_save_load()
+        self.return_to = None
         self.text_area.fill((0,0,0,64))
         self.text_input = ""
+        self.back_button = pygame.Surface((110,50), pygame.SRCALPHA)
+        self.back_button.fill((0,0,0,128))
+        txt = pygame.font.Font(None, 60).render("Back", True, COLORS["white"])
+        self.back_button.blit(txt, (5,5))
+        def go_back(mpos):
+            if self.return_to is not None:
+                self.main.change_screen(self.return_to)
+            else:
+                print "I got nowhere to go to."
+        self.clickbox.append((40, 740, 110, 50), go_back)
         self.redraw_files()
         
         def m_click(mpos):
-            index = mpos[1]//40
+            index = mpos[1]//LINE_HEIGHT
             if index < len(self.files):
                 self.highlight_click_loc = (40, index*LINE_HEIGHT + 160)
                 self.text_input = self.files[index]
                 self.redraw_text()
         def m_over(mpos):
-            index = mpos[1]//40
+            index = mpos[1]//LINE_HEIGHT
             if index < len(self.files):
                 self.highlight_over_loc = (40, index*LINE_HEIGHT + 160)
             else:
@@ -78,12 +89,20 @@ class SaveLoadScreen(Screen):
         screen.blit(self.disp_area, (40,160))
         screen.blit(self.text_area, (40,690))
         screen.blit(self.save_load_button, (550,690))
+        screen.blit(self.back_button, (40,740))
         
     def save_load(self, mpos=None):
-        print self.text_input+".sav"
+        f = self.text_input+".sav"
         if self.save_notload:
             if self.text_input in self.files:
                 print "Hot damn are you sure you want to overwrite that file?"
+                return False
+            if self.return_to is not None:
+                self.main.change_screen(self.return_to)
+            self.main.save("../saves/"+f)
+            self.main.change_screen("saveload")
+        else:   # load
+            pass
         
     def notify_key(self, inkey):
         if inkey.key == pygame.K_BACKSPACE:

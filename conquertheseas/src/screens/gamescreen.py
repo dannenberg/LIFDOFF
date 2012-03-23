@@ -24,6 +24,11 @@ class GameScreen(Screen):
         Screen.__init__(self, main)
         print "local: ", local, "player numbers: ", num_players
         
+        if isinstance(num_players, int):
+            boards = None
+        else:
+            boards = num_players
+            num_players = len(num_players)
         self.num_players = num_players
         self.local = local
 
@@ -44,8 +49,7 @@ class GameScreen(Screen):
         self.local_opanel.add_unit(UnitFactory.TADPOLE)
         self.local_shop = ShopScreen(self.main)
         
-        self.enemy_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y)
-        self.my_board = Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, True)
+        self.create_boards(num_players, boards)
         
         self.action_imgs = pygame.image.load("../img/action_choices.png")
         self.arrows = pygame.image.load("../img/arrow_formatted.png")
@@ -59,7 +63,13 @@ class GameScreen(Screen):
         def to_upgrade(mpos):
             self.main.change_screen("upgrade")
         self.clickbox.append((785,742,230,57), to_upgrade) # SO MAGICAL!
-
+        
+        def to_mainmenu(mpos):
+            self.main.change_screen("saveload")
+            self.main.screens["saveload"].redraw_save_load(True)
+            self.main.screens["saveload"].return_to = "game"
+        self.clickbox.append((1020,742,260,57), to_mainmenu)    # TOOOO MAGICAL!
+        
         def enemy_boardclick(mpos):
             gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
@@ -129,26 +139,17 @@ class GameScreen(Screen):
                     self.my_board.take_turn()
                     self.enemy_board.initialize_turn()
                     self.my_board.initialize_turn()
-                    lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
-                    win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
-                    if win or lose:
-                        self.set_mode(GameScreen.GAMEOVER)
-                        self.clickbox.clear()
-                        self.overbox.clear()
-                        def toMenu(mpos):
-                            self.main.change_screen("main")
-                            self.main.reset_screen("game")
-                            self.main.reset_screen("shop")
-                            self.main.reset_screen("upgrade")
-                        self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
-                        self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
-                        
+                    self.handle_gameover()
+                    
                 self.last_turn = not self.last_turn
                 self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
                 
                 self.local_shop, self.main.screens["shop"] = self.main.screens["shop"], self.local_shop
                 self.local_opanel, self.offense_panel = self.offense_panel, self.local_opanel
             else:
+                # send everything to server
+                # server does take_turn
+                # sends results back
                 pass
                 
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
@@ -269,6 +270,26 @@ class GameScreen(Screen):
             return hold
         self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(0),mouseout)
         self.overbox.append((MY_BOARD_X, MY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(1),mouseout)
+    
+    def create_boards(self, num_players, x=None):
+        self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, not i) for i in xrange(num_players)] if x is None else x
+        self.enemy_board = self.enemy_boards[1]
+        self.my_board = self.enemy_boards[0]
+    
+    def handle_gameover(self):
+        lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
+        win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
+        if win or lose:
+            self.set_mode(GameScreen.GAMEOVER)
+            self.clickbox.clear()
+            self.overbox.clear()
+            def toMenu(mpos):
+                self.main.change_screen("main")
+                self.main.reset_screen("game")
+                self.main.reset_screen("shop")
+                self.main.reset_screen("upgrade")
+            self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
+            self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
     
     def set_mode(self, new_mode):
         if self.mode == GameScreen.DEPLOYING:

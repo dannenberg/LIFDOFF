@@ -5,6 +5,7 @@ import math
 import re
 import threading
 import os
+import pickle
 from constants import SCREEN_WIDTH,SCREEN_HEIGHT
 from screens.screen import *
 from screens.gamescreen import *
@@ -113,6 +114,16 @@ class Main():
         self.screens[screen].on_switch_in()
         self.mainscreen = self.screens[screen]
         self.mainscreen.abs_scale(self.scale)
+    
+    def save(self, floc):
+        f = open(floc, "w+")
+        pickle.dump((VERSION, self.screens["game"].enemy_boards), f)
+        
+    def load(self, floc):
+        f = open(floc, "r")
+        v, boards = pickle.load(f)
+        self.reset_screen("game", boards)
+        self.change_screen("game")
     
     def exit(self):
         self.done = True
