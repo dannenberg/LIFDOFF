@@ -247,7 +247,7 @@ class LobbyScreen(Screen):
         
     def recv_start_game(self, num_players):
         print "game starting!!"
-        self.main.reset_screen("game", num_players, False)
+        self.main.reset_screen("game", int(num_players), False)
         self.main.change_screen("game")
         
     def notify_key(self, inkey):
