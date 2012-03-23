@@ -16,19 +16,19 @@ class UnitFactory(object):
         utype = Unit.OFFENSE if fo_real else Unit.STAGING
         utoken = None if fo_real else idd
         if idd == UnitFactory.TADPOLE:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/tadpole.png", utype, 5, 5, token=utoken)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/tadpole.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.MINE:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/mine.png", utype, 5, 5, token=utoken)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/mine.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.CRAB:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/crab.png", utype, 5, 5, token=utoken)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/crab.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.SQUIDDLE:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/squiddle.png", utype, 5, 5, token=utoken)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/squiddle.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.MERMAID:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/mermaid.png", utype, 10, 5, token=utoken)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/mermaid.png", utype, 10, 5, token=utoken)
         if idd == UnitFactory.ANGRYFISH:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/angryfish.png", utype, 10, 5, token=utoken)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/angryfish.png", utype, 10, 5, token=utoken)
         if idd == UnitFactory.BULLET:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/bullet.png", Unit.BULLET, 0, 0)
+            return Unit(loc, UnitFactory.unitsize[idd], "../img/bullet.png", Unit.BULLET, 0, 0)
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
@@ -40,14 +40,14 @@ class Unit(object):
     OFFENSE = 2
     BULLET  = 3
     STAGING  = 0
-    def __init__(self, idd, (x,y), (w, h), imgsrc, cls, gold, val, parent=None, token=None):
+    def __init__(self, (x,y), (w, h), imgsrc, cls, gold, val, parent=None, token=None):
         if parent != None:
             self._class = parent._class
             self._parent = parent
         else:
             self._parent = None
             self._class = cls
-        self.idd = idd
+        #self.idd = idd
         self._tileset = pygame.image.load(imgsrc)
         self._token = token
         self._spr_src = (0,0)     # topleft of source tile
@@ -63,17 +63,17 @@ class Unit(object):
         self.health = 1
         
         def __getstate__(self):
-        # !!!! CRITICALLY IMPORTANT !!!!
-        # If we need to change the order or contents of the items in this function,
-        # or the accompanying __setstate__, or really any sort of save/load helper
-        # function, increment the VERSION number in constants.py
-        
-                    self._parent = None
+            # !!!! CRITICALLY IMPORTANT !!!!
+            # If we need to change the order or contents of the items in this function,
+            # or the accompanying __setstate__, or really any sort of save/load helper
+            # function, increment the VERSION number in constants.py
+            
+            """self._parent = None
             self._class = cls
-        self.idd = idd
-        self._tileset = pygame.image.load(imgsrc)
-        self._token, self._spr_src, self._size, self._spr_size, self._loc, self._unaltered_loc, self._actions, self.exp_value, self.cash_value, self._move_speed, self.moves_remaining, self.health
-        return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
+            self.idd = idd
+            self._tileset = pygame.image.load(imgsrc)
+            self._token, self._spr_src, self._size, self._spr_size, self._loc, self._unaltered_loc, self._actions, self.exp_value, self.cash_value, self._move_speed, self.moves_remaining, self.health"""
+            return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
         
     def __setstate__(self, data):
         # !!!! CRITICALLY IMPORTANT !!!!

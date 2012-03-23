@@ -100,7 +100,7 @@ class Main():
                         self.client = None
                         self.race_cond = 2
                         return
-                    self.screens["lobby"].parse_server_output(msg)
+                    self.parse_server_output(msg)
         threading.Thread(target=get_server_msg).start()
         while not self.race_cond:
             pass
@@ -109,6 +109,18 @@ class Main():
         if self.client is not None and self.player_name is not None and self.race_cond:
             self.client.change_name(self.player_name)
         return True
+    
+    def parse_server_output(self, msg):
+        actions = {"MSG":self.screens["lobby"].message, "NICK":self.screens["lobby"].recv_nick_change,
+                   "JOIN":self.screens["lobby"].recv_nick_change, "DATA":self.screens["lobby"].reload_server_data,
+                   "READY":self.screens["lobby"].ready_up, "KICK":self.screens["lobby"].recv_kick_player,
+                   "START":self.screens["lobby"].recv_start_game, "ERROR":lambda x:None}
+        msg = msg.split(" ")
+        cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
+        if cmd not in actions:
+            print "Unknown action",cmd,msg
+            return
+        actions[cmd](msg)
     
     def change_screen(self, screen):
         self.screens[screen].on_switch_in()

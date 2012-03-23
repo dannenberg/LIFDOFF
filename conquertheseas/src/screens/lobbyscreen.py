@@ -250,17 +250,6 @@ class LobbyScreen(Screen):
         self.main.reset_screen("game", num_players, False)
         self.main.change_screen("game")
         
-    def parse_server_output(self, msg):
-        actions = {"MSG":self.message, "NICK":self.recv_nick_change, "JOIN":self.recv_nick_change,
-                   "DATA":self.reload_server_data, "READY":self.ready_up, "KICK":self.recv_kick_player,
-                   "START":self.recv_start_game, "ERROR":lambda x:None}
-        msg = msg.split(" ")
-        cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
-        if cmd not in actions:
-            print "Unknown action",cmd,msg
-            return
-        actions[cmd](msg)
-        
     def notify_key(self, inkey):
         if inkey.key == pygame.K_BACKSPACE:
             self.text_input = self.text_input[:-1]
