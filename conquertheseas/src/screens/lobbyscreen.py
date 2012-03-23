@@ -61,7 +61,7 @@ class LobbyScreen(Screen):
                         pygame.scrap.init()
                         pygame.scrap.put(pygame.SCRAP_TEXT, ip)
                     self.clickbox.append((476,706,txt_ip.get_width(), txt_ip.get_height()), copy_ip)
-                except (urllib2.URLError, urllib2.HTTPError):
+                except (urllib2.URLError, urllib2.HTTPError, IOError):
                     print "Error fetching IP"
             threading.Thread(target=get_ip).start()
         
