@@ -42,6 +42,7 @@ class UpgradeScreen(Screen):
     def init_upgrades(self):
         rows = {}
         maxrow = 0
+        idd = 0
         for s,ship in enumerate(self.upgrades):
             for tree in ship:
                 for upgrade in tree:    # find how many there are in each row
@@ -51,6 +52,8 @@ class UpgradeScreen(Screen):
                     maxrow = max(maxrow, tree[upgrade]["row"]+1)
                     tree[upgrade]["prereqs"] = []
                     tree[upgrade]["purchased"] = False
+                    tree[upgrade]["id"] = idd
+                    idd += 1
                     
                 for upgrade in tree:    # actually assign them to locations
                     xspacing = (SCREEN_WIDTH/4.0)/rows[tree[upgrade]["row"]]
