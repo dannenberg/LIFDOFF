@@ -62,7 +62,7 @@ class Server(threading.Thread):
                             self.send_to_all("JOIN " + str(x) + " Player " + str(x))
                         else:
                             conn, _ = c.accept()
-                            conn.send("DIE!" + RS)  # little harsh but alright
+                            conn.send("DIE " + RS)  # little harsh but alright
                             print "a player couldn't join due to lack of slots"
                             conn.close()
                                         
@@ -218,7 +218,7 @@ class Client(threading.Thread):
         try:
             self.sock.connect(self.ADDR)
         except IOError:
-            self.msgs.put("DIE!")
+            self.msgs.put("DIE ")
             return
         self.sock.settimeout(0.5)
         while not self.done:
