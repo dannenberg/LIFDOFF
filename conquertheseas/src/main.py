@@ -106,9 +106,10 @@ class Main():
         return True
     
     def parse_server_output(self, msg):
-        def bad_thing():
+        def bad_thing(msg):
             self.client = None
             self.race_cond = 2
+            print msg
 
         actions = {"MSG":self.screens["lobby"].message, "NICK":self.screens["lobby"].recv_nick_change,
                    "JOIN":self.screens["lobby"].recv_nick_change, "DATA":self.screens["lobby"].reload_server_data,
