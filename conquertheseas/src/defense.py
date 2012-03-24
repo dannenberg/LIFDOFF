@@ -12,6 +12,7 @@ class DefensiveUnit(Unit):
         else:
             imgsrc = ("../img/yellow_sub.png","../img/yellow_sub.png","../img/yellow_sub.png")[idd]
         super(DefensiveUnit, self).__init__((x,y), (w,h), imgsrc, Unit.DEFENSE, 0, 0)
+        self.idd = idd
         self._move_speed = 5
         self.moves_remaining = self._move_speed
         self._abilities = [Action.MOVE, Action.SHOOT]

@@ -30,6 +30,7 @@ class GameScreen(Screen):
             boards = num_players
             num_players = len(num_players)
         self.num_players = num_players
+        self.people_done = 0
         self.local = local
 
         self.to_server = []
@@ -83,6 +84,7 @@ class GameScreen(Screen):
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                     print "gamescreen.boardclick: can't drop here!"
                     return
+                self.add_to_server_list("SENT",1,self.held,*gpos)  # TODO: send to a board please (rather than 1)
                 if pygame.K_LSHIFT not in self.main.keys:
                     self.set_mode(GameScreen.NO_MODE)
                 
@@ -152,7 +154,26 @@ class GameScreen(Screen):
                 # send everything to server
                 # server does take_turn
                 # sends results back
+                left = True
+                while left:
+                    #print "gamescreen.action_button: LEFT",left
+                    left = 0
+                    for u in self.my_board.units:
+                        #print "gamescreen.action_button:",u._actions
+                        if u._actions:
+                            #print "gamescreen.action_button: push to server:",str(u._actions[0])
+                            self.add_to_server_list(u._actions[0], u.idd)
+                            del u._actions[0]
+                            left += 1
+                    if left:
+                        #print "gamescreen.action_button: TURN"
+                        self.add_to_server_list("TURN")
+                self.add_to_server_list("END")
+                print self.to_server
+                for msg in self.to_server:
+                    self.main.client.send(msg)
                 self.to_server = []
+                self.clickbox.append((0,0,SCREEN_WIDTH,SCREEN_HEIGHT), lambda x:None, z=17)
                 
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
@@ -273,10 +294,32 @@ class GameScreen(Screen):
         self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(0),mouseout)
         self.overbox.append((MY_BOARD_X, MY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(1),mouseout)
     
+    def new_turn(self):
+        """ Receiving the turns back """
+        self.my_board.initialize_turn()
+    
+    def resolve_turn(self, msg):
+        """ ??? """
+        self.people_done += 1
+        if self.people_done == self.num_players:
+            self.people_done = 0
+            self.new_turn()
+            self.clickbox.clear(17)
+    
     def create_boards(self, num_players, x=None):
-        self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, not i) for i in xrange(num_players)] if x is None else x
+        if x is not None:
+            if isinstance(x[0], basestring):
+                self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, x[i], not i) for i in xrange(num_players)]
+            else:
+                self.enemy_boards = x
+        else:
+            names = ["AI Player "+str(j) if j else "You" for j in xrange(num_players)]
+            self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, names[i], not i) for i in xrange(num_players)]
         self.enemy_board = self.enemy_boards[1]
         self.my_board = self.enemy_boards[0]
+    
+    def add_to_server_list(self, action, *args):
+        self.to_server.append(str(action)+" "+(" ".join([str(x) for x in args])))
     
     def handle_gameover(self):
         lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
