@@ -115,7 +115,7 @@ class Main():
                    "JOIN":self.screens["lobby"].recv_nick_change, "DATA":self.screens["lobby"].reload_server_data,
                    "READY":self.screens["lobby"].ready_up, "KICK":self.screens["lobby"].recv_kick_player,
                    "START":self.screens["lobby"].recv_start_game, "ERROR":lambda x:None, "DIE":bad_thing,
-                   "TURN":self.screens["game"].new_turn}
+                   "END":self.screens["game"].resolve_turn}
         msg = msg.split(" ")
         cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
         if cmd not in actions:

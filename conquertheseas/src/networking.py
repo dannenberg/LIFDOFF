@@ -32,16 +32,24 @@ class Server(threading.Thread):
             "START"  : self.start_game,
             "KICK"   : self.kick_player,
             "MOVE"   : self.act_move,
+            "SENT"   : self.act_sent,
             "SHOOT"  : self.act_shoot,
             "SPECIAL": self.act_special,
             "BUY"    : self.act_buy,
             "UPGRADE": self.act_upgrade,
-            "TURN"   : self.act_turn
+            "TURN"   : self.act_turn,
+            "END"    : self.act_end
             }
         
+    # TODO: make all these act_ functions actually like... queue some actions
     def act_move(self, c, msg):
         x,y,dude = msg.split(" ")
         print "server says: Def Unit",dude,"moved to",x,",",y
+        
+    def act_sent(self, c, msg):
+        bnum, uftoken, x, y = msg.split(" ")
+        # TODO: x will tell us the turn to come in. Queue it to the correct board, then later sort it onto the correct turn
+        print "server says: Deployed unit",uftoken,"at (",x,",",y,"), on board ",bnum
         
     def act_shoot(self, c, msg):
         print "server says: Def Unit",msg,"has shot!"
@@ -58,6 +66,36 @@ class Server(threading.Thread):
         
     def act_upgrade(self, c, msg):
         print "masuda says: upgrade",msg,"purchased!"
+        
+    def act_end(self, c, msg):
+        """ End transmission of moves """
+        sender = self.get_sender(c)
+        print self.slots[sender]["name"],"has sent all their moves"
+        self.set_sent(sender)
+    
+    def set_sent(self, sender):
+        self.slots[sender]["sent"] = True
+        if not filter(lambda x:not x["sent"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
+            for i,x in enumerate(self.slots):
+                if x["type"] == Server.AI:
+                    self.generate_ai_turns(i)
+            self.do_turns()
+    
+    def do_turns(self):
+        for x in self.slots:
+            # TODO: Actually resolve these friggin turns
+            x["actions"] = []
+            self.send_to_all("END") # TODO: Actually send the actions to everyone
+        # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        # work out all the turns and stuff
+        for x in self.slots:
+            x["sent"] = False
+    
+    def generate_ai_turns(self, s):
+        # TODO: AI players should make turns: DIS BENSON'S DOMAIN
+        # Toggle the comments on the next two lines
+        self.slots[s]["sent"] = True
+        #self.set_sent(s)   # over and over and over and over
     
     def run(self):
         print "listening"
@@ -219,7 +257,7 @@ class Server(threading.Thread):
         ai_num = 1
         for x in self.slots:
             if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
-                self.game_slots.append({"type":x["type"], "buffer":''})
+                self.game_slots.append({"type":x["type"], "buffer":'', "actions":[], "sent":False})
                 if x["type"] == Server.PLAYER:
                     self.game_slots[-1]["conn"] = x["conn"]
                     self.game_slots[-1]["name"] = x["name"]

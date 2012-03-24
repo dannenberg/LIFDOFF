@@ -30,6 +30,7 @@ class GameScreen(Screen):
             boards = num_players
             num_players = len(num_players)
         self.num_players = num_players
+        self.people_done = 0
         self.local = local
 
         self.to_server = []
@@ -83,7 +84,7 @@ class GameScreen(Screen):
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                     print "gamescreen.boardclick: can't drop here!"
                     return
-                self.add_to_server_list("SENT",self.held,)  # TODO
+                self.add_to_server_list("SENT",1,self.held,*gpos)  # TODO: send to a board please (rather than 1)
                 if pygame.K_LSHIFT not in self.main.keys:
                     self.set_mode(GameScreen.NO_MODE)
                 
@@ -167,7 +168,7 @@ class GameScreen(Screen):
                     if left:
                         #print "gamescreen.action_button: TURN"
                         self.add_to_server_list("TURN")
-                #self.add_to_server_list("END")
+                self.add_to_server_list("END")
                 print self.to_server
                 for msg in self.to_server:
                     self.main.client.send(msg)
@@ -293,9 +294,17 @@ class GameScreen(Screen):
         self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(0),mouseout)
         self.overbox.append((MY_BOARD_X, MY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(1),mouseout)
     
-    def new_turn(self, msg):
+    def new_turn(self):
         """ Receiving the turns back """
-        pass
+        self.my_board.initialize_turn()
+    
+    def resolve_turn(self, msg):
+        """ ??? """
+        self.people_done += 1
+        if self.people_done == self.num_players:
+            self.people_done = 0
+            self.new_turn()
+            self.clickbox.clear(17)
     
     def create_boards(self, num_players, x=None):
         if x is not None:
