@@ -23,15 +23,42 @@ class Server(threading.Thread):
         self.slots = [{"type":Server.CLOSED} for _ in xrange(10)]
         self.host = None
         self.done = False
+        self.game_slots = []
         self.commands = {
-            "MSG" : self.send_message,
-            "NICK" : self.change_name,
-            "SLOT" : self.set_slot,
-            "READY" : self.set_ready,
-            "START" : self.start_game,
-            "KICK" : self.kick_player
+            "MSG"    : self.send_message,
+            "NICK"   : self.change_name,
+            "SLOT"   : self.set_slot,
+            "READY"  : self.set_ready,
+            "START"  : self.start_game,
+            "KICK"   : self.kick_player,
+            "MOVE"   : self.act_move,
+            "SHOOT"  : self.act_shoot,
+            "SPECIAL": self.act_special,
+            "BUY"    : self.act_buy,
+            "UPGRADE": self.act_upgrade,
+            "TURN"   : self.act_turn
             }
         
+    def act_move(self, c, msg):
+        x,y,dude = msg.split(" ")
+        print "server says: Def Unit",dude,"moved to",x,",",y
+        
+    def act_shoot(self, c, msg):
+        print "server says: Def Unit",msg,"has shot!"
+        
+    def act_buy(self, c, msg):
+        print "simon says: bought",msg,"!"
+        
+    def act_special(self, c, msg):
+        x,y,dude = msg.split(" ")
+        print "server says: Def Unit",dude,"has SPECIALED at",x,",",y
+        
+    def act_turn(self, c, msg):
+        print "server says: New Turn!"
+        
+    def act_upgrade(self, c, msg):
+        print "masuda says: upgrade",msg,"purchased!"
+    
     def run(self):
         print "listening"
         self.server.listen(10)
@@ -71,32 +98,41 @@ class Server(threading.Thread):
                     # blocks on c (but select has told us that there's a
                     # message waiting, so there's no real blocking)
                     sender = self.get_sender(c)
-                    while "buffer" in self.slots[sender] and self.slots[sender]["buffer"].find(RS) == -1:
-                        message = self.slots[sender]["conn"].recv(MAX_PACKET_LENGTH)
-                        if not message:
-                            # an empty string indicates that the client has
-                            # closed their connection
-                            print "closed connection"
-                            for i,x in enumerate(self.slots):
-                                if x.has_key("conn"):
-                                    if x["conn"] == c:
-                                        self.slots[i] = {"type":Server.OPEN}
-                                        self.send_to_all("KICK " + str(i))
-                            c.close()
+                    go = True
+                    while go:
+                        while "buffer" in self.slots[sender] and self.slots[sender]["buffer"].find(RS) == -1:
+                            message = self.slots[sender]["conn"].recv(MAX_PACKET_LENGTH)
+                            if not message:
+                                # an empty string indicates that the client has
+                                # closed their connection
+                                print "closed connection"
+                                for i,x in enumerate(self.slots):
+                                    if x.has_key("conn"):
+                                        if x["conn"] == c:
+                                            self.slots[i] = {"type":Server.OPEN}
+                                            self.send_to_all("KICK " + str(i))
+                                c.close()
+                            else:
+                                self.slots[sender]["buffer"] += message
+                        if "buffer" not in self.slots[sender]:
+                            continue
+                        message, _, self.slots[sender]["buffer"] = self.slots[sender]["buffer"].partition(RS)
+                        # echoes actual message to all players
+                        cmdend = message.find(' ')
+                        cmd = message[:cmdend]
+                        args = message[cmdend+1:]
+                        #print "\ncmd: "+cmd+"\nargs: "+args+"\n"
+                        if cmd in self.commands:
+                            self.commands[cmd](c, args)
                         else:
-                            self.slots[sender]["buffer"] += message
-                    if "buffer" not in self.slots[sender]:
-                        continue
-                    message, _, self.slots[sender]["buffer"] = self.slots[sender]["buffer"].partition(RS)
-                    # echoes actual message to all players   
-                    cmdend = message.find(' ')
-                    cmd = message[:cmdend]
-                    args = message[cmdend+1:]
-                    #print "\ncmd: "+cmd+"\nargs: "+args+"\n"
-                    self.commands[cmd](c, args)
-                    #message = str(self.connections.index(c)) + ": " + message
-                    #for p in self.connections:
-                    #    p.send(message)
+                            print cmd,"is not a command i'm aware of"
+                        
+                        
+                        go = bool(self.slots[sender]["buffer"].find(RS)+1)  # loop if there's more messages :D :D :D
+                        #print "go",go,", buffer is",self.slots[sender]["buffer"]
+                        #message = str(self.connections.index(c)) + ": " + message
+                        #for p in self.connections:
+                        #    p.send(message)
         self.server.close()
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
@@ -180,18 +216,22 @@ class Server(threading.Thread):
                 if x.has_key("ready"):
                     if not x["ready"]:
                         return
-        self.send_to_all("START " + str(len([x for x in self.slots if x["type"] in [Server.PLAYER, Server.AI]])))
+        ai_num = 1
         for x in self.slots:
             if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
-                self.game_slots.append({"type":x["type"], "conn":x["conn"], "data":self.generate_board_data(), "buffer":''})
+                self.game_slots.append({"type":x["type"], "buffer":''})
                 if x["type"] == Server.PLAYER:
+                    self.game_slots[-1]["conn"] = x["conn"]
                     self.game_slots[-1]["name"] = x["name"]
                 else:
-                    self.game_slots[-1]["name"] = "AI Player"
+                    self.game_slots[-1]["name"] = AI_NAME+" "+str(ai_num)
+                    ai_num += 1
+                self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
         self.slots = self.game_slots
+        self.send_to_all("START "+('\t'.join([x["name"] for x in self.slots])))
                     
-    def generate_board_data(self):
-        return {"board":Board(BOARD_WIDTH,BOARD_HEIGHT)}
+    def generate_board_data(self, name):
+        return {"board":Board(BOARD_SQUARES_X,BOARD_SQUARES_Y, name)}
     
     def kick_player(self, c, message):
         if self.slots[0]["conn"] == c:

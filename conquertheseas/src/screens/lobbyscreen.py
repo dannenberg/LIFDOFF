@@ -245,9 +245,10 @@ class LobbyScreen(Screen):
         self.players[kickme][2] = False
         self.redraw_players()
         
-    def recv_start_game(self, num_players):
+    def recv_start_game(self, players):
         print "game starting!!"
-        self.main.reset_screen("game", int(num_players), False)
+        players = players.split("\t")
+        self.main.reset_screen("game", players, False)
         self.main.change_screen("game")
         
     def notify_key(self, inkey):

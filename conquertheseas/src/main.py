@@ -114,7 +114,8 @@ class Main():
         actions = {"MSG":self.screens["lobby"].message, "NICK":self.screens["lobby"].recv_nick_change,
                    "JOIN":self.screens["lobby"].recv_nick_change, "DATA":self.screens["lobby"].reload_server_data,
                    "READY":self.screens["lobby"].ready_up, "KICK":self.screens["lobby"].recv_kick_player,
-                   "START":self.screens["lobby"].recv_start_game, "ERROR":lambda x:None, "DIE":bad_thing}
+                   "START":self.screens["lobby"].recv_start_game, "ERROR":lambda x:None, "DIE":bad_thing,
+                   "TURN":self.screens["game"].new_turn}
         msg = msg.split(" ")
         cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
         if cmd not in actions:
@@ -151,7 +152,7 @@ class Main():
         return ((w,int(scale*self.stdsize[1])),scale)
     
     def valid_nick(self, newnick):
-        return re.match(r"^[A-Z][A-Z0-9 ]{0,20}[A-Z0-9]$", newnick, re.I)
+        return re.match(r"^[A-Z][A-Z0-9 ]{0,20}[A-Z0-9]$", newnick, re.I) and not re.match(AI_NAME, newnick)
 
 if __name__ == "__main__":
     Main()
