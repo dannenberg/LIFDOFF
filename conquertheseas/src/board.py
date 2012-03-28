@@ -121,7 +121,7 @@ class Board:
                                 # otherwise he'll resolve the collision on his turn
                         elif collided._class == Unit.TERRAIN:
                             print "a unit hit terrain"
-                            # do some shitttt
+                             # do some shitttt
                         else: # collided._class < unit._class
                             print "in the last else"
                             collided.on_collision(unit, self)   # TODO: probably wrong
