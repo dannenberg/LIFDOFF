@@ -1,0 +1,38 @@
+February 22, 2012:
+Started work on the joinscreen, including handling keypresses (such as holding a key down), and ensuring correct IPs are entered.  Added some code to lobbyscreen to write messages to a collective message surface.  Also created a single class to handle the waves in the background of many screens, to avoid code repetition.
+
+February 24, 2012:
+Today was spent drawing some of the units in our game. This includes a mermaid with a knife, a squid-creature, a crab, a floating mine, and Cthulhu. I also added an FPS counter to the game to test our FPS, which is unarguably bad on some screens (dropping to 14 fps on the gamescreen itself). This is due in part to our naïve coding when we started, and we have since learned some tricks that I'm sure we can use to improve our performance drastically.
+
+March 02, 2012:
+I added on to the networking code my teammates had started. First I made the client/server code we had been testing much easier to test, and we can now run it from the command line. I also added some code to lobbyscreen in preparation of the networking code, and to the networking code itself added the ability to set non-human slots to opened, closed, or AI. Also added code for validating nicknames.
+
+March 06, 2012
+The Join Screen will now connect to the given IP and place you in the lobby, if there is one open. However, if the IP you have given does not have a lobby with an open slot, it will still crash hard. Added a dropdown to the lobbyscreen so the host can set non-humans to AI, closed, or open. Also added tab-completion to chat, to autocomplete names that you have started typing.
+
+March 09, 2012
+Today I cleaned up the code and added comments to a bunch of classes, and added the ability to send more than just a tadpole. Also added a great deal of missing functionality to shop screen.
+
+March 13, 2012
+Small changes, more images added to shop. Finally changed our terrible arrow-drawing for the thoroughly tested version. Helped Benson with upgrade screen code.
+
+March 14, 2012
+Added more images, fixed a small glitch, will work more tomorrow.
+
+March 15, 2012
+Ships now start underwater, singleplayer players no longer share their inventories with the AI.
+
+March 16, 2012
+Wrote a way to add new upgrades easily to upgrade screen as we think of them: they will draw to the screen in the correct positions and highlight as needed.
+
+March 18, 2012
+Removed moustache from mermaid. Fixed some legacy code related to mousehitboxes.
+
+March 20, 2012
+Save/load screen started, fixed more bugs, closing slots
+
+March 23, 2012
+Client will send its moves to the server, saving and loading is going to be much harder than I had anticipated, will finish later.
+
+March 30, 2012
+Completed multiplayer: two players can make moves and each see the moves changed on their screens.
