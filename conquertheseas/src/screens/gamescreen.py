@@ -339,8 +339,8 @@ class GameScreen(Screen):
                 self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, x[i], not i) for i in xrange(num_players)]
             else:   # actual boards
                 self.enemy_boards = x
-            self.my_board = filter(self.enemy_boards, lambda x:x.name == self.main.player_name)[0]
-            self.enemy_board = filter(self.enemy_boards, lambda x:x.name != self.main.player_name)[0]
+            self.my_board = filter(lambda x:x.name == self.main.player_name, self.enemy_boards)[0]
+            self.enemy_board = filter(lambda x:x.name != self.main.player_name, self.enemy_boards)[0]
         else:   # start up
             names = ["AI Player "+str(j) if j else "You" for j in xrange(num_players)]
             self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, names[i], not i) for i in xrange(num_players)]
