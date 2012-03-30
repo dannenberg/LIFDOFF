@@ -172,6 +172,10 @@ class GameScreen(Screen):
                 print self.to_server
                 for msg in self.to_server:
                     self.main.client.send(msg)
+                self.set_mode(GameScreen.NO_MODE)
+                self.enemy_board.remove_staging()
+                for unit in self.my_board.units:
+                    self.my_board.move_unit(unit, unit._unaltered_loc)
                 self.to_server = []
                 self.clickbox.append((0,0,SCREEN_WIDTH,SCREEN_HEIGHT), lambda x:None, z=17)
                 
