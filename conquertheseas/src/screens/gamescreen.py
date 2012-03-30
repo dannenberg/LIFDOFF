@@ -298,13 +298,33 @@ class GameScreen(Screen):
         """ Receiving the turns back """
         self.my_board.initialize_turn()
     
+    def server_unit_move(self, msg):
+        x,y,dude = msg.split(" ")
+        self.enemy_boards[self.people_done].units[int(dude)].queue_movements([(int(x),int(y))])
+    
+    def server_unit_send(self, msg):
+        pass
+    
+    def server_unit_shoot(self, msg):
+        self.enemy_boards[self.people_done].units[int(msg)].queue_shoot()
+    
+    def server_unit_special(self, msg):
+        pass
+        #self.enemy_boards[self.people_done].units[int(msg)].queue_special()
+    
+    def server_unit_buy(self, msg):
+        pass
+    
+    def server_unit_upgrade(self, msg):
+        pass
+    
     def resolve_turn(self, msg):
         """ ??? """
         self.people_done += 1
         if self.people_done == self.num_players:
             self.people_done = 0
             self.new_turn()
-            self.clickbox.clear(17)
+            self.clickbox.clear(17) # I bet you'd like a comment here, huh?
     
     def create_boards(self, num_players, x=None):
         if x is not None:
@@ -319,6 +339,7 @@ class GameScreen(Screen):
         self.my_board = self.enemy_boards[0]
     
     def add_to_server_list(self, action, *args):
+        """ Adds to the list of commands we send to the server """
         self.to_server.append(str(action)+" "+(" ".join([str(x) for x in args])))
     
     def handle_gameover(self):
