@@ -1,4 +1,5 @@
 import pygame
+import random
 from action import Action
 from constants import SQUARE_SIZE
 
@@ -10,25 +11,34 @@ class UnitFactory(object):
     BULLET = 5
     TADPOLE = 6
     ANGRYFISH = 7
-    unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1), ANGRYFISH:(1,1)}
+    TERRAIN1 = 17
+    TERRAIN2 = 18
+    GOLD = 19
+    unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1), ANGRYFISH:(1,1), TERRAIN1:(1,1), TERRAIN2:(1,2), GOLD:(1,1)}
     
     def __new__(_, idd, loc, fo_real=False):
         utype = Unit.OFFENSE if fo_real else Unit.STAGING
         utoken = None if fo_real else idd
         if idd == UnitFactory.TADPOLE:
-            return Unit(loc, UnitFactory.unitsize[idd], "../img/tadpole.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/tadpole.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.MINE:
-            return Unit(loc, UnitFactory.unitsize[idd], "../img/mine.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/mine.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.CRAB:
-            return Unit(loc, UnitFactory.unitsize[idd], "../img/crab.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/crab.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.SQUIDDLE:
-            return Unit(loc, UnitFactory.unitsize[idd], "../img/squiddle.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/squiddle.png", utype, 5, 5, token=utoken)
         if idd == UnitFactory.MERMAID:
-            return Unit(loc, UnitFactory.unitsize[idd], "../img/mermaid.png", utype, 10, 5, token=utoken)
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/mermaid.png", utype, 10, 5, token=utoken)
         if idd == UnitFactory.ANGRYFISH:
-            return Unit(loc, UnitFactory.unitsize[idd], "../img/angryfish.png", utype, 10, 5, token=utoken)
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/angryfish.png", utype, 10, 5, token=utoken)
         if idd == UnitFactory.BULLET:
-            return Unit(loc, UnitFactory.unitsize[idd], "../img/bullet.png", Unit.BULLET, 0, 0)
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/bullet.png", Unit.BULLET, 0, 0)
+        if idd == UnitFactory.TERRAIN1:
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/terrain1.png", Unit.TERRAIN, 0, 0)
+        if idd == UnitFactory.TERRAIN2:
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/terrain2.png", Unit.TERRAIN, 0, 0)
+        if idd == UnitFactory.GOLD:
+            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/gold.png", Unit.GOLD, 10, 0)   # worth 10 gold, 0 exp
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
@@ -39,15 +49,17 @@ class Unit(object):
     DEFENSE = 1
     OFFENSE = 2
     BULLET  = 3
+    TERRAIN = 4
+    GOLD = 5
     STAGING  = 0
-    def __init__(self, (x,y), (w, h), imgsrc, cls, gold, val, parent=None, token=None):
+    def __init__(self, idd, (x,y), (w, h), imgsrc, cls, gold, val, parent=None, token=None):
         if parent != None:
             self._class = parent._class
             self._parent = parent
         else:
             self._parent = None
             self._class = cls
-        #self.idd = idd
+        self.idd = idd
         self._tileset = pygame.image.load(imgsrc)
         self._token = token
         self._spr_src = (0,0)     # topleft of source tile
@@ -58,7 +70,12 @@ class Unit(object):
         self._actions = []
         self.exp_value = val
         self.cash_value = gold
-        self._move_speed = 3
+        if idd == UnitFactory.SQUIDDLE or idd == UnitFactory.MINE or cls == self.TERRAIN or cls == self.GOLD:
+            self._move_speed = 1;
+        elif idd == UnitFactory.MERMAID:
+            self._move_speed = 2;
+        else:
+            self._move_speed = 3
         self.moves_remaining = self._move_speed
         self.health = 1
         
@@ -148,5 +165,18 @@ class Unit(object):
             for i in xrange(self._move_speed):
                 self._actions.append(Action(Action.MOVE, (self._loc[0] + i + 1, self._loc[1])))
         elif self._class == Unit.OFFENSE:
+            if self.idd == UnitFactory.SQUIDDLE:    # squiddle move AI
+                for i in xrange(self._move_speed):
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(2, min(10, random.randint(-1,1)+self._loc[1])))))
+            elif self.idd == UnitFactory.MINE:      # mine move AI
+                for i in xrange(self._move_speed):
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, random.randint(0,1)+self._loc[1]))))
+            else:
+                for i in xrange(self._move_speed):
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
+        elif self._class == Unit.TERRAIN:
+            for i in xrange(self._move_speed):
+                self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
+        elif self._class == Unit.GOLD:
             for i in xrange(self._move_speed):
                 self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))

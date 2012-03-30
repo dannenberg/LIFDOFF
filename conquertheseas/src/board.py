@@ -3,6 +3,7 @@ from defense import DefensiveUnit
 from action import Action
 from constants import SQUARE_SIZE, BOARD_SQUARES_X, BOARD_SQUARES_Y
 import pygame
+import random
 
 class Board:
     def __init__(self, w, h, name, purple=False):
@@ -100,20 +101,30 @@ class Board:
                         if collided._class > unit._class:   # bullet on offense or offense on defense
                             collided.on_collision(unit, self)
                         elif collided._class == unit._class:
-                            if unit.moved or unit._actions[0].action != Action.MOVE: # he's moved already, or he's not GOING to move
+                            if collided.moved or (collided._actions and collided._actions[0].action != Action.MOVE): # he's moved already, or he's not GOING to move
+                                print "in the if"
                                 unit._actions = []  # bunp
                                 unit.take_damage(self, 0)
                                 # TODO : Take some damage: may i suggest len(collided.get_shape())*c
                                 return False
                             else:   # if he's gonna move into you dats bad
+                                print "in the else - this unit hasn't moved"
+                                #print "collided._actions is " + str(collided._actions)
+                                #print "collided._actions[0].action == Action.MOVE is " + str(collided._actions[0].action)
                                 if collided._actions and collided._actions[0].action == Action.MOVE:
+                                    print "in the if"
                                     cloc = collided._actions[0].loc
                                     for cx,cy in collided.get_shape():
                                         if (cx+cloc[0], cy+cloc[1]) in nextlocs:    # onoz!
+                                            print "units actually colliding in the if"
                                             unit.take_damage(self, 0)   # same as prev TODO
                                             return False
                                 # otherwise he'll resolve the collision on his turn
+                        elif collided._class == Unit.TERRAIN:
+                            print "a unit hit terrain"
+                             # do some shitttt
                         else: # collided._class < unit._class
+                            print "in the last else"
                             collided.on_collision(unit, self)   # TODO: probably wrong
                     #else:
                         #print "board.unit_take_action: No collision!"
@@ -136,10 +147,26 @@ class Board:
                 self.remove_unit(unit)
     
     def initialize_turn(self):
+        self.generate_terrain()
+        self.generate_gold()
         for unit in self.units:
             unit._unaltered_loc = unit._loc
             unit.moves_remaining = unit._move_speed
-
+    
+    def generate_terrain(self):
+        rand = random.randint(0,9)
+        if rand == 0:
+            print self.add_unit(UnitFactory(UnitFactory.TERRAIN1, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-1)))
+        if rand == 1:
+            print self.add_unit(UnitFactory(UnitFactory.TERRAIN2, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-2)))
+    
+    def generate_gold(self):
+        rand = random.randint(0,9)
+        randY = random.randint(3,8)
+        if rand == 0:
+            self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
+        
+            
     def move_unit(self, unit, loc=None):
         if loc == None:
             loc = unit._loc
