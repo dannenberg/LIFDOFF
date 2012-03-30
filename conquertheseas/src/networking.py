@@ -31,15 +31,21 @@ class Server(threading.Thread):
             "READY"  : self.set_ready,
             "START"  : self.start_game,
             "KICK"   : self.kick_player,
-            "MOVE"   : self.act_move,
+            "MOVE"   : self.act_generic("MOVE"),
             "SENT"   : self.act_sent,
-            "SHOOT"  : self.act_shoot,
-            "SPECIAL": self.act_special,
-            "BUY"    : self.act_buy,
-            "UPGRADE": self.act_upgrade,
+            "SHOOT"  : self.act_generic("SHOOT"),
+            "SPECIAL": self.act_generic("SPECIAL"),
+            "BUY"    : self.act_generic("BUY"),
+            "UPGRADE": self.act_generic("UPGRADE"),
             "TURN"   : self.act_turn,
             "END"    : self.act_end
             }
+        
+    def act_generic(self, action):
+        def anon(c, msg):
+            board = self.get_sender(c)
+            self.add_action(board, action+" "+msg)
+        return anon
         
     # TODO: make all these act_ functions actually like... queue some actions
     def act_move(self, c, msg):
@@ -47,9 +53,11 @@ class Server(threading.Thread):
         print "server says: Def Unit",dude,"moved to",x,",",y
         
     def act_sent(self, c, msg):
+        """ Deployed a unit on an enemy board """
         bnum, uftoken, x, y = msg.split(" ")
         # TODO: x will tell us the turn to come in. Queue it to the correct board, then later sort it onto the correct turn
         print "server says: Deployed unit",uftoken,"at (",x,",",y,"), on board ",bnum
+        self.add_action(int(bnum), "SENT "+uft+" "+x+" "+y, OFFENSIVE_PLACEMENT_DEPTH-int(x))
         
     def act_shoot(self, c, msg):
         print "server says: Def Unit",msg,"has shot!"
@@ -58,11 +66,14 @@ class Server(threading.Thread):
         print "simon says: bought",msg,"!"
         
     def act_special(self, c, msg):
+        """ But only if you feel special """
         x,y,dude = msg.split(" ")
         print "server says: Def Unit",dude,"has SPECIALED at",x,",",y
         
     def act_turn(self, c, msg):
+        return  # TODO: stop
         print "server says: New Turn!"
+        self.slots[self.get_sender(c)]["index"] += 1
         
     def act_upgrade(self, c, msg):
         print "masuda says: upgrade",msg,"purchased!"
@@ -73,27 +84,68 @@ class Server(threading.Thread):
         print self.slots[sender]["name"],"has sent all their moves"
         self.set_sent(sender)
     
+    def add_action(self, board, msg, index=None):
+        """ Format msg nicely please. """
+        if index is None:
+            index = self.slots[board]["index"]
+        actions = self.slots[board]["actions"]
+        if index not in actions:
+            actions[index] = []
+        actions[index].append(msg)
+    
     def set_sent(self, sender):
+        print "networking.set_sent: Player",sender,"set sent"
         self.slots[sender]["sent"] = True
         if not filter(lambda x:not x["sent"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
+            print "networking.set_sent: Generate the AI's turn"
             for i,x in enumerate(self.slots):
                 if x["type"] == Server.AI:
                     self.generate_ai_turns(i)
             self.do_turns()
     
     def do_turns(self):
+        toR = []
         for x in self.slots:
             # TODO: Actually resolve these friggin turns
-            x["actions"] = []
-            self.send_to_all("END") # TODO: Actually send the actions to everyone
+            #toR += ["TURN "]
+            i=0
+            while x["actions"]:
+                if i in x["actions"]:
+                    for j in x["actions"][i]:
+                        toR += [j]
+                        #if j.split(" ")[0] == "MOVE":
+                        #    _,x,y,dude = j.split(" ")
+                        #    x["board"].units[int(dude)].queue_movements([(int(x),int(y))])
+                        #if j.split(" ")[0] == "SHOOT":
+                        #    _,dude = j.split(" ")
+                        #    x["board"].units[int(dude)].queue_shoot()
+                    del x["actions"][i]
+                i += 1
+            toR += ["END "]
+            #x["board"].take_turn_server()
+            
+            #i = 0
+            #to_send = []
+            #while x["actions"]:
+            #    if i in x["actions"]:
+            #        to_send.append(x["actions"][i])
+            #        del x["actions"][i]
+            #    else:
+            #        to_send.append("TURN")
+            #    i += 1
+            # x["actions"] = {}   # clear the actions
+        for t in toR:
+            print "networking.do_turns: Gimme a",t
+            self.send_to_all(t) # TODO: Actually send the actions to everyone
         # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         # work out all the turns and stuff
-        for x in self.slots:
+        for x in self.slots:    # next turns
             x["sent"] = False
     
     def generate_ai_turns(self, s):
         # TODO: AI players should make turns: DIS BENSON'S DOMAIN
         # Toggle the comments on the next two lines
+        self.slots[s]["actions"][0] = ["END "]
         self.slots[s]["sent"] = True
         #self.set_sent(s)   # over and over and over and over
     
@@ -130,7 +182,6 @@ class Server(threading.Thread):
                             conn.send("DIE There were no available slots in the game you attempted to join!" + RS)  # little harsh but alright
                             print "a player couldn't join due to lack of slots"
                             conn.close()
-                                        
                 else:
                     print "Message from a client"
                     # blocks on c (but select has told us that there's a
@@ -254,19 +305,19 @@ class Server(threading.Thread):
                 if x.has_key("ready"):
                     if not x["ready"]:
                         return
-        ai_num = 1
-        for x in self.slots:
-            if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
-                self.game_slots.append({"type":x["type"], "buffer":'', "actions":[], "sent":False})
-                if x["type"] == Server.PLAYER:
-                    self.game_slots[-1]["conn"] = x["conn"]
-                    self.game_slots[-1]["name"] = x["name"]
-                else:
-                    self.game_slots[-1]["name"] = AI_NAME+" "+str(ai_num)
-                    ai_num += 1
-                self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
-        self.slots = self.game_slots
-        self.send_to_all("START "+('\t'.join([x["name"] for x in self.slots])))
+            ai_num = 1
+            for x in self.slots:
+                if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
+                    self.game_slots.append({"type":x["type"], "buffer":'', "actions":{}, "sent":False, "index":0})
+                    if x["type"] == Server.PLAYER:
+                        self.game_slots[-1]["conn"] = x["conn"]
+                        self.game_slots[-1]["name"] = x["name"]
+                    else:
+                        self.game_slots[-1]["name"] = AI_NAME+" "+str(ai_num)
+                        ai_num += 1
+                    self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
+            self.slots = self.game_slots
+            self.send_to_all("START "+('\t'.join([x["name"] for x in self.slots])))
                     
     def generate_board_data(self, name):
         return {"board":Board(BOARD_SQUARES_X,BOARD_SQUARES_Y, name)}
