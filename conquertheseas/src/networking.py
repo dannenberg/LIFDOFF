@@ -57,7 +57,7 @@ class Server(threading.Thread):
         bnum, uftoken, x, y = msg.split(" ")
         # TODO: x will tell us the turn to come in. Queue it to the correct board, then later sort it onto the correct turn
         print "server says: Deployed unit",uftoken,"at (",x,",",y,"), on board ",bnum
-        self.add_action(bnum, "", OFFENSIVE_PLACEMENT_DEPTH-x)
+        self.add_action(int(bnum), "SENT "+uft+" "+x+" "+y, OFFENSIVE_PLACEMENT_DEPTH-int(x))
         
     def act_shoot(self, c, msg):
         print "server says: Def Unit",msg,"has shot!"

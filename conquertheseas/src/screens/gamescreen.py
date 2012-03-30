@@ -307,6 +307,7 @@ class GameScreen(Screen):
         self.enemy_boards[self.people_done].units[int(dude)].queue_movements([(int(x),int(y))])
     
     def server_unit_send(self, msg):
+        """ uft x y """
         pass
     
     def server_unit_shoot(self, msg):
