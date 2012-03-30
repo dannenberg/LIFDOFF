@@ -335,15 +335,18 @@ class GameScreen(Screen):
     
     def create_boards(self, num_players, x=None):
         if x is not None:
-            if isinstance(x[0], basestring):
+            if isinstance(x[0], basestring):    # names
                 self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, x[i], not i) for i in xrange(num_players)]
-            else:
+            else:   # actual boards
                 self.enemy_boards = x
-        else:
+            self.my_board = filter(self.enemy_boards, lambda x:x.name == self.main.player_name)[0]
+            self.enemy_board = filter(self.enemy_boards, lambda x:x.name != self.main.player_name)[0]
+        else:   # start up
             names = ["AI Player "+str(j) if j else "You" for j in xrange(num_players)]
             self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, names[i], not i) for i in xrange(num_players)]
-        self.enemy_board = self.enemy_boards[1]
-        self.my_board = self.enemy_boards[0]
+        # NOPE
+            self.enemy_board = self.enemy_boards[1]
+            self.my_board = self.enemy_boards[0]
     
     def add_to_server_list(self, action, *args):
         """ Adds to the list of commands we send to the server """
