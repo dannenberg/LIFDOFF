@@ -301,19 +301,19 @@ class Server(threading.Thread):
                 if x.has_key("ready"):
                     if not x["ready"]:
                         return
-        ai_num = 1
-        for x in self.slots:
-            if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
-                self.game_slots.append({"type":x["type"], "buffer":'', "actions":{}, "sent":False, "index":0})
-                if x["type"] == Server.PLAYER:
-                    self.game_slots[-1]["conn"] = x["conn"]
-                    self.game_slots[-1]["name"] = x["name"]
-                else:
-                    self.game_slots[-1]["name"] = AI_NAME+" "+str(ai_num)
-                    ai_num += 1
-                self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
-        self.slots = self.game_slots
-        self.send_to_all("START "+('\t'.join([x["name"] for x in self.slots])))
+            ai_num = 1
+            for x in self.slots:
+                if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
+                    self.game_slots.append({"type":x["type"], "buffer":'', "actions":{}, "sent":False, "index":0})
+                    if x["type"] == Server.PLAYER:
+                        self.game_slots[-1]["conn"] = x["conn"]
+                        self.game_slots[-1]["name"] = x["name"]
+                    else:
+                        self.game_slots[-1]["name"] = AI_NAME+" "+str(ai_num)
+                        ai_num += 1
+                    self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
+            self.slots = self.game_slots
+            self.send_to_all("START "+('\t'.join([x["name"] for x in self.slots])))
                     
     def generate_board_data(self, name):
         return {"board":Board(BOARD_SQUARES_X,BOARD_SQUARES_Y, name)}
