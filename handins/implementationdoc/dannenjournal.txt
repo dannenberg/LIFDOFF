@@ -1,0 +1,12 @@
+February 21: Worked on server: readiness and nick commands implemented. Struggling with clean disconnecting.
+February 25: Added kicking and made disconnecting cleaner.
+March 2: Worked on linking lobby screen to server with Brian: created dropdown menus for player slots.
+March 6: Met with an external friend and figured out how to fix bad disconnects. Cleaned up networking code I wrote with benson on the 2nd.
+March 8: Worked with Brian on lobbyscreen. Fixed client creation and disconnects in conjunction with closing the game (learning to hate networking).
+March 9: Clean up lobby a bit more with Brian; should finally be perfect. Worked on shop and linked it to offense panel. Changed some magic numbers to constants.
+March 10: Expanded networking to allow large messages.
+March 13: Changed defensive units so that they can only preform movespeed actions and added undo functionality.
+March 20: Fixed bug in undo. Fixed connecting to an improper source.
+March 21: Fixed server issues created in my absence.
+March 23: Started the gaming portion of networking with Brian (huge awful pain). Changed game creation to take list of players and whether or not it's an online game.
+March 30: Did more multiplayer with Brian. Fixed unit coloring bug, board not reseting after submit, and defensive units knowing who they are. Helped Benson with implementation doc.
