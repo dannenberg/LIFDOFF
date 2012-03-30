@@ -6,7 +6,8 @@ import pygame
 import random
 
 class Board:
-    def __init__(self, w, h, purple=False):
+    def __init__(self, w, h, name, purple=False):
+        self.name = name
         self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE), pygame.SRCALPHA)
         self._w = w
         self._h = h
@@ -23,12 +24,12 @@ class Board:
         # If we need to change the order or contents of the items in this function,
         # or the accompanying __setstate__, or really any sort of save/load helper
         # function, increment the VERSION number in constants.py
-        return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
+        return [self.name, self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
         
     def __setstate__(self, data):
         # !!!! CRITICALLY IMPORTANT !!!!
         # See above
-        self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
+        self.name, self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
     
     def draw_board(self):
         for x in self.units:
