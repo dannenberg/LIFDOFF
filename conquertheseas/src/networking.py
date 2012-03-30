@@ -38,7 +38,7 @@ class Server(threading.Thread):
             "BUY"    : self.act_generic("BUY"),
             "UPGRADE": self.act_generic("UPGRADE"),
             "TURN"   : self.act_turn,
-            "END"    : self.act_generic("END")
+            "END"    : self.act_end
             }
         
     def act_generic(self, action):
@@ -94,8 +94,10 @@ class Server(threading.Thread):
         actions[index].append(msg)
     
     def set_sent(self, sender):
+        print "networking.set_sent: Player",sender,"set sent"
         self.slots[sender]["sent"] = True
         if not filter(lambda x:not x["sent"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
+            print "networking.set_sent: Generate the AI's turn"
             for i,x in enumerate(self.slots):
                 if x["type"] == Server.AI:
                     self.generate_ai_turns(i)
@@ -133,6 +135,7 @@ class Server(threading.Thread):
             #    i += 1
             # x["actions"] = {}   # clear the actions
         for t in toR:
+            print "networking.do_turns: Gimme a",t
             self.send_to_all(t) # TODO: Actually send the actions to everyone
         # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         # work out all the turns and stuff
@@ -142,6 +145,7 @@ class Server(threading.Thread):
     def generate_ai_turns(self, s):
         # TODO: AI players should make turns: DIS BENSON'S DOMAIN
         # Toggle the comments on the next two lines
+        self.slots[s]["actions"][0] = ["END "]
         self.slots[s]["sent"] = True
         #self.set_sent(s)   # over and over and over and over
     

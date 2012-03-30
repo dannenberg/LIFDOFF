@@ -324,7 +324,9 @@ class GameScreen(Screen):
     
     def resolve_turn(self, msg):
         """ ??? """
+        self.enemy_boards[self.people_done].take_turn()
         self.people_done += 1
+        print self.people_done
         if self.people_done == self.num_players:
             self.people_done = 0
             self.new_turn()
