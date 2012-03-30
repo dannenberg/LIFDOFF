@@ -336,7 +336,7 @@ class GameScreen(Screen):
     def create_boards(self, num_players, x=None):
         if x is not None:
             if isinstance(x[0], basestring):    # names
-                self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, x[i], not i) for i in xrange(num_players)]
+                self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, x[i], x[i] == self.main.player_name) for i in xrange(num_players)]
             else:   # actual boards
                 self.enemy_boards = x
             self.my_board = filter(lambda x:x.name == self.main.player_name, self.enemy_boards)[0]
