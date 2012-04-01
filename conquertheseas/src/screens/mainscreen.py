@@ -52,7 +52,7 @@ class MainScreen(Screen):
                 self.overbox.remove((90+self.maxwid, 200))  # remove that submenu's overbox
                 self.clickbox.remove((90+self.maxwid, 250))
             self.submenu = 1
-            self.submenuoptions = ["Single Player", "Join Multiplayer", "Host Multiplayer"]
+            self.submenuoptions = ["Quick Play", "Join Multiplayer", "Host Multiplayer"]
             self.submaxwid = self.maxwidth(self.submenuoptions)
             self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
             
@@ -168,7 +168,6 @@ class MainScreen(Screen):
             #screen.blit(self.textbox, (300, 270))
             screen.blit(self.textbox, (300,270), (min(self.textbox.get_width()-self.submaxwid, max(0,(self.smallerfont.size(self.text_input)[0])-self.submaxwid+10)),0,self.submaxwid,40))
             
-        
         screen.blit(textbox, (30, 200))
         
     def maxwidth(self, optionlist):
