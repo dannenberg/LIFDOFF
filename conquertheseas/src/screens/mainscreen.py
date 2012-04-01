@@ -64,6 +64,8 @@ class MainScreen(Screen):
                 self.main.server = networking.Server()
                 self.main.server.start()
                 self.main.join_server()
+                if self.main.player_name is None:
+                    self.main.player_name = 'Host'
                 self.main.change_screen("lobby")
             
             self.clickbox.append((90+self.maxwid, 215, self.submaxwid+50, 50), click_singleplayer)

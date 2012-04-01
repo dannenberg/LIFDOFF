@@ -203,19 +203,21 @@ class LobbyScreen(Screen):
             self.msgpanel.message(self.players[index][0], msg, self.player_colors[index])
         
     def reload_server_data(self, data):
-        # get that info somehow
+        """ loading player data after joining a lobby """
         self.main.race_cond = True
         self.my_index = int(data[0])    # what slot should you get
         data = data.split("\n")[1:]     # split on newlines (ignore the first slot)
         print data
         for i,d in enumerate(data):     # 
             num = int(d[0])             # are you a player or a certain value
-            if num:                     # if a certain value
+            if num:                     # if not a human
                 self.players[i][0] = num    # make my "name" that value
                 self.players[i][2] = False  # also i'm 'unready'
             else:                           # 0 c Name (c is 0 if unready, 1 if ready)
                 self.players[i][0] = d[4:]  # the rest of the string after the first two characters and spaces is the name
                 self.players[i][2] = bool(int(d[2]))    # char space _char_ is readiness
+        if self.main.player_name is None:
+            self.main.player_name = self.players[self.my_index][0]
         self.redraw_players()           # redraw that board
     
     def ready_up(self, data):
