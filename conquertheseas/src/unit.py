@@ -71,26 +71,28 @@ class Unit(object):
         self.exp_value = val
         self.cash_value = gold
         if idd == UnitFactory.SQUIDDLE or idd == UnitFactory.MINE or cls == self.TERRAIN or cls == self.GOLD:
-            self._move_speed = 1;
+            self._move_speed = 1
         elif idd == UnitFactory.MERMAID:
-            self._move_speed = 2;
+            self._move_speed = 2
         else:
             self._move_speed = 3
+        if cls == Unit.GOLD:
+            self.animations = {"state":("idle",0), "idle":{0:(1,50,(0,0)), 1:(2, 50, (1,0)), 2:(3,50, (2,0)), 3:(4,50, (3,0)), 4:(5,50, (4,0)), 5:(6,50, (3,0)), 6:(7,50, (2,0)), 7:(0,50, (1,0))}}
         self.moves_remaining = self._move_speed
         self.health = 1
         
-        def __getstate__(self):
-            # !!!! CRITICALLY IMPORTANT !!!!
-            # If we need to change the order or contents of the items in this function,
-            # or the accompanying __setstate__, or really any sort of save/load helper
-            # function, increment the VERSION number in constants.py
-            
-            """self._parent = None
-            self._class = cls
-            self.idd = idd
-            self._tileset = pygame.image.load(imgsrc)
-            self._token, self._spr_src, self._size, self._spr_size, self._loc, self._unaltered_loc, self._actions, self.exp_value, self.cash_value, self._move_speed, self.moves_remaining, self.health"""
-            return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
+    def __getstate__(self):
+        # !!!! CRITICALLY IMPORTANT !!!!
+        # If we need to change the order or contents of the items in this function,
+        # or the accompanying __setstate__, or really any sort of save/load helper
+        # function, increment the VERSION number in constants.py
+        
+        """self._parent = None
+        self._class = cls
+        self.idd = idd
+        self._tileset = pygame.image.load(imgsrc)
+        self._token, self._spr_src, self._size, self._spr_size, self._loc, self._unaltered_loc, self._actions, self.exp_value, self.cash_value, self._move_speed, self.moves_remaining, self.health"""
+        return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
         
     def __setstate__(self, data):
         # !!!! CRITICALLY IMPORTANT !!!!
@@ -98,13 +100,20 @@ class Unit(object):
         self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
         
     def advance_sprite(self):
-        x = self._spr_src[0]+self._spr_size[0]
-        if x == self._spr_size[0]*3:
-            x = 0
-        self._spr_src = (x, self._spr_src[1])
+        try:
+            self.animations # crash on me?
+            next, time, (posx, posy) = self.animations[self.animations["state"][0]][self.animations["state"][1]]
+            self.animations["state"] = (self.animations["state"][0], next)  # TODO: stuck in one animation
+            self._spr_src = (posx*SQUARE_SIZE, posy*SQUARE_SIZE)
+        except AttributeError:
+            pass
+        #x = self._spr_src[0]+self._spr_size[0]
+        #if x == self._spr_size[0]*3:    # WHY THREEE?????
+        #    x = 0
+        #self._spr_src = (x, self._spr_src[1])
         
     def draw_sprite(self, destsurface, loc = None):
-        #self.advance_sprite() # TODO wrong
+        self.advance_sprite() # TODO wrong
         if loc != None: # for drawing an addon using relative position
             loc = tuple(map(sum,zip(self._loc, loc))) #sum the tuples
         else:

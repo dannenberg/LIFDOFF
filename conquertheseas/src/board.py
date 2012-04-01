@@ -168,8 +168,8 @@ class Board:
     
     def generate_gold(self):
         rand = random.randint(0,9)
-        randY = random.randint(3,8)
         if rand == 0:
+            randY = random.randint(3,8)
             self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
         
             
