@@ -57,7 +57,7 @@ class Server(threading.Thread):
         bnum, uftoken, x, y = msg.split(" ")
         # TODO: x will tell us the turn to come in. Queue it to the correct board, then later sort it onto the correct turn
         print "server says: Deployed unit",uftoken,"at (",x,",",y,"), on board ",bnum
-        self.add_action(int(bnum), "SENT "+uft+" "+x+" "+y, OFFENSIVE_PLACEMENT_DEPTH-int(x))
+        self.add_action(int(bnum), "SENT "+uftoken+" "+x+" "+y, OFFENSIVE_PLACEMENT_DEPTH - (BOARD_SQUARES_X - int(x)))
         
     def act_shoot(self, c, msg):
         print "server says: Def Unit",msg,"has shot!"
@@ -145,7 +145,7 @@ class Server(threading.Thread):
     def generate_ai_turns(self, s):
         # TODO: AI players should make turns: DIS BENSON'S DOMAIN
         # Toggle the comments on the next two lines
-        self.slots[s]["actions"][0] = ["END "]
+        self.slots[s]["actions"][0] = []
         self.slots[s]["sent"] = True
         #self.set_sent(s)   # over and over and over and over
     
@@ -317,6 +317,7 @@ class Server(threading.Thread):
                         ai_num += 1
                     self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
             self.slots = self.game_slots
+            print "number of slots", len(self.slots)
             self.send_to_all("START "+('\t'.join([x["name"] for x in self.slots])))
                     
     def generate_board_data(self, name):

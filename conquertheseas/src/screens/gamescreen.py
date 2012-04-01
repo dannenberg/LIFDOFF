@@ -32,6 +32,7 @@ class GameScreen(Screen):
         self.num_players = num_players
         self.people_done = 0
         self.local = local
+        self.enemy_board_index = 0
 
         self.to_server = []
 
@@ -84,7 +85,7 @@ class GameScreen(Screen):
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
                     print "gamescreen.boardclick: can't drop here!"
                     return
-                self.add_to_server_list("SENT",1,self.held,*gpos)  # TODO: send to a board please (rather than 1)
+                self.add_to_server_list("SENT",self.enemy_board_index,self.held,*gpos)
                 if pygame.K_LSHIFT not in self.main.keys:
                     self.set_mode(GameScreen.NO_MODE)
                 
@@ -173,11 +174,12 @@ class GameScreen(Screen):
                 for msg in self.to_server:
                     self.main.client.send(msg)
                 self.set_mode(GameScreen.NO_MODE)
-                self.enemy_board.remove_staging()
+                self.enemy_board.clear_staging()
                 for unit in self.my_board.units:
                     self.my_board.move_unit(unit, unit._unaltered_loc)
                 self.to_server = []
                 self.clickbox.append((0,0,SCREEN_WIDTH,SCREEN_HEIGHT), lambda x:None, z=17)
+
                 
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
@@ -308,7 +310,9 @@ class GameScreen(Screen):
     
     def server_unit_send(self, msg):
         """ uft x y """
-        pass
+        uft,x,y = msg.split(" ")
+        print "received", uft, x, y
+        self.enemy_boards[self.people_done].add_unit(UnitFactory(int(uft), (int(x), int(y))))
     
     def server_unit_shoot(self, msg):
         self.enemy_boards[self.people_done].units[int(msg)].queue_shoot()
@@ -325,9 +329,10 @@ class GameScreen(Screen):
     
     def resolve_turn(self, msg):
         """ ??? """
+        self.enemy_boards[self.people_done].remove_staging()
         self.enemy_boards[self.people_done].take_turn()
         self.people_done += 1
-        print self.people_done
+        print "people done", self.people_done
         if self.people_done == self.num_players:
             self.people_done = 0
             self.new_turn()
@@ -339,8 +344,14 @@ class GameScreen(Screen):
                 self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, x[i], x[i] == self.main.player_name) for i in xrange(num_players)]
             else:   # actual boards
                 self.enemy_boards = x
-            self.my_board = filter(lambda x:x.name == self.main.player_name, self.enemy_boards)[0]
-            self.enemy_board = filter(lambda x:x.name != self.main.player_name, self.enemy_boards)[0]
+            my_index = [i for i,j in enumerate(x) if j == self.main.player_name][0]
+            print "my index", my_index
+            self.my_board = self.enemy_boards[my_index]
+            if my_index == 0:
+                self.enemy_board_index = 1
+            else:
+                self.enemy_board_index = 0
+            self.enemy_board = self.enemy_boards[self.enemy_board_index]
         else:   # start up
             names = ["AI Player "+str(j) if j else "You" for j in xrange(num_players)]
             self.enemy_boards = [Board(BOARD_SQUARES_X, BOARD_SQUARES_Y, names[i], not i) for i in xrange(num_players)]

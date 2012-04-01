@@ -140,6 +140,11 @@ class Board:
             return True
         return False
     
+    def clear_staging(self):
+        for unit in self.units[:]:
+            if unit._class == Unit.STAGING:
+                self.remove_unit(unit)
+    
     def remove_staging(self):
         for unit in self.units[:]:
             if unit._class == Unit.STAGING:
