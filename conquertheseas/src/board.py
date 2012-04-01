@@ -96,7 +96,7 @@ class Board:
                     if not (0<=ux<BOARD_SQUARES_X and 0<=uy<BOARD_SQUARES_Y):
                         continue
                     collided = self.cells[ux][uy]
-                    if collided != None and collided != unit:
+                    if collided is not None and collided is not unit:
                         # this is confusing as anything so comments
                         if collided._class > unit._class:   # bullet on offense or offense on defense
                             collided.on_collision(unit, self)
@@ -125,10 +125,11 @@ class Board:
                              # do some shitttt
                         else: # collided._class < unit._class
                             print "in the last else"
-                            collided.on_collision(unit, self)   # TODO: probably wrong
+                            unit.on_collision(collided, self)   # TODO: probably wrong, I may have fixed it. someone with more understanding should double check
                     #else:
                         #print "board.unit_take_action: No collision!"
-                self.move_unit(unit, mloc)  # the movement
+                if unit in self.units:
+                    self.move_unit(unit, mloc)  # the movement
                 #print "board.unit_take_action: MOVED"
             elif unit._actions[0].action == Action.SHOOT:
                 u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
