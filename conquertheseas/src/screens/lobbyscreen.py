@@ -233,6 +233,8 @@ class LobbyScreen(Screen):
     def recv_nick_change(self, data=None):
         data = data.split(" ")
         i, name = int(data[0]), ' '.join(data[1:])
+        if i == self.my_index:
+            self.main.player_name = name
         try:
             name = int(name)
         except ValueError:

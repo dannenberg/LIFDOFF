@@ -276,7 +276,7 @@ class Server(threading.Thread):
         for x in self.slots:
             if x["type"] == Server.PLAYER:
                 if x["name"] == message:
-                    self.slots[sender]["conn"].send("That name is already taken" + RS)
+                    self.slots[sender]["conn"].send("NICK " + str(sender) + " " + self.slots[sender]["name"] + RS)
                     return
         self.slots[sender]["name"] = message
         self.send_to_all("NICK " + str(sender) + " " + message)
