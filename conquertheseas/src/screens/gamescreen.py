@@ -121,9 +121,9 @@ class GameScreen(Screen):
                         self.action_surface.blit(self.action_imgs, (ACTION_BUTTON_SIZE*i,0), ((ACTION_BUTTON_SIZE*Action.img_lookup[o],0), (ACTION_BUTTON_SIZE,ACTION_BUTTON_SIZE)))
                     def action_click(mpos):
                         ui_action(options[mpos[0]//ACTION_BUTTON_SIZE], curunit)  # show the ui for that action
-                    try:
-                        self.clickbox.append((gpos[0]*SQUARE_SIZE+MY_BOARD_X, gpos[1]*SQUARE_SIZE+MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
-                        self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE)
+                    try: # oh good jesus the math
+                        self.action_loc = (min(gpos[0]*SQUARE_SIZE, (BOARD_SQUARES_X - (ACTION_BUTTON_SIZE*len(options)/SQUARE_SIZE + 1))*SQUARE_SIZE), min(gpos[1]*SQUARE_SIZE, (BOARD_SQUARES_Y - 2) * SQUARE_SIZE))
+                        self.clickbox.append((self.action_loc[0] + MY_BOARD_X, self.action_loc[1] + MY_BOARD_Y, ACTION_BUTTON_SIZE*len(options), ACTION_BUTTON_SIZE), action_click, z=2)
                         #self.clickbox.append((300,0,ACTION_BUTTON_SIZE*len(options),ACTION_BUTTON_SIZE), action_click)
                         #self.action_loc = (gpos[0]*SQUARE_SIZE, gpos[1]*SQUARE_SIZE, 0)
                     except AttributeError:
