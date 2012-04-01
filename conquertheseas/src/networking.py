@@ -223,6 +223,7 @@ class Server(threading.Thread):
                         #for p in self.connections:
                         #    p.send(message)
         self.server.close()
+        self.send_to_all("HOSTDEAD ")
         for i,x in enumerate(self.slots):
             if x.has_key("conn"):
                 x["conn"].close()

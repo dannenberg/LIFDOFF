@@ -118,7 +118,7 @@ class Main():
                    "END":self.screens["game"].resolve_turn, "MOVE":self.screens["game"].server_unit_move,
                    "SENT":self.screens["game"].server_unit_send, "SHOOT":self.screens["game"].server_unit_shoot,
                    "SPECIAL":self.screens["game"].server_unit_special, "BUY":self.screens["game"].server_unit_buy,
-                   "UPGRADE":self.screens["game"].server_unit_upgrade, "TURN":lambda x:None}
+                   "UPGRADE":self.screens["game"].server_unit_upgrade, "TURN":lambda x:None, "HOSTDEAD":self.host_dead}
         msg = msg.split(" ")
         cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
         if cmd not in actions:
@@ -126,6 +126,11 @@ class Main():
             return
         actions[cmd](msg)
     
+    def host_dead (self, msg):
+        """ host d/c'd """
+        print "host is gone"
+        self.change_screen("main")
+
     def change_screen(self, screen):
         self.screens[screen].on_switch_in()
         self.mainscreen = self.screens[screen]
