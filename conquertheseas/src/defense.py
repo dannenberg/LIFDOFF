@@ -1,4 +1,4 @@
-from unit import Unit
+from unit import *
 from action import Action
 from constants import *
 
@@ -6,12 +6,10 @@ class DefensiveUnit(Unit):
     def __init__(self, idd, purple=False):
         #self.upgrades = ()[idd]()
         (x,y) = ((0,3),(5,6),(0,9))[idd]
-        (w,h) = ((2,2),(2,2),(2,2))[idd]
         if purple:
-            imgsrc = ("../img/purple_sub.png","../img/purple_sub.png","../img/purple_sub.png")[idd]
+            super(DefensiveUnit, self).__init__(UnitFactory.PURPLE_SUB, (x,y), Unit.DEFENSE)
         else:
-            imgsrc = ("../img/yellow_sub.png","../img/yellow_sub.png","../img/yellow_sub.png")[idd]
-        super(DefensiveUnit, self).__init__(None, (x,y), (w,h), imgsrc, Unit.DEFENSE, 0, 0)
+            super(DefensiveUnit, self).__init__(UnitFactory.YELLOW_SUB, (x,y), Unit.DEFENSE)
         self._move_speed = 5
         self.idd = idd #TODO wrong
         self.moves_remaining = self._move_speed
