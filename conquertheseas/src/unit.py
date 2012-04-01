@@ -14,31 +14,36 @@ class UnitFactory(object):
     TERRAIN1 = 17
     TERRAIN2 = 18
     GOLD = 19
-    unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1), ANGRYFISH:(1,1), TERRAIN1:(1,1), TERRAIN2:(1,2), GOLD:(1,1)}
-    
+    PURPLE_SUB = 20
+    YELLOW_SUB = 21
+    unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1), ANGRYFISH:(1,1), TERRAIN1:(1,1), TERRAIN2:(1,2), GOLD:(1,1), PURPLE_SUB:(2,2), YELLOW_SUB:(2,2)}
+    cash_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:10, BULLET:0, ANGRYFISH:10, TERRAIN1:0, TERRAIN2:0, GOLD:10, PURPLE_SUB:0, YELLOW_SUB:0}
+    exp_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:5, BULLET:0, ANGRYFISH:5, TERRAIN1:0, TERRAIN2:0, GOLD:0, PURPLE_SUB:0, YELLOW_SUB:0}
+    img = {TADPOLE:"../img/tadpole.png", MINE:"../img/mine.png", CRAB:"../img/crab.png", SQUIDDLE:"../img/squiddle.png", MERMAID:"../img/mermaid.png", BULLET:"../img/bullet.png", ANGRYFISH:"../img/angryfish.png", TERRAIN1:"../img/terrain1.png", TERRAIN2:"../img/terrain2.png", GOLD:"../img/gold.png", PURPLE_SUB:"../img/purple_sub.png", YELLOW_SUB:"../img/yellow_sub.png"}
+
     def __new__(_, idd, loc, fo_real=False):
         utype = Unit.OFFENSE if fo_real else Unit.STAGING
         utoken = None if fo_real else idd
         if idd == UnitFactory.TADPOLE:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/tadpole.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, utype, token=utoken)
         if idd == UnitFactory.MINE:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/mine.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, utype, token=utoken)
         if idd == UnitFactory.CRAB:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/crab.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, utype, token=utoken)
         if idd == UnitFactory.SQUIDDLE:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/squiddle.png", utype, 5, 5, token=utoken)
+            return Unit(idd, loc, utype, token=utoken)
         if idd == UnitFactory.MERMAID:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/mermaid.png", utype, 10, 5, token=utoken)
+            return Unit(idd, loc, utype, token=utoken)
         if idd == UnitFactory.ANGRYFISH:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/angryfish.png", utype, 10, 5, token=utoken)
+            return Unit(idd, loc, utype, token=utoken)
         if idd == UnitFactory.BULLET:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/bullet.png", Unit.BULLET, 0, 0)
+            return Unit(idd, loc, Unit.BULLET)
         if idd == UnitFactory.TERRAIN1:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/terrain1.png", Unit.TERRAIN, 0, 0)
+            return Unit(idd, loc, Unit.TERRAIN)
         if idd == UnitFactory.TERRAIN2:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/terrain2.png", Unit.TERRAIN, 0, 0)
+            return Unit(idd, loc, Unit.TERRAIN)
         if idd == UnitFactory.GOLD:
-            return Unit(idd, loc, UnitFactory.unitsize[idd], "../img/gold.png", Unit.GOLD, 10, 0)   # worth 10 gold, 0 exp
+            return Unit(idd, loc, Unit.GOLD)
         raise ValueError("Unknown unit id "+str(idd))
     
     @staticmethod
@@ -52,7 +57,7 @@ class Unit(object):
     TERRAIN = 4
     GOLD = 5
     STAGING  = 0
-    def __init__(self, idd, (x,y), (w, h), imgsrc, cls, gold, val, parent=None, token=None):
+    def __init__(self, idd, (x,y), cls, parent=None, token=None):
         if parent != None:
             self._class = parent._class
             self._parent = parent
@@ -60,16 +65,16 @@ class Unit(object):
             self._parent = None
             self._class = cls
         self.idd = idd
-        self._tileset = pygame.image.load(imgsrc)
+        self._tileset = pygame.image.load(UnitFactory.img[idd])
         self._token = token
         self._spr_src = (0,0)     # topleft of source tile
-        self._size = (w, h)         # width/height
-        self._spr_size = (w*SQUARE_SIZE, h*SQUARE_SIZE) # width and height in pixels
+        self._size = UnitFactory.unitsize[idd]
+        self._spr_size = (self._size[0]*SQUARE_SIZE, self._size[1]*SQUARE_SIZE) # width and height in pixels
         self._loc = (x,y)           # location on the board
         self._unaltered_loc = (x,y)
         self._actions = []
-        self.exp_value = val
-        self.cash_value = gold
+        self.exp_value = UnitFactory.exp_val[idd]
+        self.cash_value = UnitFactory.cash_val[idd]
         if idd == UnitFactory.SQUIDDLE or idd == UnitFactory.MINE or cls == self.TERRAIN or cls == self.GOLD:
             self._move_speed = 1;
         elif idd == UnitFactory.MERMAID:
