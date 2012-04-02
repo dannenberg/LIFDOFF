@@ -6,6 +6,7 @@ from screens.screen import Screen
 from message_panel import MessagePanel
 from bg_waves import Waves
 import pygame
+import random
 import networking
 from dummy import Dummy
 
@@ -256,6 +257,8 @@ class LobbyScreen(Screen):
         
     def recv_start_game(self, players):
         print "game starting!!"
+        seed, _, players = players.partition(" ")
+        random.seed(seed)
         players = players.split("\t")
         self.main.reset_screen("game", players, False)
         self.main.change_screen("game")
