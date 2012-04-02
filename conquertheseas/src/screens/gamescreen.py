@@ -20,6 +20,7 @@ class GameScreen(Screen):
     ACTION_MENU = 2
     MOVING = 3
     GAMEOVER = 4
+    WAITING = 5
     def __init__(self, main, num_players=2, local=True):
         Screen.__init__(self, main)
         print "local: ", local, "player numbers: ", num_players
@@ -55,6 +56,7 @@ class GameScreen(Screen):
         
         self.create_boards(num_players, boards)
         
+        self.waiting_img = pygame.image.load("../img/wait_overlay.png")
         self.action_imgs = pygame.image.load("../img/action_choices.png")
         self.arrows = pygame.image.load("../img/arrow_formatted.png")
         self.arrow_locs = Arrows((0,0), 0)
@@ -171,10 +173,10 @@ class GameScreen(Screen):
                         self.add_to_server_list("TURN")
                 self.add_to_server_list("END")
                 print self.to_server
+                self.set_mode(GameScreen.WAITING)
                 self.clickbox.append((0,0,SCREEN_WIDTH,SCREEN_HEIGHT), lambda x:None, z=17)
                 for msg in self.to_server:
                     self.main.client.send(msg)
-                self.set_mode(GameScreen.NO_MODE)
                 self.enemy_board.clear_staging()
                 for unit in self.my_board.units:
                     self.my_board.move_unit(unit, unit._unaltered_loc)
@@ -302,6 +304,8 @@ class GameScreen(Screen):
     def new_turn(self):
         """ Receiving the turns back """
         self.my_board.initialize_turn()
+        self.people_done = 0
+        self.set_mode(GameScreen.NO_MODE)
     
     def server_unit_move(self, msg):
         x,y,dude = msg.split(" ")
@@ -333,9 +337,7 @@ class GameScreen(Screen):
         self.people_done += 1
         print "people done", self.people_done
         if self.people_done == self.num_players:
-            self.people_done = 0
             self.new_turn()
-            self.clickbox.clear(17) # I bet you'd like a comment here, huh?
     
     def create_boards(self, num_players, x=None):
         if x is not None:
@@ -378,6 +380,8 @@ class GameScreen(Screen):
             self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
     
     def set_mode(self, new_mode):
+        if self.mode == GameScreen.WAITING:
+            self.clickbox.clear(17) # I bet you'd like a comment here, huh?
         if self.mode == GameScreen.DEPLOYING:
             self.offense_panel.selected = None
             self.held = None
@@ -459,6 +463,9 @@ class GameScreen(Screen):
         screen.blit(self.board_sans_buttons, (0, 0))
         screen.blit(self.button_bar, (0, 740))
         
+        if self.mode == GameScreen.WAITING:
+            screen.blit(self.waiting_img, (0,0))
+            
         if self.mode == GameScreen.GAMEOVER:
             screen.blit(self.victoryimg, (0,0))
             
