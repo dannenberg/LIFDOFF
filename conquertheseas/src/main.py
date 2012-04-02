@@ -24,6 +24,7 @@ class Main():
         pygame.init()
         self.server = None
         self.client = None
+        self.rand = random.Random()
         self.stdsize=(SCREEN_WIDTH,SCREEN_HEIGHT)
         self.size=self.stdsize
         self.scale = 1

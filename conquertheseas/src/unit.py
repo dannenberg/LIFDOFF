@@ -1,5 +1,4 @@
 import pygame
-import random
 from action import Action
 from constants import SQUARE_SIZE
 from animation import Animation
@@ -173,17 +172,17 @@ class Unit(object):
         self.take_damage(board)
         return 5
     
-    def create_move(self):
+    def create_move(self, rand):
         if self._class == Unit.BULLET:
             for i in xrange(self._move_speed):
                 self._actions.append(Action(Action.MOVE, (self._loc[0] + i + 1, self._loc[1])))
         elif self._class == Unit.OFFENSE:
             if self.idd == UnitFactory.SQUIDDLE:    # squiddle move AI
                 for i in xrange(self._move_speed):
-                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(2, min(10, random.randint(-1,1)+self._loc[1])))))
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(2, min(10, rand.randint(-1,1)+self._loc[1])))))
             elif self.idd == UnitFactory.MINE:      # mine move AI
                 for i in xrange(self._move_speed):
-                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, random.randint(0,1)+self._loc[1]))))
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, rand.randint(0,1)+self._loc[1]))))
             else:
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))

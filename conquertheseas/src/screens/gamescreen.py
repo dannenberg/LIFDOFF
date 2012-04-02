@@ -142,10 +142,10 @@ class GameScreen(Screen):
                     self.my_board.move_unit(unit, unit._unaltered_loc)
                 # TODO removed staged units from enemy board
                 if self.last_turn == True:
-                    self.enemy_board.take_turn()
-                    self.my_board.take_turn()
-                    self.enemy_board.initialize_turn()
-                    self.my_board.initialize_turn()
+                    self.enemy_board.take_turn(self.main.rand)
+                    self.my_board.take_turn(self.main.rand)
+                    self.enemy_board.initialize_turn(self.main.rand)
+                    self.my_board.initialize_turn(self.main.rand)
                     self.handle_gameover()
                     
                 self.last_turn = not self.last_turn
@@ -303,7 +303,7 @@ class GameScreen(Screen):
     
     def new_turn(self):
         """ Receiving the turns back """
-        self.my_board.initialize_turn()
+        self.my_board.initialize_turn(self.main.rand)
         self.people_done = 0
         self.set_mode(GameScreen.NO_MODE)
     
@@ -333,7 +333,7 @@ class GameScreen(Screen):
     def resolve_turn(self, msg):
         """ ??? """
         self.enemy_boards[self.people_done].remove_staging()
-        self.enemy_boards[self.people_done].take_turn()
+        self.enemy_boards[self.people_done].take_turn(self.main.rand)
         self.people_done += 1
         print "people done", self.people_done
         if self.people_done == self.num_players:

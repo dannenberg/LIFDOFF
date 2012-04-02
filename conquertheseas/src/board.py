@@ -3,7 +3,6 @@ from defense import DefensiveUnit
 from action import Action
 from constants import SQUARE_SIZE, BOARD_SQUARES_X, BOARD_SQUARES_Y
 import pygame
-import random
 
 class Board:
     def __init__(self, w, h, name, purple=False):
@@ -60,10 +59,10 @@ class Board:
                     pass
         return not failure
     
-    def take_turn(self):
+    def take_turn(self, rand):
         for unit in self.units:
             if unit._class not in (Unit.STAGING, Unit.DEFENSE):
-                unit.create_move()
+                unit.create_move(rand)
         for action in self._actions:
             if action.action == Action.CREATE:
                 unit = UnitFactory(action.extra, action.loc, True)
@@ -152,24 +151,24 @@ class Board:
                 self._actions.append(Action(Action.CREATE, unit._loc, unit._token))
                 self.remove_unit(unit)
     
-    def initialize_turn(self):
-        self.generate_terrain()
-        self.generate_gold()
+    def initialize_turn(self, rand):
+        self.generate_terrain(rand)
+        self.generate_gold(rand)
         for unit in self.units:
             unit._unaltered_loc = unit._loc
             unit.moves_remaining = unit._move_speed
     
-    def generate_terrain(self):
-        rand = random.randint(0,9)
-        if rand == 0:
+    def generate_terrain(self, rand):
+        randval = rand.randint(0,9)
+        if randval == 0:
             print self.add_unit(UnitFactory(UnitFactory.TERRAIN1, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-1)))
-        if rand == 1:
+        if randval == 1:
             print self.add_unit(UnitFactory(UnitFactory.TERRAIN2, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-2)))
     
-    def generate_gold(self):
-        rand = random.randint(0,9)
-        if rand == 0:
-            randY = random.randint(3,8)
+    def generate_gold(self, rand):
+        randval = rand.randint(0,9)
+        if randval == 0:
+            randY = rand.randint(3,8)
             self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
         
             
