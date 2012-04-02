@@ -68,12 +68,12 @@ class MouseHitboxes:
         if z is None:
             self._data = []
         else:
-            self._data = [x for x in self._data if x["z"]!=z]
+            self._data = filter(lambda x:x["z"] != z, self._data)
         
     def __repr__(self):
         toR = []
         for x in self._data:
-            toR.append("Left:%d, Top:%d, Right:%d, Bottom:%d"%(x["left"], x["top"], x["right"], x["bottom"]))
+            toR.append("Left:%d, Top:%d, Right:%d, Bottom:%d, Z:%d"%(x["left"], x["top"], x["right"], x["bottom"], x["z"]))
         return '\n'.join(toR)
         
 class TestMouseHitboxes(unittest.TestCase):
