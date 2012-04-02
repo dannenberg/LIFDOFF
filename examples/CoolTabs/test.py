@@ -6,7 +6,7 @@ size = (600, 600)
 tabsize = (100, 30)
 screen = pygame.display.set_mode(size)
 done = False
-numtabs = 12
+numtabs = 9
 
 words = [''.join([random.choice(lowercase) for _ in xrange(7)]).title() for _ in xrange(numtabs)]
 tab_selected = None
@@ -26,10 +26,16 @@ def redraw_tab(tab, tabs, selected=False):
 
 def redraw(screen):
     screen.fill((0xFF,0xFF,0xFF))
+    pygame.draw.rect(screen, (0,0,0), (tabsize[0]/2, 0, size[0]-tabsize[0], size[1]), 3)
     for i,x in enumerate(tabs):
-        bx = (i*(size[0]-tabsize[0]))/numtabs  # default loc
+        bx = (i*(size[0]-tabsize[0]*2))/(numtabs-1) + tabsize[0]/2  # default loc
         if mx is not None:
-            bx += min(tabsize[0]/2, max(-tabsize[0]/2, ((bx-mx)**3)/(size[0]-tabsize[0])))   # push away from the mouse
+            val = min(tabsize[0]/2, max(0, ((bx-mx)**3)/(size[0]-tabsize[0]*2)))   # push away from the mouse
+            if i==0:
+                val = min(val, 0)
+            if i==len(tabs)-1:
+                val = max(val, 0)
+            bx += val
         screen.blit(x, (bx,0))
 
 mx = 0
@@ -47,8 +53,9 @@ while not done:
             done = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             x,y = event.pos
-            if y <= tabsize[1]: # can skip this in the final code
-                redraw_tab((x*numtabs)/((size[0]-tabsize[0])), tabs, True) # inverse of bx's default loc in redraw
+            if y <= tabsize[1]: # can skip this check in the final code
+                i = min(numtabs-1, ((numtabs-1)*(x-tabsize[0]/2))/(size[0]-tabsize[0]*2))
+                redraw_tab(i, tabs, True) # inverse of bx's default loc in redraw
         if event.type == pygame.MOUSEMOTION:
             x,y = event.pos
             mx = None
