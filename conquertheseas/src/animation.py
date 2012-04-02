@@ -1,7 +1,5 @@
 class Animation:
     def __init__(self, state, **args):
-        if "args" in args:
-            args = args["args"] # this line made me lol
         if state not in args:
             raise ValueError("State given ("+str(state)+") was not defined.")
         self.state = state
@@ -17,4 +15,4 @@ class Animation:
         return self.clips[self.state][self.frame][2]                 # return the current image position for our sprite
     
     def clone(self):
-        return Animation(self.state, args=self.clips)
+        return Animation(self.state, **self.clips)
