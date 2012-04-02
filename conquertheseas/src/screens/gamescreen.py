@@ -171,6 +171,7 @@ class GameScreen(Screen):
                         self.add_to_server_list("TURN")
                 self.add_to_server_list("END")
                 print self.to_server
+                self.clickbox.append((0,0,SCREEN_WIDTH,SCREEN_HEIGHT), lambda x:None, z=17)
                 for msg in self.to_server:
                     self.main.client.send(msg)
                 self.set_mode(GameScreen.NO_MODE)
@@ -178,8 +179,6 @@ class GameScreen(Screen):
                 for unit in self.my_board.units:
                     self.my_board.move_unit(unit, unit._unaltered_loc)
                 self.to_server = []
-                self.clickbox.append((0,0,SCREEN_WIDTH,SCREEN_HEIGHT), lambda x:None, z=17)
-
                 
         self.clickbox.append((1, 740, 207, 60), action_button) #TODO SO MAGICAL
         
