@@ -257,7 +257,7 @@ class LobbyScreen(Screen):
     def recv_start_game(self, players):
         print "game starting!!"
         seed, _, players = players.partition(" ")
-        self.main.rand.seed(seed)
+        self.main.rand.seed(int(seed))
         players = players.split("\t")
         self.main.reset_screen("game", players, False)
         self.main.change_screen("game")

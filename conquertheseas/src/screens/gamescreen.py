@@ -303,7 +303,6 @@ class GameScreen(Screen):
     
     def new_turn(self):
         """ Receiving the turns back """
-        self.my_board.initialize_turn(self.main.rand)
         self.people_done = 0
         self.set_mode(GameScreen.NO_MODE)
     
@@ -334,6 +333,7 @@ class GameScreen(Screen):
         """ ??? """
         self.enemy_boards[self.people_done].remove_staging()
         self.enemy_boards[self.people_done].take_turn(self.main.rand)
+        self.enemy_boards[self.people_done].initialize_turn(self.main.rand)
         self.people_done += 1
         print "people done", self.people_done
         if self.people_done == self.num_players:
