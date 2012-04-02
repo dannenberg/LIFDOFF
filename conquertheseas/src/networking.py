@@ -1,6 +1,7 @@
 import socket
 import select
 import threading
+import random
 from Queue import Queue
 from board import Board
 from constants import *
@@ -319,7 +320,7 @@ class Server(threading.Thread):
                     self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
             self.slots = self.game_slots
             print "number of slots", len(self.slots)
-            self.send_to_all("START "+('\t'.join([x["name"] for x in self.slots])))
+            self.send_to_all("START "+str(random.randint(0,2**32-1))+" "+('\t'.join([x["name"] for x in self.slots])))
                     
     def generate_board_data(self, name):
         return {"board":Board(BOARD_SQUARES_X,BOARD_SQUARES_Y, name)}
