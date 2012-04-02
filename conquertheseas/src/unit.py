@@ -2,6 +2,7 @@ import pygame
 import random
 from action import Action
 from constants import SQUARE_SIZE
+from animation import Animation
 
 class UnitFactory(object):
     MINE = 1
@@ -19,6 +20,19 @@ class UnitFactory(object):
     unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1), ANGRYFISH:(1,1), TERRAIN1:(1,1), TERRAIN2:(1,2), GOLD:(1,1), PURPLE_SUB:(2,2), YELLOW_SUB:(2,2)}
     cash_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:10, BULLET:0, ANGRYFISH:10, TERRAIN1:0, TERRAIN2:0, GOLD:10, PURPLE_SUB:0, YELLOW_SUB:0}
     exp_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:5, BULLET:0, ANGRYFISH:5, TERRAIN1:0, TERRAIN2:0, GOLD:0, PURPLE_SUB:0, YELLOW_SUB:0}
+    move_spd = {TADPOLE:3, MINE:1, CRAB:3, SQUIDDLE:1, MERMAID:2, BULLET:3, ANGRYFISH:3, TERRAIN1:1, TERRAIN2:1, GOLD:1, PURPLE_SUB:5, YELLOW_SUB:5}
+    animations = {TADPOLE:Animation("idle", idle=[(1,50,(0,0)),(2,50,(2,0)),(3,50,(0,0)),(0,50,(1,0))]),
+                  MINE:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  CRAB:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  SQUIDDLE:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(2,0)),(4,50,(3,0)),(5,50,(4,0)),(0,50,(2,0))]),
+                  MERMAID:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  BULLET:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  ANGRYFISH:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  TERRAIN1:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  TERRAIN2:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  GOLD:Animation("idle", idle=[(1,50,(0,0)), (2, 50, (1,0)), (3,50, (2,0)), (4,50, (3,0)), (5,50, (4,0)), (6,50, (3,0)), (7,50, (2,0)), (0,50, (1,0))]),
+                  PURPLE_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))]),
+                  YELLOW_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))])}
     img = {TADPOLE:"../img/tadpole.png", MINE:"../img/mine.png", CRAB:"../img/crab.png", SQUIDDLE:"../img/squiddle.png", MERMAID:"../img/mermaid.png", BULLET:"../img/bullet.png", ANGRYFISH:"../img/angryfish.png", TERRAIN1:"../img/terrain1.png", TERRAIN2:"../img/terrain2.png", GOLD:"../img/gold.png", PURPLE_SUB:"../img/purple_sub.png", YELLOW_SUB:"../img/yellow_sub.png"}
 
     def __new__(_, idd, loc, fo_real=False):
@@ -75,14 +89,8 @@ class Unit(object):
         self._actions = []
         self.exp_value = UnitFactory.exp_val[idd]
         self.cash_value = UnitFactory.cash_val[idd]
-        if idd == UnitFactory.SQUIDDLE or idd == UnitFactory.MINE or cls == self.TERRAIN or cls == self.GOLD:
-            self._move_speed = 1
-        elif idd == UnitFactory.MERMAID:
-            self._move_speed = 2
-        else:
-            self._move_speed = 3
-        if cls == Unit.GOLD:
-            self.animations = {"state":("idle",0), "idle":{0:(1,50,(0,0)), 1:(2, 50, (1,0)), 2:(3,50, (2,0)), 3:(4,50, (3,0)), 4:(5,50, (4,0)), 5:(6,50, (3,0)), 6:(7,50, (2,0)), 7:(0,50, (1,0))}}
+        self._move_speed = UnitFactory.move_spd[idd]
+        self.animation = UnitFactory.animations[idd].clone()
         self.moves_remaining = self._move_speed
         self.health = 1
         
@@ -105,20 +113,11 @@ class Unit(object):
         self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
         
     def advance_sprite(self):
-        try:
-            self.animations # crash on me?
-            next, time, (posx, posy) = self.animations[self.animations["state"][0]][self.animations["state"][1]]
-            self.animations["state"] = (self.animations["state"][0], next)  # TODO: stuck in one animation
-            self._spr_src = (posx*SQUARE_SIZE, posy*SQUARE_SIZE)
-        except AttributeError:
-            pass
-        #x = self._spr_src[0]+self._spr_size[0]
-        #if x == self._spr_size[0]*3:    # WHY THREEE?????
-        #    x = 0
-        #self._spr_src = (x, self._spr_src[1])
+        temp = self.animation.advance_sprite(50)   # TODO: 50 is a terrible guess
+        self._spr_src = (temp[0]*self._spr_size[0], temp[1]*self._spr_size[1])
         
     def draw_sprite(self, destsurface, loc = None):
-        self.advance_sprite() # TODO wrong
+        self.advance_sprite()
         if loc != None: # for drawing an addon using relative position
             loc = tuple(map(sum,zip(self._loc, loc))) #sum the tuples
         else:
