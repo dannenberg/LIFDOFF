@@ -161,21 +161,26 @@ class Board:
             unit.moves_remaining = unit._move_speed
     
     def generate_terrain(self, rand):
-        for i in xrange(self.next_terrain):
-            self.add_unit(UnitFactory(UnitFactory.TERRAIN1, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-i-1))) 
-        
+        temp = self.next_terrain
         randval = rand.randint(0,3)
         if randval == 0:
-            self.next_terrain -= 1
+            temp -= 1
         elif randval == 1:
-            self.next_terrain += 1
-        else:
-            self.next_terrain = 0
-
-        if self.next_terrain < 0:
-            self.next_terrain = 0
-        elif self.next_terrain > 2:
-            self.next_terrain = 2
+            temp += 1
+        temp = max(0, min(2, temp))
+        
+        for i in xrange(self.next_terrain):
+            self.add_unit(UnitFactory(UnitFactory.TERRAIN1, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-i-1)))
+            self.units[-1].level = 4
+            if self.cells[BOARD_SQUARES_X-2][BOARD_SQUARES_Y-i-1] is not None and self.cells[BOARD_SQUARES_X-2][BOARD_SQUARES_Y-i-1]._class == Unit.TERRAIN:
+                self.units[-1].level |= 8
+            if temp-1 >= i:
+                self.units[-1].level |= 2
+            if self.next_terrain-1 > i:
+                self.units[-1].level |= 1
+            print "Level",self.units[-1].level
+        
+        self.next_terrain = temp
     
     def generate_gold(self, rand):
         randval = rand.randint(0,9)

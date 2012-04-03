@@ -92,6 +92,7 @@ class Unit(object):
         self.animation = UnitFactory.animations[idd].clone()
         self.moves_remaining = self._move_speed
         self.health = 1
+        self.level = 0
         
     def __getstate__(self):
         # !!!! CRITICALLY IMPORTANT !!!!
@@ -113,7 +114,7 @@ class Unit(object):
         
     def advance_sprite(self):
         temp = self.animation.advance_sprite(50)   # TODO: 50 is a terrible guess
-        self._spr_src = (temp[0]*self._spr_size[0], temp[1]*self._spr_size[1])
+        self._spr_src = (temp[0]*self._spr_size[0], self.level*self._spr_size[1])
         
     def draw_sprite(self, destsurface, loc = None):
         self.advance_sprite()
