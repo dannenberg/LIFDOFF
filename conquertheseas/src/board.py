@@ -15,6 +15,8 @@ class Board:
         self._actions = []
         self.exp = 20
         self.gold = 0
+        self.next_terrain = 0
+        
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i, purple))
     
@@ -159,11 +161,21 @@ class Board:
             unit.moves_remaining = unit._move_speed
     
     def generate_terrain(self, rand):
-        randval = rand.randint(0,9)
+        for i in xrange(self.next_terrain):
+            self.add_unit(UnitFactory(UnitFactory.TERRAIN1, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-i-1))) 
+        
+        randval = rand.randint(0,3)
         if randval == 0:
-            print self.add_unit(UnitFactory(UnitFactory.TERRAIN1, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-1)))
-        if randval == 1:
-            print self.add_unit(UnitFactory(UnitFactory.TERRAIN2, (BOARD_SQUARES_X-1, BOARD_SQUARES_Y-2)))
+            self.next_terrain -= 1
+        elif randval == 1:
+            self.next_terrain += 1
+        else:
+            self.next_terrain = 0
+
+        if self.next_terrain < 0:
+            self.next_terrain = 0
+        elif self.next_terrain > 2:
+            self.next_terrain = 2
     
     def generate_gold(self, rand):
         randval = rand.randint(0,9)
