@@ -1,4 +1,5 @@
 import pygame
+import copy
 from action import Action
 from constants import SQUARE_SIZE
 from animation import Animation
@@ -20,6 +21,7 @@ class UnitFactory(object):
     cash_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:10, BULLET:0, ANGRYFISH:10, TERRAIN1:0, TERRAIN2:0, GOLD:10, PURPLE_SUB:0, YELLOW_SUB:0}
     exp_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:5, BULLET:0, ANGRYFISH:5, TERRAIN1:0, TERRAIN2:0, GOLD:0, PURPLE_SUB:0, YELLOW_SUB:0}
     move_spd = {TADPOLE:3, MINE:1, CRAB:3, SQUIDDLE:1, MERMAID:2, BULLET:3, ANGRYFISH:3, TERRAIN1:1, TERRAIN2:1, GOLD:1, PURPLE_SUB:5, YELLOW_SUB:5}
+    damage = {SQUIDDLE:0}
     animations = {TADPOLE:Animation("idle", idle=[(1,50,(0,0)),(2,50,(2,0)),(3,50,(0,0)),(0,50,(1,0))]),
                   MINE:Animation("idle", idle=[(0,9999999,(0,0))]),
                   CRAB:Animation("idle", idle=[(0,9999999,(0,0))]),
@@ -32,6 +34,7 @@ class UnitFactory(object):
                   GOLD:Animation("idle", idle=[(1,50,(0,0)), (2, 50, (1,0)), (3,50, (2,0)), (4,50, (3,0)), (5,50, (4,0)), (6,50, (3,0)), (7,50, (2,0)), (0,50, (1,0))]),
                   PURPLE_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))]),
                   YELLOW_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))])}
+    effects = {SQUIDDLE:[{"type":1, "amount":3, "left":3, "default":None}]}
     img = {TADPOLE:"../img/tadpole.png", MINE:"../img/mine.png", CRAB:"../img/crab.png", SQUIDDLE:"../img/squiddle.png", MERMAID:"../img/mermaid.png", BULLET:"../img/bullet.png", ANGRYFISH:"../img/angryfish.png", TERRAIN1:"../img/terrain1.png", TERRAIN2:"../img/terrain2.png", GOLD:"../img/gold.png", PURPLE_SUB:"../img/purple_sub.png", YELLOW_SUB:"../img/yellow_sub.png"}
 
     def __new__(_, idd, loc, fo_real=False):
@@ -65,9 +68,9 @@ class UnitFactory(object):
 
 class Unit(object):
     DEFENSE = 1
-    OFFENSE = 2
+    OFFENSE = 4
     BULLET  = 3
-    TERRAIN = 4
+    TERRAIN = 2
     GOLD = 5
     STAGING  = 0
     def __init__(self, idd, (x,y), cls, parent=None, token=None):
@@ -90,9 +93,18 @@ class Unit(object):
         self.cash_value = UnitFactory.cash_val[idd]
         self._move_speed = UnitFactory.move_spd[idd]
         self.animation = UnitFactory.animations[idd].clone()
+        self.effects = []
+        if idd in UnitFactory.effects:
+            for effect in UnitFactory.effects[idd]:
+                self.effects.append(copy.deepcopy(effect))
+        if idd in UnitFactory.damage:
+            self.damage = UnitFactory.damage[idd]
+        else:
+            self.damage = 5
         self.moves_remaining = self._move_speed
         self.health = 1
         self.level = 0
+
         
     def __getstate__(self):
         # !!!! CRITICALLY IMPORTANT !!!!
@@ -169,9 +181,27 @@ class Unit(object):
     
     def on_collision(self, opposed, board):
         """ Returns damage done to opponent """
-        opposed.take_damage(board, 5)   # TODO: 5?
-        self.take_damage(board)
-        return 5
+        # do lots of checks for what two things are hitting and act appropriately
+        sSelf, sOpposed = sorted([self, opposed], key = lambda x:x._class)
+        if sSelf._class == Unit.DEFENSE:
+            if sOpposed._class == Unit.GOLD:
+                sOpposed.take_damage(board)
+                board.gold += 5
+            elif sOpposed._class == Unit.TERRAIN:
+                print "unit is hitting terrain...die"
+                sSelf.take_damage(board)
+            elif sOpposed._class == Unit.OFFENSE:
+                sSelf.take_damage(board, sOpposed.damage);
+                sOpposed.take_damage(board, sSelf.damage);
+                for effect in sOpposed.effects:
+                    sSelf.effects.append(effect)
+        if sSelf._class == Unit.OFFENSE:
+            if sOpposed._class == Unit.TERRAIN:
+                return False;
+                
+        #opposed.take_damage(board, 5)   # TODO: 5?
+        #self.take_damage(board)
+        #return 5
     
     def create_move(self, rand):
         if self._class == Unit.BULLET:
@@ -180,9 +210,11 @@ class Unit(object):
         elif self._class == Unit.OFFENSE:
             if self.idd == UnitFactory.SQUIDDLE:    # squiddle move AI
                 for i in xrange(self._move_speed):
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(2, min(10, rand.randint(-1,1)+self._loc[1])))))
             elif self.idd == UnitFactory.MINE:      # mine move AI
                 for i in xrange(self._move_speed):
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, rand.randint(0,1)+self._loc[1]))))
             else:
                 for i in xrange(self._move_speed):

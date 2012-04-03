@@ -99,9 +99,7 @@ class Board:
                     collided = self.cells[ux][uy]
                     if collided is not None and collided is not unit:
                         # this is confusing as anything so comments
-                        if collided._class > unit._class:   # bullet on offense or offense on defense
-                            collided.on_collision(unit, self)
-                        elif collided._class == unit._class:
+                        if collided._class == unit._class:
                             if collided.moved or (collided._actions and collided._actions[0].action != Action.MOVE): # he's moved already, or he's not GOING to move
                                 print "in the if"
                                 unit._actions = []  # bunp
@@ -121,12 +119,10 @@ class Board:
                                             unit.take_damage(self, 0)   # same as prev TODO
                                             return False
                                 # otherwise he'll resolve the collision on his turn
-                        elif collided._class == Unit.TERRAIN:
-                            print "a unit hit terrain"
-                             # do some shitttt
-                        else: # collided._class < unit._class
-                            print "in the last else"
-                            unit.on_collision(collided, self)   # TODO: probably wrong, I may have fixed it. someone with more understanding should double check
+                        else:
+                            if not unit.on_collision(collided, self):
+                                return False
+                            
                     #else:
                         #print "board.unit_take_action: No collision!"
                 if unit in self.units:
@@ -157,6 +153,21 @@ class Board:
         self.generate_terrain(rand)
         self.generate_gold(rand)
         for unit in self.units:
+            if unit._class == Unit.DEFENSE:
+                # apply effects
+                for effect in unit.effects[:]:
+                    # {type: speed, amount: x, left: y, default: z}
+                    print "defensiveUnit has an effect", effect
+                    if effect["type"] == 1:
+                        if effect["default"] == None:
+                            effect["default"] = unit._move_speed
+                            unit._move_speed = effect["default"] - effect["amount"]
+                        if effect["left"] == 0:
+                            unit._move_speed = effect["default"]
+                            unit.effects.remove(effect)
+                            print "removing bad effect"
+                        else:
+                            effect["left"] -= 1
             unit._unaltered_loc = unit._loc
             unit.moves_remaining = unit._move_speed
     

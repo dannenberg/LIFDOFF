@@ -15,6 +15,7 @@ class DefensiveUnit(Unit):
         self.moves_remaining = self._move_speed
         self._abilities = [Action.MOVE, Action.SHOOT]
         self.addons = []
+        self.effects = []
 
     def draw_sprite(self, destsurface, loc = None):
         self.advance_sprite()
@@ -45,5 +46,6 @@ class DefensiveUnit(Unit):
         if not self.moves_remaining:
             return [Action.UNDO]
         if self._actions:
+            print "defense get abilities: " , self._actions
             return self._abilities + [Action.UNDO]
         return self._abilities
