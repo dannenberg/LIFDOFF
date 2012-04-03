@@ -23,7 +23,7 @@ class CreditsScreen(Screen):
         
         textbox = pygame.Surface((1220, 430), pygame.SRCALPHA)
         textbox.fill((0, 0, 0, 128))
-        for i,x in enumerate(("-- Credits --\nMatt Dannenberg - Version Control, Master of Unlocking\nBrian Shaginaw - Coding, in its entirety.\nBenson 'Team Leader' Perry - Fuckall"\
+        for i,x in enumerate(("-- Credits --\nMatt Dannenberg - Version Control, Master of Unlocking\nBrian Shaginaw - Coding, in its entirety.\nBenson 'Team Leader' Perry - Purchaser of Burgers"\
                              +"\nPyGame\nPython\nEgoraptor").split("\n")):
             text = self.smallerfont.render(x, True, COLORS["white"])
             textbox.blit(text, (10,10+i*50))
