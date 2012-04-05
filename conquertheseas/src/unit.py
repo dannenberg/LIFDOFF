@@ -20,7 +20,7 @@ class UnitFactory(object):
     unitsize = {TADPOLE:(1,1), MINE:(2,2), CRAB:(1,1), SQUIDDLE:(1,1), MERMAID:(2,1), BULLET:(1,1), ANGRYFISH:(1,1), TERRAIN1:(1,1), TERRAIN2:(1,2), GOLD:(1,1), PURPLE_SUB:(2,2), YELLOW_SUB:(2,2)}
     cash_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:10, BULLET:0, ANGRYFISH:10, TERRAIN1:0, TERRAIN2:0, GOLD:10, PURPLE_SUB:0, YELLOW_SUB:0}
     exp_val = {TADPOLE:5, MINE:5, CRAB:5, SQUIDDLE:5, MERMAID:5, BULLET:0, ANGRYFISH:5, TERRAIN1:0, TERRAIN2:0, GOLD:0, PURPLE_SUB:0, YELLOW_SUB:0}
-    move_spd = {TADPOLE:3, MINE:1, CRAB:3, SQUIDDLE:1, MERMAID:2, BULLET:3, ANGRYFISH:3, TERRAIN1:1, TERRAIN2:1, GOLD:1, PURPLE_SUB:5, YELLOW_SUB:5}
+    move_spd = {TADPOLE:3, MINE:1, CRAB:3, SQUIDDLE:1, MERMAID:1, BULLET:3, ANGRYFISH:3, TERRAIN1:1, TERRAIN2:1, GOLD:1, PURPLE_SUB:5, YELLOW_SUB:5}
     damage = {SQUIDDLE:0}
     animations = {TADPOLE:Animation("idle", idle=[(1,50,(0,0)),(2,50,(2,0)),(3,50,(0,0)),(0,50,(1,0))]),
                   MINE:Animation("idle", idle=[(0,9999999,(0,0))]),
@@ -72,7 +72,7 @@ class Unit(object):
     BULLET  = 3
     TERRAIN = 2
     GOLD = 5
-    STAGING  = 0
+    STAGING = 0
     def __init__(self, idd, (x,y), cls, parent=None, token=None):
         if parent != None:
             self._class = parent._class
@@ -197,8 +197,8 @@ class Unit(object):
                     sSelf.effects.append(effect)
         if sSelf._class == Unit.OFFENSE:
             if sOpposed._class == Unit.TERRAIN:
-                return False;
-                
+                return False
+        return True       
         #opposed.take_damage(board, 5)   # TODO: 5?
         #self.take_damage(board)
         #return 5
@@ -216,6 +216,7 @@ class Unit(object):
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, rand.randint(0,1)+self._loc[1]))))
+                    print rand.randint(0,1000000)
             else:
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
