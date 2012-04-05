@@ -57,6 +57,8 @@ class MainScreen(Screen):
             self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 150), over(False), out)
             
             def click_singleplayer(mpos):
+                self.main.reset("game", 2, True)
+                self.main.reset_screen("shop")
                 self.main.change_screen("game")
             def click_joingame(mpos):
                 self.main.change_screen("join")

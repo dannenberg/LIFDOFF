@@ -260,6 +260,7 @@ class LobbyScreen(Screen):
         self.main.rand.seed(int(seed))
         players = players.split("\t")
         self.main.reset_screen("game", players, False)
+        self.main.reset_screen("shop")
         self.main.change_screen("game")
         
     def notify_key(self, inkey):
