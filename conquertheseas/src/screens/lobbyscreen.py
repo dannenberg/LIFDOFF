@@ -6,6 +6,7 @@ from screens.screen import Screen
 from message_panel import MessagePanel
 from bg_waves import Waves
 import pygame
+import socket
 import networking
 from dummy import Dummy
 
@@ -59,7 +60,11 @@ class LobbyScreen(Screen):
         if host:
             def get_ip():
                 try:
-                    ip = urllib.urlopen('http://whatismyip.org').read()    # yes, this is actually the accepted way to do this
+                    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    s.connect(('google.com', 80))
+                    ip = s.getsockname()[0]
+                    s.close()
+
                     txt_ip = self.largefont.render(ip, True, COLORS["white"])
                     self.base_panel.blit(txt_ip, (450, 25))
                     def copy_ip(mpos):
