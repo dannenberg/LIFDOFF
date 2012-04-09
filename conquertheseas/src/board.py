@@ -174,6 +174,7 @@ class Board:
     def generate_terrain(self, rand):
         temp = self.next_terrain
         randval = rand.randint(0,3)
+        print "generate_terrain", randval
         if randval == 0:
             temp -= 1
         elif randval == 1:
@@ -195,8 +196,10 @@ class Board:
     
     def generate_gold(self, rand):
         randval = rand.randint(0,9)
+        print "generate_gold", randval
         if randval == 0:
             randY = rand.randint(3,8)
+            print "generate_gold", randY
             self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
         
             

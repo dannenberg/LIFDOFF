@@ -211,12 +211,15 @@ class Unit(object):
             if self.idd == UnitFactory.SQUIDDLE:    # squiddle move AI
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
-                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(2, min(10, rand.randint(-1,1)+self._loc[1])))))
+                    randval = rand.randint(-1,1)
+                    print "SQUIDDLE", randval
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(2, min(10, randval+self._loc[1])))))
             elif self.idd == UnitFactory.MINE:      # mine move AI
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
-                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, rand.randint(0,1)+self._loc[1]))))
-                    print rand.randint(0,1000000)
+                    randval = rand.randint(0,1)
+                    print "MINE", randval
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, randval+self._loc[1]))))
             else:
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
