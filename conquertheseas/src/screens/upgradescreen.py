@@ -14,10 +14,12 @@ class UpgradeScreen(Screen):
         self.ship = 0
         self.current_upgrade = None
         self.current_tree = None
-        self.upgrades = [[{"First":{"row":0, "order":0, "next":["Second","Third"], "cost":5, "desc":"makes dannenberg less shitty at games. now he's actually not the worst in the world."},
-                           "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":10, "desc":"makes dannenberg almost decent at games. now he can beat little crippled girls half the time."},
-                           "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15, "desc":"makes dannenberg good at games. he can hold his own against asian 10 year olds."},
-                           "Ultimate":{"row":2,"order":0, "next":[], "cost":30, "desc":"makes dannenberg great at games. he can finally win a game against someone his age."}},
+        self.upgrades = [[{"Zeroth":{"row":0, "order":0, "next":["Second","Third"], "cost":5, "desc":"now they are about benson!!!!!11!1 lolololol"},
+                           "First":{"row":0, "order":1, "next":["Third", "Fourth"], "cost":15, "desc":"makes benson good at games. he can hold his own against asian 10 year olds."},
+                           "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":15, "desc":"makes benson good at games. he can hold his own against asian 10 year olds."},
+                           "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15, "desc":"hahahaha benson, he is so awful"},
+                           "Fourth":{"row":1, "order":2, "next":["Ultimate"], "cost":15, "desc":"STILL TERRIBLE BENSON!!! AHHAHAHAH"},
+                           "Ultimate":{"row":2,"order":0, "next":[], "cost":30, "desc":"makes benson great at games. he can finally win a game against someone his age."}},
                           {"Zero":{"row":0, "order":0, "next":["Three"], "cost":5, "desc":"-"},
                            "One":{"row":0, "order":1, "next":["Four","Five"], "cost":5, "desc":"-"},
                            "Two":{"row":0, "order":2, "next":["Five"], "cost":5, "desc":"-"},
@@ -25,7 +27,16 @@ class UpgradeScreen(Screen):
                            "Four":{"row":1, "order":1, "next":["Six","Seven"], "cost":5, "desc":"-"},
                            "Five":{"row":1, "order":2, "next":[], "cost":5, "desc":"-"},
                            "Six":{"row":2, "order":0, "next":[], "cost":5, "desc":"-"},
-                           "Seven":{"row":2, "order":1, "next":[], "cost":5, "desc":"-"}}, {}],[{},{},{}],[{},{},{}]]
+                           "Seven":{"row":2, "order":1, "next":[], "cost":5, "desc":"-"}},
+                          {"ZEROTH":{"row":0, "order":0, "next":["THREETH","FOURTH"], "cost":5, "desc":"zeroth"},
+                           "ONETH":{"row":0, "order":1, "next":["FIVETH"], "cost":10, "desc":"oneth"},
+                           "TWOTH":{"row":0, "order":2, "next":["FIVETH"], "cost":15, "desc":"twoth"},
+                           "THREETH":{"row":1,"order":0, "next":["SIXTH"], "cost":30, "desc":"threeth"},
+                           "FOURTH":{"row":1, "order":1, "next":["SIXTH", "SEVENTH"], "cost":10, "desc":"fourth"},
+                           "FIVETH":{"row":1, "order":2, "next":["SEVENTH"], "cost":15, "desc":"fiveth"},
+                           "SIXTH":{"row":2, "order":0, "next":[], "cost":15, "desc":"sixth"},
+                           "SEVENTH":{"row":2,"order":1, "next":[], "cost":30, "desc":"seventh"}}
+                           ],[{},{},{}],[{},{},{}]]
         self.init_upgrades()
         
         for x in (self.tree_one, self.tree_two, self.tree_three):
