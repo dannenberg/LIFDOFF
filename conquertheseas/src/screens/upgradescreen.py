@@ -18,7 +18,14 @@ class UpgradeScreen(Screen):
                            "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":10, "desc":"makes dannenberg almost decent at games. now he can beat little crippled girls half the time."},
                            "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15, "desc":"makes dannenberg good at games. he can hold his own against asian 10 year olds."},
                            "Ultimate":{"row":2,"order":0, "next":[], "cost":30, "desc":"makes dannenberg great at games. he can finally win a game against someone his age."}},
-                          {},{}],[{},{},{}],[{},{},{}]]
+                          {"Zero":{"row":0, "order":0, "next":["Three"], "cost":5, "desc":"-"},
+                           "One":{"row":0, "order":1, "next":["Four","Five"], "cost":5, "desc":"-"},
+                           "Two":{"row":0, "order":2, "next":["Five"], "cost":5, "desc":"-"},
+                           "Three":{"row":1, "order":0, "next":["Six"], "cost":5, "desc":"-"},
+                           "Four":{"row":1, "order":1, "next":["Six","Seven"], "cost":5, "desc":"-"},
+                           "Five":{"row":1, "order":2, "next":[], "cost":5, "desc":"-"},
+                           "Six":{"row":2, "order":0, "next":[], "cost":5, "desc":"-"},
+                           "Seven":{"row":2, "order":1, "next":[], "cost":5, "desc":"-"}}, {}],[{},{},{}],[{},{},{}]]
         self.init_upgrades()
         
         for x in (self.tree_one, self.tree_two, self.tree_three):
@@ -62,6 +69,7 @@ class UpgradeScreen(Screen):
                     tree[upgrade]["y"] = (tree[upgrade]["row"]+.5)*yspacing
                     for next in tree[upgrade]["next"]:
                         tree[next]["prereqs"].append(upgrade)
+                rows = {}
         
     def switch_ship(self, which=None):
         if which is None:
@@ -92,6 +100,8 @@ class UpgradeScreen(Screen):
                                 ((tree[prereqs]["x"]-UPGRADE_ICON_SIZE/2, tree[prereqs]["y"]+UPGRADE_ICON_SIZE/2), (UPGRADE_ICON_SIZE, 0))):
                         q_p = (q[0]-p[0], q[1]-p[1])
                         rxs = cross(r,s)
+                        if not rxs: # parallel lines
+                            continue
                         u = float(cross(q_p, r)) / rxs
                         if u < lstu and 0<=float(cross(q_p, s))/ rxs<=1: # lol @ the second part mattering
                             lstu = u
@@ -134,7 +144,7 @@ class UpgradeScreen(Screen):
                             pass
                         self.clickbox.append((UPGRADE_PURCHASE_INDENT+SCREEN_WIDTH*3/4, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), buy) 
                     return onclick
-                self.clickbox.append(rectloc, what(tree, upgrade), z=2)
+                self.clickbox.append((rectloc[0]+t*SCREEN_WIDTH/4,rectloc[1],rectloc[2],rectloc[3]), what(tree, upgrade), z=2)
 
                 
         
