@@ -23,14 +23,14 @@ class UnitFactory(object):
     move_spd = {TADPOLE:3, MINE:1, CRAB:3, SQUIDDLE:1, MERMAID:1, BULLET:3, ANGRYFISH:3, TERRAIN1:1, TERRAIN2:1, GOLD:1, PURPLE_SUB:5, YELLOW_SUB:5}
     damage = {SQUIDDLE:0}
     animations = {TADPOLE:Animation("idle", idle=[(1,50,(0,0)),(2,50,(2,0)),(3,50,(0,0)),(0,50,(1,0))]),
-                  MINE:Animation("idle", idle=[(0,9999999,(0,0))]),
-                  CRAB:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  MINE:Animation("idle"),
+                  CRAB:Animation("idle"),
                   SQUIDDLE:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(2,0)),(4,50,(3,0)),(5,50,(4,0)),(0,50,(2,0))]),
-                  MERMAID:Animation("idle", idle=[(0,9999999,(0,0))]),
-                  BULLET:Animation("idle", idle=[(0,9999999,(0,0))]),
-                  ANGRYFISH:Animation("idle", idle=[(0,9999999,(0,0))]),
-                  TERRAIN1:Animation("idle", idle=[(0,9999999,(0,0))]),
-                  TERRAIN2:Animation("idle", idle=[(0,9999999,(0,0))]),
+                  MERMAID:Animation("idle", idle=[(1,50,(0,0)),(0,50,(1,0))]),
+                  BULLET:Animation("idle"),
+                  ANGRYFISH:Animation("idle"),
+                  TERRAIN1:Animation("idle"),
+                  TERRAIN2:Animation("idle"),
                   GOLD:Animation("idle", idle=[(1,50,(0,0)), (2, 50, (1,0)), (3,50, (2,0)), (4,50, (3,0)), (5,50, (4,0)), (6,50, (3,0)), (7,50, (2,0)), (0,50, (1,0))]),
                   PURPLE_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))]),
                   YELLOW_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))])}

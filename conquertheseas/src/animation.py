@@ -1,5 +1,7 @@
 class Animation:
     def __init__(self, state, **args):
+        if not args:
+            args = {state:[(0,9999999,(0,0))]}
         if state not in args:
             raise ValueError("State given ("+str(state)+") was not defined.")
         self.state = state
