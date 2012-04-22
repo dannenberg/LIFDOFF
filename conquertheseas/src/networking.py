@@ -425,4 +425,4 @@ if __name__ == "__main__":
         try:
             exec(raw_input(">"))
         except:
-            print "You have fucked up."
+            print "Bad input."

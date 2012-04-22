@@ -313,7 +313,7 @@ class GameScreen(Screen):
     def server_unit_send(self, msg):
         """ uft x y """
         uft,x,y = msg.split(" ")
-        print "received", uft, x, y
+        print "gamescreen.server_unit_send: received", uft, x, y
         self.enemy_boards[self.people_done].add_unit(UnitFactory(int(uft), (int(x), int(y))))
     
     def server_unit_shoot(self, msg):
@@ -365,8 +365,8 @@ class GameScreen(Screen):
         self.to_server.append(str(action)+" "+(" ".join([str(x) for x in args])))
     
     def handle_gameover(self):
-        lose = not any(u._class==Unit.DEFENSE for u in self.my_board.units)
-        win  = not any(u._class==Unit.DEFENSE for u in self.enemy_board.units)
+        lose =     not any(u._class==Unit.DEFENSE for u in self.my_board.units)
+        win  = all([not any(u._class==Unit.DEFENSE for u in b.units) for b in self.enemy_boards if b is not self.my_board])
         if win or lose:
             self.set_mode(GameScreen.GAMEOVER)
             self.clickbox.clear()
@@ -421,7 +421,7 @@ class GameScreen(Screen):
             self.my_board.surface.blit(self.arrows, (x[0]*SQUARE_SIZE+2+self.arrow_offset[0], x[1]*SQUARE_SIZE+2+self.arrow_offset[1]), ((SQUARE_SIZE*(x[2]|x[3]),0),(SQUARE_SIZE,SQUARE_SIZE)))
         
         if self.mode == GameScreen.DEPLOYING:
-            self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*11)), ((35-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))
+            self.enemy_board.surface.blit(pygame.transform.scale(self.highlight, (SQUARE_SIZE*OFFENSIVE_PLACEMENT_DEPTH, SQUARE_SIZE*BOARD_SQUARES_Y)), ((BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH)*SQUARE_SIZE,0))
         
         # panel highlight
         if self.highlight_panel_square != None:

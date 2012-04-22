@@ -39,7 +39,7 @@ class Main():
                         "join":JoinScreen(self),
                         "saveload":SaveLoadScreen(self)}
 
-        pygame.display.set_caption("FRIENDS OF THE SEA")
+        pygame.display.set_caption("Conquer the Seas")
         self.done=False
         clock = pygame.time.Clock()
         self.player_name = None
