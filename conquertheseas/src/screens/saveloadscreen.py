@@ -92,6 +92,9 @@ class SaveLoadScreen(Screen):
         screen.blit(self.back_button, (40,740))
         
     def save_load(self, mpos=None):
+        if not self.text_input:
+            print "Invalid filename"
+            return False
         f = self.text_input+".sav"
         if self.save_notload:
             if self.text_input in self.files:
@@ -102,7 +105,10 @@ class SaveLoadScreen(Screen):
             self.main.save("../saves/"+f)
             self.main.change_screen("saveload")
         else:   # load
-            pass
+            if self.text_input not in self.files:
+                print "File does not exist"
+                return False
+            self.main.load("../saves/"+f)
         
     def notify_key(self, inkey):
         if inkey.key == pygame.K_BACKSPACE:

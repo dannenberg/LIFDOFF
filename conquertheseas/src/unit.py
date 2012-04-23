@@ -97,10 +97,9 @@ class Unit(object):
         if idd in UnitFactory.effects:
             for effect in UnitFactory.effects[idd]:
                 self.effects.append(copy.deepcopy(effect))
+        self.damage = 5
         if idd in UnitFactory.damage:
             self.damage = UnitFactory.damage[idd]
-        else:
-            self.damage = 5
         self.moves_remaining = self._move_speed
         self.health = 1
         self.level = 0
@@ -111,18 +110,14 @@ class Unit(object):
         # If we need to change the order or contents of the items in this function,
         # or the accompanying __setstate__, or really any sort of save/load helper
         # function, increment the VERSION number in constants.py
-        
-        """self._parent = None
-        self._class = cls
-        self.idd = idd
-        self._tileset = pygame.image.load(imgsrc)
-        self._token, self._spr_src, self._size, self._spr_size, self._loc, self._unaltered_loc, self._actions, self.exp_value, self.cash_value, self._move_speed, self.moves_remaining, self.health"""
-        return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
+        return {k:v for k,v in self.__dict__.items() if k!="_tileset"}
+        #return [self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
         
     def __setstate__(self, data):
         # !!!! CRITICALLY IMPORTANT !!!!
         # See above
-        self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
+        self.__dict__.update(data)
+        self._tileset = pygame.image.load(UnitFactory.img[self.idd])
         
     def advance_sprite(self):
         temp = self.animation.advance_sprite(50)   # TODO: 50 is a terrible guess

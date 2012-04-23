@@ -30,6 +30,7 @@ class Board:
     def __setstate__(self, data):
         # !!!! CRITICALLY IMPORTANT !!!!
         # See above
+        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE), pygame.SRCALPHA)
         self.name, self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
     
     def draw_board(self):
@@ -202,11 +203,10 @@ class Board:
             print "generate_gold", randY
             self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
         
-            
     def move_unit(self, unit, loc=None):
         if loc == None:
             loc = unit._loc
-        if loc[0] < 0 or loc[0] > 34 or loc[1] < 0 or loc[1] > 10:
+        if loc[0] < 0 or loc[0] > BOARD_SQUARES_X-1 or loc[1] < 0 or loc[1] > BOARD_SQUARES_Y-1:
             if unit._class != Unit.DEFENSE:
                 self.remove_unit(unit)
         else:
@@ -223,9 +223,3 @@ class Board:
     def remove_unit(self, unit):
         self.units.remove(unit)
         self.lift_unit(unit)
-        
-    def __getattr__(self, name):
-        def anon(*args):
-            print name,"didn't exist"
-            return None
-        return anon

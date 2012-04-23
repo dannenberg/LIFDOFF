@@ -127,7 +127,7 @@ class Main():
             return
         actions[cmd](msg)
     
-    def host_dead (self, msg):
+    def host_dead(self, msg):
         """ host d/c'd """
         print "host is gone"
         self.change_screen("main")
@@ -138,12 +138,14 @@ class Main():
         self.mainscreen.abs_scale(self.scale)
     
     def save(self, floc):
-        f = open(floc, "w+")
+        f = open(floc, "w")
         pickle.dump((VERSION, self.screens["game"].enemy_boards), f)
         
     def load(self, floc):
         f = open(floc, "r")
         v, boards = pickle.load(f)
+        if v != VERSION:    # whuh oh
+            print "OLD SAVE FILE: incompatible with current version (",v,") vs (",VERSION,")"
         self.reset_screen("game", boards)
         self.change_screen("game")
     
