@@ -16,7 +16,12 @@ class DefensiveUnit(Unit):
         self._abilities = [Action.MOVE, Action.SHOOT]
         self.addons = []
         self.effects = []
-
+        self.purple = purple
+    
+    def __setstate__(self, data):
+        self.__dict__.update(data)
+        self._tileset = pygame.image.load(UnitFactory.img[UnitFactory.PURPLE_SUB if self.purple else UnitFactory.YELLOW_SUB])
+    
     def draw_sprite(self, destsurface, loc = None):
         self.advance_sprite()
         if loc != None:             # determine correct relative positioning for addons and recursion

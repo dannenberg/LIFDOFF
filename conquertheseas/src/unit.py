@@ -208,7 +208,7 @@ class Unit(object):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
                     randval = rand.randint(-1,1)
                     print "SQUIDDLE", randval
-                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(2, min(10, randval+self._loc[1])))))
+                    self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(0, min(10, randval+self._loc[1])))))
             elif self.idd == UnitFactory.MINE:      # mine move AI
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))

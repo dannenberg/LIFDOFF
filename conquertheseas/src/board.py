@@ -30,8 +30,8 @@ class Board:
     def __setstate__(self, data):
         # !!!! CRITICALLY IMPORTANT !!!!
         # See above
-        self.surface = pygame.Surface((w*SQUARE_SIZE, h*SQUARE_SIZE), pygame.SRCALPHA)
         self.name, self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
+        self.surface = pygame.Surface((self._w*SQUARE_SIZE, self._h*SQUARE_SIZE), pygame.SRCALPHA)
     
     def draw_board(self):
         for x in self.units:
@@ -191,7 +191,7 @@ class Board:
                 self.units[-1].level |= 2
             if self.next_terrain-1 > i:
                 self.units[-1].level |= 1
-            print "Level",self.units[-1].level
+            #print "Level",self.units[-1].level
         
         self.next_terrain = temp
     
@@ -199,7 +199,7 @@ class Board:
         randval = rand.randint(0,9)
         print "generate_gold", randval
         if randval == 0:
-            randY = rand.randint(3,8)
+            randY = rand.randint(0,8)
             print "generate_gold", randY
             self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
         

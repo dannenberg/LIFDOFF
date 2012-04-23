@@ -13,6 +13,20 @@ from action import Action
 
 from screens.shopscreen import ShopScreen   # :(
 
+def fxrange(start, end=None, inc=None):
+    """ Why can't python do this. Come on. """
+    start += 0.0    # make start a float
+    if end is None:
+        end = start
+        start = 0.0
+    if inc is None:
+        inc = 1.0
+    count = int((end-start)/inc)
+    if start+count*inc != end:
+        count += 1
+    for i in xrange(count):
+        yield start+i*inc
+
 class GameScreen(Screen):
     """in game screen"""
     NO_MODE = 0
@@ -37,6 +51,7 @@ class GameScreen(Screen):
 
         self.to_server = []
 
+        self.sin_cache = [math.sin(i) for i in fxrange(0, math.pi, math.pi/180)]
         self.font = pygame.font.Font(None, 40)
         self.mode = GameScreen.NO_MODE
         self.action_surface = None
@@ -402,8 +417,8 @@ class GameScreen(Screen):
         pygame.draw.rect(self.my_board.surface, COLORS["sky"], (0, 0, BOARD_WIDTH, BOARD_HEIGHT))
         pygame.draw.rect(self.enemy_board.surface, COLORS["sky"], (0, 0, BOARD_WIDTH, BOARD_HEIGHT))
         
-        self.water_level = (self.water_level + (math.pi/180))%(math.pi * 2)
-        modifier = int(SQUARE_SIZE * 2.5 + math.sin(self.water_level) * self.water_range)
+        self.water_level = (self.water_level+1)%len(self.sin_cache)
+        modifier = int(SQUARE_SIZE * .5 + self.sin_cache[self.water_level] * self.water_range)
         pygame.draw.rect(self.enemy_board.surface, COLORS["water"], (0, modifier, BOARD_WIDTH, BOARD_HEIGHT - modifier))
         pygame.draw.rect(self.my_board.surface, COLORS["water"], (0, modifier, BOARD_WIDTH, BOARD_HEIGHT - modifier))
         
