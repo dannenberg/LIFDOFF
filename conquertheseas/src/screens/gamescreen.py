@@ -52,6 +52,7 @@ class GameScreen(Screen):
 
         self.to_server = []
 
+        self.tabs = pygame.Surface((1280-201, 60), pygame.SRCALPHA)
         self.sin_cache = [math.sin(i) for i in fxrange(0, math.pi, math.pi/180)]
         self.font = pygame.font.Font(None, 40)
         self.mode = GameScreen.NO_MODE
@@ -334,6 +335,21 @@ class GameScreen(Screen):
             return hold
         self.overbox.append((ENEMY_BOARD_X,ENEMY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(0),mouseout)
         self.overbox.append((MY_BOARD_X, MY_BOARD_Y,BOARD_WIDTH,BOARD_HEIGHT),mouseover(1),mouseout)
+        
+        if self.num_players > 2:
+            off = 0
+            for i,x in enumerate(self.enemy_boards):
+                if x == self.my_board:
+                    off = -1
+                    continue
+                def on_click(ind):
+                    def anon(mpos):
+                        self.enemy_board_index = ind
+                        self.enemy_board = self.enemy_boards[ind]
+                        self.redraw_tabs()
+                    return anon
+                self.clickbox.append((201+(i+off)*200, 20, 200,40), on_click(i))
+            self.redraw_tabs()
     
     def new_turn(self):
         """ Receiving the turns back """
@@ -362,6 +378,26 @@ class GameScreen(Screen):
     
     def server_unit_upgrade(self, msg):
         pass
+    
+    def redraw_tabs(self):
+        tabsize = (210,40)
+        draw = ((10,0),(0,10),(0,tabsize[1]),tabsize,(tabsize[0],0))
+        tabshape = pygame.Surface(tabsize, pygame.SRCALPHA)
+        pygame.draw.polygon(tabshape, (0xFF, 0,0), draw)
+        pygame.draw.polygon(tabshape, (0,0,0), draw, 3)
+        off = 0
+        for i,x in enumerate(self.enemy_boards):
+            if x == self.my_board:
+                off = -1
+                continue
+            if self.enemy_board_index == i: # yellow!
+                ts = pygame.Surface(tabsize, pygame.SRCALPHA)
+                pygame.draw.polygon(ts, (0xFF, 0xC0,0), draw)
+                pygame.draw.polygon(ts, (0,0,0), draw, 3)
+                self.tabs.blit(ts,       ((tabsize[0]-10)*(i+off), 20))
+            else:
+                self.tabs.blit(tabshape, ((tabsize[0]-10)*(i+off), 20))
+            self.tabs.blit(self.font.render(x.name, True, (0xFF,)*3), ((tabsize[0]-10)*(i+off)+10, 30))
     
     def resolve_turn(self, msg):
         """ ??? """
@@ -509,6 +545,9 @@ class GameScreen(Screen):
             
         if self.mode == GameScreen.GAMEOVER:
             screen.blit(self.victoryimg, (0,0))
+        
+        if self.num_players > 2:
+            screen.blit(self.tabs, (201,0))
             
 class Arrows:
     def __init__(self, (x,y), movespd):
