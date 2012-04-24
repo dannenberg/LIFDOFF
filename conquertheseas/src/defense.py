@@ -5,7 +5,7 @@ from constants import *
 class DefensiveUnit(Unit):
     def __init__(self, idd, purple=False):
         #self.upgrades = ()[idd]()
-        (x,y) = ((0,3),(5,6),(0,9))[idd]
+        (x,y) = ((0,1),(5,5),(0,9))[idd]
         if purple:
             super(DefensiveUnit, self).__init__(UnitFactory.PURPLE_SUB, (x,y), Unit.DEFENSE)
         else:

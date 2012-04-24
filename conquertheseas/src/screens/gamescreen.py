@@ -35,6 +35,7 @@ class GameScreen(Screen):
     MOVING = 3
     GAMEOVER = 4
     WAITING = 5
+    PAUSE_MENU = 6
     def __init__(self, main, num_players=2, local=True):
         Screen.__init__(self, main)
         print "local: ", local, "player numbers: ", num_players
@@ -57,6 +58,7 @@ class GameScreen(Screen):
         self.action_surface = None
         self.last_turn = False
         self.victoryimg = None
+        self.pause_img = pygame.image.load("../img/pause_menu.png")
         
         self.action_loc = None
         self.water_level = 0
@@ -86,9 +88,26 @@ class GameScreen(Screen):
         self.clickbox.append((785,742,230,57), to_upgrade) # SO MAGICAL!
         
         def to_mainmenu(mpos):
-            self.main.change_screen("saveload")
-            self.main.screens["saveload"].redraw_save_load(True)
-            self.main.screens["saveload"].return_to = "game"
+            self.set_mode(GameScreen.PAUSE_MENU)
+            self.clickbox.append((0,0,SCREEN_WIDTH, SCREEN_HEIGHT), lambda mpos:None, z=13) # blocking
+            self.overbox.append((0,0,SCREEN_WIDTH, SCREEN_HEIGHT), lambda mpos:None, z=14)  # blocking
+            def return_to_game(mpos):
+                self.set_mode(GameScreen.NO_MODE)
+            
+            def to_savescreen(mpos):
+                self.set_mode(GameScreen.NO_MODE)
+                self.main.change_screen("saveload")
+                self.main.screens["saveload"].redraw_save_load(True)
+                self.main.screens["saveload"].return_to = "game"
+            
+            def quit_game(mpos):
+                # TODO: multiplayer "that's it i'm out"
+                self.main.change_screen("main")
+            
+            self.clickbox.append((440,250,393,60), return_to_game, z=14)    # return to game
+            self.clickbox.append((440,323,393,60), to_savescreen,  z=14)    # save game
+            self.clickbox.append((440,396,393,60), quit_game,      z=14)    # quit game
+            
         self.clickbox.append((1020,742,260,57), to_mainmenu)    # TOOOO MAGICAL!
         
         def enemy_boardclick(mpos):
@@ -408,6 +427,10 @@ class GameScreen(Screen):
             self.held = None
             self.clickbox.remove((self.action_loc[0]+MY_BOARD_X, self.action_loc[1]+MY_BOARD_Y))
             self.action_loc = None
+        if self.mode == GameScreen.PAUSE_MENU:
+            self.clickbox.clear(13) # blocking
+            self.clickbox.clear(14) # buttons
+            self.overbox.clear(14)
         self.mode = new_mode
     
     def display(self, screen):
@@ -477,6 +500,9 @@ class GameScreen(Screen):
         
         screen.blit(self.board_sans_buttons, (0, 0))
         screen.blit(self.button_bar, (0, 740))
+        
+        if self.mode == GameScreen.PAUSE_MENU:
+            screen.blit(self.pause_img, (0,0))
         
         if self.mode == GameScreen.WAITING:
             screen.blit(self.waiting_img, (0,0))

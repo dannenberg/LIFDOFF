@@ -4,6 +4,7 @@ import threading
 import random
 from Queue import Queue
 from board import Board
+from unit import Unit
 from constants import *
 
 HOST = socket.gethostname()
@@ -102,6 +103,21 @@ class Server(threading.Thread):
         # TODO: AI players should make turns: DIS BENSON'S DOMAIN
         # Toggle the comments on the next two lines
         #self.slots[s]["actions"] = []  # FUCKIN NO
+        for x in xrange(3):
+            #if self.slots[s]["board"].units[x]._class == Unit.DEFENSE:  # move 'im
+            for _ in xrange(3):
+                r = random.randint(0,3)
+                if r < 2:
+                    dx = 0
+                    dy = (r%2)*2 - 1
+                else:
+                    dx = (r%2)*2 - 1
+                    dy = 0
+                self.slots[s]["units"][x] = (max(0,min(33,self.slots[s]["units"][x][0]+dx)), max(0,min(9,self.slots[s]["units"][x][1]+dy)))
+                self.slots[s]["actions"].append("MOVE "+str(self.slots[s]["units"][x][0])+" "+str(self.slots[s]["units"][x][1])+" "+str(x))
+            if not random.randint(0,3):
+                self.slots[s]["actions"].append("SHOOT "+str(x))
+                
         self.slots[s]["sent"] = True
         #self.set_sent(s)   # over and over and over and over
     
@@ -271,6 +287,7 @@ class Server(threading.Thread):
                         self.game_slots[-1]["name"] = x["name"]
                     else:
                         self.game_slots[-1]["name"] = AI_NAME+" "+str(ai_num)
+                        self.game_slots[-1]["units"] = [(0,1),(5,5),(0,9)]
                         ai_num += 1
                     self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
             self.slots = self.game_slots
