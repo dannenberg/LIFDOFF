@@ -119,6 +119,7 @@ class Unit(object):
     
     def add_effect(self, effect):
         self.effects.append(effect.clone())
+        effect.apply_effect(self)
         if effect.etype == Effect.DOUBLESHOT:
             self.level |= 2
         if effect.etype == Effect.AERODYNAMIC:

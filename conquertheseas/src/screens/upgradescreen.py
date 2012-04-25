@@ -137,7 +137,6 @@ class UpgradeScreen(Screen):
                         
                         def buy(mpos):
                             if self.purchasable(tree, upgrade):
-                                print "Tree:",tree," upgrade:",upgrade
                                 tree[upgrade]["purchased"] = True
                                 self.main.screens["game"].my_board.exp -= tree[upgrade]["cost"]
                                 self.main.screens["game"].to_server.append("UPGRADE " + str(tree[upgrade]["id"]))
@@ -146,6 +145,8 @@ class UpgradeScreen(Screen):
                                 self.switch_ship(which) # redraw the upgrades
                                 if "effect" in tree[upgrade]:
                                     self.main.screens["game"].my_board.defensive[t].add_effect(tree[upgrade]["effect"])
+                                    if tree[upgrade]["effect"].etype == Effect.AERODYNAMIC:
+                                        self.main.screens["game"].my_board.defensive[t].moves_remaining += tree[upgrade]["effect"].amount
                                 
                                 #pygame.draw.rect(self.info_sfc, (0xC0,0xC0,0xC0), (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H))
                                 #pygame.draw.rect(self.info_sfc, COLORS["black"], (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), 2)
