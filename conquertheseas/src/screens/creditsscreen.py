@@ -1,6 +1,5 @@
 import pygame
 import math
-from mousehitbox import MouseHitboxes
 from screen import Screen
 from constants import COLORS
 from bg_waves import Waves

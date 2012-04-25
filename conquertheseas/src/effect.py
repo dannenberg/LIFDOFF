@@ -18,20 +18,21 @@ class Effect:   # like mass effect amirite
     
     def apply_effect(self, unit):
         print "effects.apply_effect: defensiveUnit has an effect", self
-        if self.etype in (TANGLED, AERODYNAMIC):
+        if self.etype in (Effect.TANGLED, Effect.AERODYNAMIC):
             if self.default is None:
                 self.default = unit._move_speed
                 a = self.amount
-                if self.etype == AERODYNAMIC:
+                if self.etype == Effect.AERODYNAMIC:
                     a *= -1
-                unit._move_speed = self.default-self.amount
+                    print "movespeed is ",self.default-a
+                unit._move_speed = self.default-a
             if self.left == 0:
                 unit._move_speed = self.default
                 unit.effects.remove(effect)
                 print "effects.apply_effect: removing bad effect"
             elif self.left > 0: # else intrinsic
                 self.left -= 1
-        elif self.etype == LUCKY:
+        elif self.etype == Effect.LUCKY:
             pass    # lollerskates
     
     def __str__(self):

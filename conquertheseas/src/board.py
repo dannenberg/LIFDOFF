@@ -1,6 +1,7 @@
 from unit import Unit,UnitFactory
 from defense import DefensiveUnit
 from action import Action
+from effect import Effect
 from constants import SQUARE_SIZE, BOARD_SQUARES_X, BOARD_SQUARES_Y
 import pygame
 
@@ -19,18 +20,20 @@ class Board:
         
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i, purple))
+        
+        self.defensive = {i:x for i,x in enumerate(self.units)}
     
     def __getstate__(self):
         # !!!! CRITICALLY IMPORTANT !!!!
         # If we need to change the order or contents of the items in this function,
         # or the accompanying __setstate__, or really any sort of save/load helper
         # function, increment the VERSION number in constants.py
-        return [self.name, self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold]
+        return {k:v for k,v in self.__dict__.items() if k!="surface"}
         
     def __setstate__(self, data):
         # !!!! CRITICALLY IMPORTANT !!!!
         # See above
-        self.name, self._w, self._h, self.cells, self.units, self._actions, self.exp, self.gold = data
+        self.__dict__.update(data)
         self.surface = pygame.Surface((self._w*SQUARE_SIZE, self._h*SQUARE_SIZE), pygame.SRCALPHA)
     
     def draw_board(self):
@@ -132,7 +135,9 @@ class Board:
             elif unit._actions[0].action == Action.SHOOT:
                 u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
                 self.add_unit(u)
-                pass    # TODO
+                if filter(lambda e:e.etype == Effect.DOUBLESHOT, unit.effects):
+                    u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]+1))
+                    self.add_unit(u)
             elif unit._actions[0].action == Action.SPECIAL:
                 pass    # TODO
             del unit._actions[0]

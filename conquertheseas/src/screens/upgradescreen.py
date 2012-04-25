@@ -127,7 +127,7 @@ class UpgradeScreen(Screen):
                 color = (COLORS["upg_unav"], COLORS["upg_av"], COLORS["upg_purc"])[max(self.purchasable(tree, upgrade), tree[upgrade]["purchased"]*2)]
                 pygame.draw.rect(surfs[t], color, rectloc)
                 pygame.draw.rect(surfs[t], (0xFF if tree==self.current_tree and upgrade==self.current_upgrade else 0,0,0), rectloc, 2)
-                def what(tree, upgrade):
+                def what(t,tree, upgrade):
                     def onclick(mpos):
                         self.current_upgrade = upgrade
                         self.current_tree = tree
@@ -137,12 +137,15 @@ class UpgradeScreen(Screen):
                         
                         def buy(mpos):
                             if self.purchasable(tree, upgrade):
+                                print "Tree:",tree," upgrade:",upgrade
                                 tree[upgrade]["purchased"] = True
                                 self.main.screens["game"].my_board.exp -= tree[upgrade]["cost"]
                                 self.main.screens["game"].to_server.append("UPGRADE " + str(tree[upgrade]["id"]))
                                 self.redraw_right_panel()
                                 text = self.font3.render("Purchase",True,COLORS["gray"])
                                 self.switch_ship(which) # redraw the upgrades
+                                self.main.screens["game"].my_board.defensive[t].add_effect(tree[upgrade]["effect"])
+                                
                                 #pygame.draw.rect(self.info_sfc, (0xC0,0xC0,0xC0), (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H))
                                 #pygame.draw.rect(self.info_sfc, COLORS["black"], (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), 2)
                                 #self.info_sfc.blit(text, (UPGRADE_PURCHASE_INDENT+70, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10+7))
@@ -154,7 +157,7 @@ class UpgradeScreen(Screen):
                             pass
                         self.clickbox.append((UPGRADE_PURCHASE_INDENT+SCREEN_WIDTH*3/4, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), buy) 
                     return onclick
-                self.clickbox.append((rectloc[0]+t*SCREEN_WIDTH/4,rectloc[1],rectloc[2],rectloc[3]), what(tree, upgrade), z=2)
+                self.clickbox.append((rectloc[0]+t*SCREEN_WIDTH/4,rectloc[1],rectloc[2],rectloc[3]), what(t, tree, upgrade), z=2)
 
                 
         

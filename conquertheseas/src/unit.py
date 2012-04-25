@@ -102,7 +102,6 @@ class Unit(object):
         self.moves_remaining = self._move_speed
         self.health = 1
         self.level = 0
-
         
     def __getstate__(self):
         # !!!! CRITICALLY IMPORTANT !!!!
@@ -117,7 +116,14 @@ class Unit(object):
         # See above
         self.__dict__.update(data)
         self._tileset = pygame.image.load(UnitFactory.img[self.idd])
-        
+    
+    def add_effect(self, effect):
+        self.effects.append(effect.clone())
+        if effect.etype == Effect.DOUBLESHOT:
+            self.level |= 2
+        if effect.etype == Effect.AERODYNAMIC:
+            self.level |= 1
+    
     def advance_sprite(self):
         temp = self.animation.advance_sprite(50)   # TODO: 50 is a terrible guess
         self._spr_src = (temp[0]*self._spr_size[0], self.level*self._spr_size[1])
