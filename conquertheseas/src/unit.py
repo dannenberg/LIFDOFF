@@ -68,9 +68,9 @@ class UnitFactory(object):
 
 class Unit(object):
     DEFENSE = 1
-    OFFENSE = 4
+    OFFENSE = 2
     BULLET  = 3
-    TERRAIN = 2
+    TERRAIN = 4
     GOLD = 5
     STAGING = 0
     def __init__(self, idd, (x,y), cls, parent=None, token=None):
@@ -191,12 +191,18 @@ class Unit(object):
             elif sOpposed._class == Unit.TERRAIN:
                 print "unit is hitting terrain...die"
                 sSelf.take_damage(board)
+            elif sOpposed._class == Unit.BULLET:
+                sOpposed.take_damage(board)
             elif sOpposed._class == Unit.OFFENSE:
                 sSelf.take_damage(board, sOpposed.damage);
                 sOpposed.take_damage(board, sSelf.damage);
-                sSelf.effects = [effect for effect in sOpposed.effects]
+                sSelf.effects += [effect.clone() for effect in sOpposed.effects]
         if sSelf._class == Unit.OFFENSE:
             if sOpposed._class == Unit.TERRAIN:
+                sSelf.take_damage(board)
+            elif sOpposed._class == Unit.BULLET:
+                sSelf.take_damage(board)
+            elif sOpposed._class == Unit.GOLD:
                 return False
         return True       
         #opposed.take_damage(board, 5)   # TODO: 5?

@@ -95,8 +95,8 @@ class Board:
             return False
         if len(unit._actions) > 0:
             if unit._actions[0].action == Action.MOVE:
-                mloc = unit._actions[0].loc
-                nextlocs = [(x+mloc[0],y+mloc[1]) for x,y in unit.get_shape()]
+                dest = unit._actions[0].loc
+                nextlocs = [(x+dest[0],y+dest[1]) for x,y in unit.get_shape()]
                 for ux,uy in nextlocs:  # this is serverside stuff :(
                     if not (0<=ux<BOARD_SQUARES_X and 0<=uy<BOARD_SQUARES_Y):
                         continue
@@ -107,20 +107,18 @@ class Board:
                             if collided.moved or (collided._actions and collided._actions[0].action != Action.MOVE): # he's moved already, or he's not GOING to move
                                 print "in the if"
                                 unit._actions = []  # bunp
-                                unit.take_damage(self, 0)
-                                # TODO : Take some damage: may i suggest len(collided.get_shape())*c
                                 return False
-                            else:   # if he's gonna move into you dats bad
+                            else:   # if he's gonna move
                                 print "in the else - this unit hasn't moved"
                                 #print "collided._actions is " + str(collided._actions)
                                 #print "collided._actions[0].action == Action.MOVE is " + str(collided._actions[0].action)
                                 if collided._actions and collided._actions[0].action == Action.MOVE:
                                     print "in the if"
-                                    cloc = collided._actions[0].loc
+                                    cdest = collided._actions[0].loc
                                     for cx,cy in collided.get_shape():
-                                        if (cx+cloc[0], cy+cloc[1]) in nextlocs:    # onoz!
+                                        if (cx+cdest[0], cy+cdest[1]) in nextlocs:    # onoz!
                                             print "units actually colliding in the if"
-                                            unit.take_damage(self, 0)   # same as prev TODO
+                                            unit._actions = []  # bunp
                                             return False
                                 # otherwise he'll resolve the collision on his turn
                         else:
@@ -130,7 +128,7 @@ class Board:
                     #else:
                         #print "board.unit_take_action: No collision!"
                 if unit in self.units:
-                    self.move_unit(unit, mloc)  # the movement
+                    self.move_unit(unit, dest)  # the movement
                 #print "board.unit_take_action: MOVED"
             elif unit._actions[0].action == Action.SHOOT:
                 u = UnitFactory(UnitFactory.BULLET, (unit._loc[0]+3, unit._loc[1]))
