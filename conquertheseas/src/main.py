@@ -76,7 +76,7 @@ class Main():
                     self.mainscreen.abs_scale(self.scale)
             
             self.mainscreen.display(preblit)
-            preblit.blit(font.render(str(clock.get_fps()), True, (0xFF,0,0)), (0,0))
+            #preblit.blit(font.render(str(clock.get_fps()), True, (0xFF,0,0)), (0,0))
             preblit2 = pygame.transform.scale(preblit, self.size)
             self.screen.blit(preblit2, (0,0))
             pygame.display.flip()
