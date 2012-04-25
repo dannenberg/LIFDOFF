@@ -1,5 +1,5 @@
 import pygame
-import copy
+from effect import Effect
 from action import Action
 from constants import SQUARE_SIZE
 from animation import Animation
@@ -34,7 +34,7 @@ class UnitFactory(object):
                   GOLD:Animation("idle", idle=[(1,50,(0,0)), (2, 50, (1,0)), (3,50, (2,0)), (4,50, (3,0)), (5,50, (4,0)), (6,50, (3,0)), (7,50, (2,0)), (0,50, (1,0))]),
                   PURPLE_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))]),
                   YELLOW_SUB:Animation("idle", idle=[(1,50,(0,0)),(2,50,(1,0)),(3,50,(0,0)),(0,50,(2,0))])}
-    effects = {SQUIDDLE:[{"type":1, "amount":3, "left":3, "default":None}]}
+    effects = {SQUIDDLE:[Effect(Effect.TANGLED, left=3, amount=3)]}
     img = {TADPOLE:"../img/tadpole.png", MINE:"../img/mine.png", CRAB:"../img/crab.png", SQUIDDLE:"../img/squiddle.png", MERMAID:"../img/mermaid.png", BULLET:"../img/bullet.png", ANGRYFISH:"../img/angryfish.png", TERRAIN1:"../img/terrain1.png", TERRAIN2:"../img/terrain2.png", GOLD:"../img/gold.png", PURPLE_SUB:"../img/purple_sub.png", YELLOW_SUB:"../img/yellow_sub.png"}
 
     def __new__(_, idd, loc, fo_real=False):
@@ -95,8 +95,7 @@ class Unit(object):
         self.animation = UnitFactory.animations[idd].clone()
         self.effects = []
         if idd in UnitFactory.effects:
-            for effect in UnitFactory.effects[idd]:
-                self.effects.append(copy.deepcopy(effect))
+            self.effects = [e.clone() for e in UnitFactory.effects[idd]]
         self.damage = 5
         if idd in UnitFactory.damage:
             self.damage = UnitFactory.damage[idd]
@@ -188,8 +187,7 @@ class Unit(object):
             elif sOpposed._class == Unit.OFFENSE:
                 sSelf.take_damage(board, sOpposed.damage);
                 sOpposed.take_damage(board, sSelf.damage);
-                for effect in sOpposed.effects:
-                    sSelf.effects.append(effect)
+                sSelf.effects = [effect for effect in sOpposed.effects]
         if sSelf._class == Unit.OFFENSE:
             if sOpposed._class == Unit.TERRAIN:
                 return False

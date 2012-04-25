@@ -2,6 +2,7 @@ import pygame
 import math
 from constants import *
 from screen import Screen
+from effect import Effect
 
 class UpgradeScreen(Screen):
     def __init__(self, main):
@@ -14,28 +15,26 @@ class UpgradeScreen(Screen):
         self.ship = 0
         self.current_upgrade = None
         self.current_tree = None
-        self.upgrades = [[{"Zeroth":{"row":0, "order":0, "next":["Second","Third"], "cost":5, "desc":"now they are about benson!!!!!11!1 lolololol"},
-                           "First":{"row":0, "order":1, "next":["Third", "Fourth"], "cost":15, "desc":"makes benson good at games. he can hold his own against asian 10 year olds."},
-                           "Second":{"row":1, "order":0, "next":["Ultimate"], "cost":15, "desc":"makes benson good at games. he can hold his own against asian 10 year olds."},
-                           "Third":{"row":1, "order":1, "next":["Ultimate"], "cost":15, "desc":"hahahaha benson, he is so awful"},
-                           "Fourth":{"row":1, "order":2, "next":["Ultimate"], "cost":15, "desc":"STILL TERRIBLE BENSON!!! AHHAHAHAH"},
-                           "Ultimate":{"row":2,"order":0, "next":[], "cost":30, "desc":"makes benson great at games. he can finally win a game against someone his age."}},
-                          {"Zero":{"row":0, "order":0, "next":["Three"], "cost":5, "desc":"-"},
-                           "One":{"row":0, "order":1, "next":["Four","Five"], "cost":5, "desc":"-"},
-                           "Two":{"row":0, "order":2, "next":["Five"], "cost":5, "desc":"-"},
-                           "Three":{"row":1, "order":0, "next":["Six"], "cost":5, "desc":"-"},
-                           "Four":{"row":1, "order":1, "next":["Six","Seven"], "cost":5, "desc":"-"},
-                           "Five":{"row":1, "order":2, "next":[], "cost":5, "desc":"-"},
-                           "Six":{"row":2, "order":0, "next":[], "cost":5, "desc":"-"},
-                           "Seven":{"row":2, "order":1, "next":[], "cost":5, "desc":"-"}},
-                          {"ZEROTH":{"row":0, "order":0, "next":["THREETH","FOURTH"], "cost":5, "desc":"zeroth"},
-                           "ONETH":{"row":0, "order":1, "next":["FIVETH"], "cost":10, "desc":"oneth"},
-                           "TWOTH":{"row":0, "order":2, "next":["FIVETH"], "cost":15, "desc":"twoth"},
-                           "THREETH":{"row":1,"order":0, "next":["SIXTH"], "cost":30, "desc":"threeth"},
-                           "FOURTH":{"row":1, "order":1, "next":["SIXTH", "SEVENTH"], "cost":10, "desc":"fourth"},
-                           "FIVETH":{"row":1, "order":2, "next":["SEVENTH"], "cost":15, "desc":"fiveth"},
-                           "SIXTH":{"row":2, "order":0, "next":[], "cost":15, "desc":"sixth"},
-                           "SEVENTH":{"row":2,"order":1, "next":[], "cost":30, "desc":"seventh"}}
+        self.upgrades = [[{"Aerodynamic":{"row":0, "order":0, "next":["Doubleshot"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2)},
+                           "Gold":{"row":0, "order":1, "next":["Doubleshot","Armor"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn."},
+                           "Luck":{"row":0, "order":2, "next":["Armor"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2)},
+                           "Doubleshot":{"row":1, "order":0, "next":["Ultimate"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2)},
+                           "Armor":{"row":1, "order":1, "next":["Ultimate"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1)},
+                           "Ultimate":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!"}},
+                          {"Aerodynamic":{"row":1, "order":1, "next":["Powershot"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2)},
+                           "Gold":{"row":1, "order":0, "next":["Ultimate","Powershot"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn."},
+                           "Luck":{"row":0, "order":1, "next":["Aerodynamic"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2)},
+                           "Doubleshot":{"row":0, "order":2, "next":["Aerodynamic"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2)},
+                           "Armor":{"row":0, "order":0, "next":["Gold"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1)},
+                           "Ultimate":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!"},
+                           "Powershot":{"row":2, "order":1, "next":[], "cost":500, "desc":"A much more powerful shot: it explodes on impact!"}},
+                          {"Aerodynamic":{"row":1, "order":0, "next":["Ultimate"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2)},
+                           "Gold":{"row":0, "order":1, "next":["Aerodynamic"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn."},
+                           "Luck":{"row":0, "order":0, "next":["Aerodynamic"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2)},
+                           "Doubleshot":{"row":1, "order":1, "next":["Ultimate","Tripleshot"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2)},
+                           "Armor":{"row":0, "order":2, "next":["Doubleshot"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1)},
+                           "Ultimate":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!"},
+                           "Tripleshot":{"row":2, "order":1, "next":[], "cost":1000, "desc":"How do you even intend to fit that many guns on that tiny ship? Buy it and find out!"}},
                            ],[{},{},{}],[{},{},{}]]
         self.init_upgrades()
         
@@ -88,7 +87,7 @@ class UpgradeScreen(Screen):
         self.ship = which
         
         color = [0xCC, 0xCC, 0xCC]
-        color[which] = 0xFF
+        color[2-which] = 0xFF
         for x in (self.tree_one, self.tree_two, self.tree_three):
             x.fill(color)
         
@@ -176,8 +175,8 @@ class UpgradeScreen(Screen):
         
         # vertical lines
         pygame.draw.line(self.info_sfc, (0,0,0), (SCREEN_WIDTH/8, SCREEN_HEIGHT*5/6), (SCREEN_WIDTH/8, SCREEN_HEIGHT*11/12),2) # splits shop/game in half
-        pygame.draw.line(self.info_sfc, (0,0,0), (SCREEN_WIDTH/12, SCREEN_HEIGHT*11/12), (SCREEN_WIDTH/12, SCREEN_HEIGHT),2)
-        pygame.draw.line(self.info_sfc, (0,0,0), (SCREEN_WIDTH/6, SCREEN_HEIGHT*11/12), (SCREEN_WIDTH/6, SCREEN_HEIGHT),2)
+        """pygame.draw.line(self.info_sfc, (0,0,0), (SCREEN_WIDTH/12, SCREEN_HEIGHT*11/12), (SCREEN_WIDTH/12, SCREEN_HEIGHT),2)
+        pygame.draw.line(self.info_sfc, (0,0,0), (SCREEN_WIDTH/6, SCREEN_HEIGHT*11/12), (SCREEN_WIDTH/6, SCREEN_HEIGHT),2)"""
         
         
         # text 
@@ -186,12 +185,12 @@ class UpgradeScreen(Screen):
         backButton = self.font.render("Back", True, COLORS["black"])
         self.info_sfc.blit(backButton, (SCREEN_WIDTH/8 + 33, SCREEN_HEIGHT*5/6+15))
         
-        ship1Button = self.font2.render("Ship 1", True, COLORS["black"])
+        """ship1Button = self.font2.render("Ship 1", True, COLORS["black"])
         ship2Button = self.font2.render("Ship 2", True, COLORS["black"])
         ship3Button = self.font2.render("Ship 3", True, COLORS["black"])
         self.info_sfc.blit(ship1Button, (0 + 10, SCREEN_HEIGHT*11/12 + 20))
         self.info_sfc.blit(ship2Button, (SCREEN_WIDTH/12 + 10, SCREEN_HEIGHT*11/12 + 20))
-        self.info_sfc.blit(ship3Button, (SCREEN_WIDTH/6 + 10, SCREEN_HEIGHT*11/12 + 20))
+        self.info_sfc.blit(ship3Button, (SCREEN_WIDTH/6 + 10, SCREEN_HEIGHT*11/12 + 20))"""
         
         if not first:
             resourceOverview = self.font2.render("Resource Overview", True, COLORS["black"])
@@ -247,9 +246,9 @@ class UpgradeScreen(Screen):
         self.clickbox.append((SCREEN_WIDTH*6/8, SCREEN_HEIGHT*5/6, SCREEN_WIDTH/8, SCREEN_HEIGHT/12), click_shop)
         self.clickbox.append((SCREEN_WIDTH*7/8, SCREEN_HEIGHT*5/6, SCREEN_WIDTH/8, SCREEN_HEIGHT/12), click_back)
         
-        self.clickbox.append((SCREEN_WIDTH*9/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(0))
+        """self.clickbox.append((SCREEN_WIDTH*9/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(0))
         self.clickbox.append((SCREEN_WIDTH*10/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(1))
-        self.clickbox.append((SCREEN_WIDTH*11/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(2))
+        self.clickbox.append((SCREEN_WIDTH*11/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(2))"""    # TODO: if you ever decide to resurrect this code (god help you) uncomment these
         
     def on_switch_in(self):
         self.redraw_right_panel()

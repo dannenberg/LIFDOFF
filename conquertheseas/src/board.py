@@ -155,20 +155,8 @@ class Board:
         self.generate_gold(rand)
         for unit in self.units:
             if unit._class == Unit.DEFENSE:
-                # apply effects
                 for effect in unit.effects[:]:
-                    # {type: speed, amount: x, left: y, default: z}
-                    print "defensiveUnit has an effect", effect
-                    if effect["type"] == 1:
-                        if effect["default"] == None:
-                            effect["default"] = unit._move_speed
-                            unit._move_speed = effect["default"] - effect["amount"]
-                        if effect["left"] == 0:
-                            unit._move_speed = effect["default"]
-                            unit.effects.remove(effect)
-                            print "removing bad effect"
-                        else:
-                            effect["left"] -= 1
+                    effect.apply_effect(unit)
             unit._unaltered_loc = unit._loc
             unit.moves_remaining = unit._move_speed
     
