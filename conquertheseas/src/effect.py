@@ -28,7 +28,7 @@ class Effect:   # like mass effect amirite
                 unit._move_speed = self.default-a
             if self.left == 0:
                 unit._move_speed = self.default
-                unit.effects.remove(effect)
+                unit.effects.remove(self)
                 print "effects.apply_effect: removing bad effect"
             elif self.left > 0: # else intrinsic
                 self.left -= 1
