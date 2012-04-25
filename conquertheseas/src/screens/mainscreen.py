@@ -16,11 +16,10 @@ class MainScreen(Screen):
         self.sel_speed = 0 #current speed
         self.smallerfont = pygame.font.Font(None, 50) #font for menu items
         
-        self.options = ["New Game", "Load Game", "Options", "Credits", "Exit"] # menu options
+        self.options = ["New Game", "Load Game", "Tutorial", "Options", "Credits", "Exit"] # menu options
         self.submenuoptions = None
         self.submenu = 0    # submenu = 1 means one submenu is open
         self.maxwid = max([self.smallerfont.size(x)[0] for x in self.options])  # width of hitbox (highlighted area)
-        # it's the 
         
         self.textbox = None
         self.text_input = ""
@@ -42,7 +41,7 @@ class MainScreen(Screen):
         def out(): #removes box since we have left menu
             self.selectbox[0] = None
             
-        self.overbox.append((30, 200, self.maxwid+50, 280), over(True), out)    # makes entire menu mouse-over-able
+        self.overbox.append((30, 200, self.maxwid+50, 330), over(True), out)    # makes entire menu mouse-over-able
 
         def click_newgame(mpos):
             self.entering_name = False
@@ -92,9 +91,9 @@ class MainScreen(Screen):
                 self.clickbox.remove((90+self.maxwid, 265))
                 self.clickbox.remove((90+self.maxwid, 315))
             self.submenu = 2
-            self.submenuoptions = ["Multiplayer name:","________________","AI Level: 1 2 3","SFX:  "+("-"*9)+"|","Music:"+("-"*9)+"|"]
+            self.submenuoptions = ["Multiplayer name:","________________"]
             self.submaxwid = self.maxwidth(self.submenuoptions)
-            self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 280), over(False), out)
+            #self.overbox.append((90+self.maxwid, 200, self.submaxwid+50, 280), over(False), out)
             self.textbox = pygame.Surface((750,40), pygame.SRCALPHA)
             if self.main.player_name is not None:
                 self.textbox.blit(self.smallerfont.render(self.main.player_name.strip(), True, COLORS["white"]),(5,5))
@@ -116,13 +115,16 @@ class MainScreen(Screen):
                 self.main.player_name = self.text_input.strip()
             else:
                 self.main.player_name = None
-            self.main.change_screen("credits")            
+            self.main.change_screen("credits")
             
         def click_exit(mpos): #ideally this will close the game
             self.main.exit()
         
-        for i,x in enumerate([click_newgame, click_loadgame, click_options, click_credits, click_exit]):
-            self.clickbox.append((30, 215+50*i, self.maxwid, 45), x)
+        def click_tutorial(mpos):
+            self.main.change_screen("tutorial")
+        
+        for i,x in enumerate([click_newgame, click_loadgame, click_tutorial, click_options, click_credits, click_exit]):
+            self.clickbox.append((30, 215+50*i, 205, 45), x)
     
     def display(self, screen):
         """ main screen turn on """

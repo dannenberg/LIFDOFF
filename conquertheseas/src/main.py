@@ -17,6 +17,7 @@ from screens.upgradescreen import *
 from screens.lobbyscreen import *
 from screens.joinscreen import *
 from screens.saveloadscreen import *
+from screens.tutorialscreen import *
 
 class Main():
     def __init__(self):
@@ -37,7 +38,8 @@ class Main():
                         "shop":ShopScreen(self),
                         "lobby":LobbyScreen(self),
                         "join":JoinScreen(self),
-                        "saveload":SaveLoadScreen(self)}
+                        "saveload":SaveLoadScreen(self),
+                        "tutorial":TutorialScreen(self)}
 
         pygame.display.set_caption("Conquer the Seas")
         self.done=False
