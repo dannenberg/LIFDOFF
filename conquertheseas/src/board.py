@@ -21,7 +21,7 @@ class Board:
         for i in xrange(3):
             self.add_unit(DefensiveUnit(i, purple))
         
-        self.defensive = {i:x for i,x in enumerate(self.units)}
+        self.defensive = {x.idd:x for x in self.units}
     
     def __getstate__(self):
         # !!!! CRITICALLY IMPORTANT !!!!

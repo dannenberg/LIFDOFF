@@ -358,7 +358,7 @@ class GameScreen(Screen):
     
     def server_unit_move(self, msg):
         x,y,dude = msg.split(" ")
-        self.enemy_boards[self.people_done].units[int(dude)].queue_movements([(int(x),int(y))])
+        self.enemy_boards[self.people_done].defensive[int(dude)].queue_movements([(int(x),int(y))])
     
     def server_unit_send(self, msg):
         """ uft x y """
@@ -367,7 +367,7 @@ class GameScreen(Screen):
         self.enemy_boards[self.people_done].add_unit(UnitFactory(int(uft), (int(x), int(y))))
     
     def server_unit_shoot(self, msg):
-        self.enemy_boards[self.people_done].units[int(msg)].queue_shoot()
+        self.enemy_boards[self.people_done].defensive[int(msg)].queue_shoot()
     
     def server_unit_special(self, msg):
         pass
