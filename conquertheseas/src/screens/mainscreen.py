@@ -197,6 +197,9 @@ class MainScreen(Screen):
                 self.main.player_name = None
             
     def on_switch_in(self):
+        self.main.reset_screen("game")
+        self.main.reset_screen("shop")
+        self.main.reset_screen("upgrade")
         if self.main.server != None:
             self.main.server.stop()
             self.main.server = None
