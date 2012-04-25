@@ -19,6 +19,9 @@ class ShopScreen(Screen):
         def go_back(mpos):
             self.main.change_screen("game")
         self.clickbox.append((SHOP_BACK_X,SHOP_BACK_Y,SHOP_BACK_W,SHOP_BACK_H), go_back)
+        def go_upgrade(mpos):
+            self.main.change_screen("upgrade")
+        self.clickbox.append((SHOP_UPGR_X, SHOP_BACK_Y, SHOP_UPGR_W, SHOP_BACK_H), go_upgrade)
         def which(ik):
             def select(mpos):
                 try:
@@ -74,6 +77,11 @@ class ShopScreen(Screen):
         font = pygame.font.Font(None, 60)
         text = font.render("Back", True, COLORS["black"])
         self.background.blit(text, (SHOP_BACK_X+45,SHOP_BACK_Y+7))
+        
+        pygame.draw.rect(self.background, (0xC0,)*3, (SHOP_UPGR_X, SHOP_BACK_Y, SHOP_UPGR_W, SHOP_BACK_H))
+        pygame.draw.rect(self.background, COLORS["black"], (SHOP_UPGR_X, SHOP_BACK_Y, SHOP_UPGR_W, SHOP_BACK_H), 2)
+        text = font.render("Upgrades", True, COLORS["black"])
+        self.background.blit(text, (SHOP_UPGR_X+13,SHOP_BACK_Y+7))
     
     def draw_words(self):
         self.words.fill((0,0,0,0))
