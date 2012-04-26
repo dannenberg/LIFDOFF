@@ -412,13 +412,13 @@ class GameScreen(Screen):
             if lose:
                 self.main.client.send("DEAD ")
             if win or lose:
-                self.set_mode(GameScreen.GAMEOVER)
                 self.clickbox.clear()
                 self.overbox.clear()
                 def toMenu(mpos):
                     self.main.change_screen("main")
                 self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
                 self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
+                self.set_mode(GameScreen.GAMEOVER)
                 return
             self.new_turn()
     

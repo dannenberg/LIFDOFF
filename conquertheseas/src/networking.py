@@ -66,7 +66,7 @@ class Server(threading.Thread):
         else:
             dead_man = self.get_sender(c)
             self.slots[dead_man]["dead"] = True
-            self.slots[dead_man]["sent"] = True
+            self.set_sent(dead_man)
 
     def act_turn(self, c, msg):
         return  # TODO: stop
