@@ -175,6 +175,8 @@ class Unit(object):
             board.gold+=self.cash_value
             board.exp+=self.exp_value
             board.remove_unit(self) # D:
+            if self._class == Unit.DEFENSE:
+                board.defensive[self.idd].dead = True 
             self.health = 0
         else:
             self.health -= dmg
