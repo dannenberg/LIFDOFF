@@ -360,8 +360,9 @@ class GameScreen(Screen):
     
     def server_unit_send(self, msg):
         """ uft x y """
-        uft,x,y = msg.split(" ")
-        self.enemy_boards[self.people_done].add_unit(UnitFactory(int(uft), (int(x), int(y))))
+        uft,x,y = map(int, msg.split(" "))
+        if self.enemy_boards[self.people_done].cells[x][y] is None: # not technically correct
+            self.enemy_boards[self.people_done].add_unit(UnitFactory(uft, (x, y)))
     
     def server_unit_shoot(self, msg):
         self.enemy_boards[self.people_done].defensive[int(msg)].queue_shoot()
