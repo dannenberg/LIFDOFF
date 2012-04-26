@@ -61,12 +61,9 @@ class Server(threading.Thread):
         
     def act_dead(self, c, msg):
         print "its worse than that hes dead jim"
-        if msg.split(" "):
-            pass
-        else:
-            dead_man = self.get_sender(c)
-            self.slots[dead_man]["dead"] = True
-            self.set_sent(dead_man)
+        dead_man = self.get_sender(c)
+        self.slots[dead_man]["dead"] = True
+        self.set_sent(dead_man)
 
     def act_turn(self, c, msg):
         return  # TODO: stop
