@@ -407,6 +407,18 @@ class GameScreen(Screen):
         self.people_done += 1
         print "people done", self.people_done
         if self.people_done == self.num_players:
+            lose = all(u.dead for _,u in self.my_board.defensive.items())
+            win  = all([all(u.dead for _,u in b.defensive.items()) for b in self.enemy_boards if b is not self.my_board])
+            if lose:
+                self.main.client.send("DEAD ")
+            if win or lose:
+                self.set_mode(GameScreen.GAMEOVER)
+                self.clickbox.clear()
+                self.overbox.clear()
+                def toMenu(mpos):
+                    self.main.change_screen("main")
+                self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
+                return
             self.new_turn()
     
     def create_boards(self, num_players, x=None):

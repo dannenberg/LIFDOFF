@@ -40,6 +40,7 @@ class Server(threading.Thread):
             "BUY"    : self.act_generic("BUY"),
             "UPGRADE": self.act_generic("UPGRADE"),
             "TURN"   : self.act_turn,
+            "DEAD"   : self.act_dead,
             "END"    : self.act_end
             }
         
@@ -58,6 +59,12 @@ class Server(threading.Thread):
         print "server says: Deployed unit",uftoken,"at (",x,",",y,"), on board",bnum
         self.add_action(int(bnum), "SENT "+uftoken+" "+x+" "+y)#, OFFENSIVE_PLACEMENT_DEPTH - (BOARD_SQUARES_X - int(x)))
         
+    def act_dead(self, c, msg):
+        if msg.split(" "):
+            pass
+        else:
+            self.slots[self.get_sender(c)]["dead"] = True
+
     def act_turn(self, c, msg):
         return  # TODO: stop
         print "server says: New Turn!"
@@ -76,7 +83,7 @@ class Server(threading.Thread):
     def set_sent(self, sender):
         print "networking.set_sent: Player",sender,"set sent"
         self.slots[sender]["sent"] = True
-        if not filter(lambda x:not x["sent"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
+        if not filter(lambda x:not x["sent"] and not x["dead"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
             print "networking.set_sent: Generate the AI's turn"
             for i,x in enumerate(self.slots):
                 if x["type"] == Server.AI:
@@ -283,7 +290,7 @@ class Server(threading.Thread):
             ai_num = 1
             for x in self.slots:
                 if x["type"] in [Server.PLAYER, Server.AI]: # "give them a board i guess" -- Dannenberg
-                    self.game_slots.append({"type":x["type"], "buffer":'', "actions":[], "sent":False})
+                    self.game_slots.append({"type":x["type"], "buffer":'', "actions":[], "sent":False, "dead":False})
                     if x["type"] == Server.PLAYER:
                         self.game_slots[-1]["conn"] = x["conn"]
                         self.game_slots[-1]["name"] = x["name"]
