@@ -17,19 +17,19 @@ class Effect:   # like mass effect amirite
         return copy.deepcopy(self)
     
     def apply_effect(self, unit):
-        print "effects.apply_effect: defensiveUnit has an effect", self
+        #print "effects.apply_effect: defensiveUnit has an effect", self
         if self.etype in (Effect.TANGLED, Effect.AERODYNAMIC):
             if self.default is None:
                 self.default = unit._move_speed
                 a = self.amount
                 if self.etype == Effect.AERODYNAMIC:
                     a *= -1
-                    print "movespeed is ",self.default-a
+                    #print "movespeed is ",self.default-a
                 unit._move_speed = self.default-a
             if self.left == 0:
                 unit._move_speed = self.default
                 unit.effects.remove(self)
-                print "effects.apply_effect: removing bad effect"
+                #print "effects.apply_effect: removing bad effect"
             elif self.left > 0: # else intrinsic
                 self.left -= 1
         elif self.etype == Effect.LUCKY:
