@@ -184,10 +184,16 @@ class Board:
     
     def generate_gold(self, rand):
         randval = rand.randint(0,9)
-        print "generate_gold", randval
-        if randval == 0:
+        #print "generate_gold", randval
+        #randthresh = 1
+        #for k,v in self.defensive.items():
+        #    print [i.etype for i in v.effects]
+        #    if Effect.GOLD in [i.etype for i in v.effects]:
+        #        randthresh += 1
+        randthresh = 1+len(filter(lambda v:Effect.GOLD in [i.etype for i in v[1].effects], self.defensive.items()))
+        print "Gold chance:",randthresh,"/ 9"
+        if randval < randthresh:
             randY = rand.randint(0,8)
-            print "generate_gold", randY
             self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
         
     def move_unit(self, unit, loc=None):

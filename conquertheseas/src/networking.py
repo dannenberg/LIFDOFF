@@ -56,8 +56,6 @@ class Server(threading.Thread):
     def act_generic(self, action):
         def anon(c, msg):
             board = self.get_sender(c)
-            if action == "MOVE":
-                print "  -- move:",msg
             self.add_action(board, action+" "+msg)
         return anon
         
