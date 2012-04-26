@@ -1,4 +1,5 @@
 import pygame
+import threading
 from screen import Screen
 
 ARROW_OFFSET = 400
@@ -6,10 +7,16 @@ DOUBLE_ARROW_OFFSET = 300
 class TutorialScreen(Screen):
     def __init__(self, main):
         Screen.__init__(self, main)
+        self.loaded = False
         arrows = pygame.image.load("../img/tut_arrows.png")
         self.arrows = pygame.Surface((arrows.get_width()*2, arrows.get_height()), pygame.SRCALPHA)
-        paths = ["cthulhu_highres","crab_highres","mermaid_highres"]
-        self.images = [pygame.image.load("../img/"+p+".png") for p in paths]
+        self.num_images = 15
+        
+        def load_images():
+            self.images = [pygame.image.load("../img/tut/tut"+str(p)+".png") for p in xrange(self.num_images)]
+            self.loaded = True
+        threading.Thread(target=load_images).start()
+        
         self.basebar = pygame.Surface((1280,100))
         self.basebar.fill((0x44,)*3)
         self.basebar.fill((0x22,)*3, (1185,55,95,45))
@@ -25,7 +32,7 @@ class TutorialScreen(Screen):
         
         def go(amt):
             def anon(mpos):
-                if 0<=self.index+amt<len(self.images):
+                if 0<=self.index+amt<self.num_images:
                     self.index += amt
                     self.redraw_basedisp()
             return anon
@@ -38,12 +45,13 @@ class TutorialScreen(Screen):
         
         def back(mpos):
             self.main.change_screen("main")
+            self.index = 0
         
         self.clickbox.append((ARROW_OFFSET, 710, self.arrows.get_width()/4, self.arrows.get_height()), go(-1))
         self.clickbox.append((1280-ARROW_OFFSET-self.arrows.get_width()/4, 710, self.arrows.get_width()/4, self.arrows.get_height()), go(1))
         
         self.clickbox.append((DOUBLE_ARROW_OFFSET, 710, (self.arrows.get_width()/4)+20, self.arrows.get_height()), endpoint(0))
-        self.clickbox.append((1280-DOUBLE_ARROW_OFFSET-self.arrows.get_width()/4, 710, (self.arrows.get_width()/4)+20, self.arrows.get_height()), endpoint(len(self.images)-1))
+        self.clickbox.append((1280-DOUBLE_ARROW_OFFSET-self.arrows.get_width()/4, 710, (self.arrows.get_width()/4)+20, self.arrows.get_height()), endpoint(self.num_images-1))
         
         self.clickbox.append((1185,755,95,45), back)
         
@@ -60,7 +68,7 @@ class TutorialScreen(Screen):
         self.basedisp.blit(self.arrows, (DOUBLE_ARROW_OFFSET-20, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
         
         off = 2
-        if self.index == len(self.images)-1:
+        if self.index == self.num_images-1:
             off = 3
         self.basedisp.blit(self.arrows, (1280-ARROW_OFFSET-self.arrows.get_width()/4, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
         self.basedisp.blit(self.arrows, (1280-DOUBLE_ARROW_OFFSET-self.arrows.get_width()/4, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
@@ -71,3 +79,8 @@ class TutorialScreen(Screen):
         screen.blit(self.images[self.index], (0,0))
         screen.blit(self.basebar, (0,700))
         screen.blit(self.basedisp, (0,700))
+        
+    def on_switch_in(self):
+        while not self.loaded:  # busy loop until loaded
+            pass
+        self.redraw_basedisp()
