@@ -38,6 +38,7 @@ class UpgradeScreen(Screen):
                            ],[{},{},{}],[{},{},{}]]
         self.init_upgrades()
         
+        self.dead_unit = pygame.image.load("../img/dead_upgrade.png")
         for x in (self.tree_one, self.tree_two, self.tree_three):
             x.fill((0xCC,0xCC,0xFF))
         self.info_sfc.fill((0x99,0xCC,0xCC))
@@ -157,7 +158,10 @@ class UpgradeScreen(Screen):
                             pass
                         self.clickbox.append((UPGRADE_PURCHASE_INDENT+SCREEN_WIDTH*3/4, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), buy) 
                     return onclick
-                self.clickbox.append((rectloc[0]+t*SCREEN_WIDTH/4,rectloc[1],rectloc[2],rectloc[3]), what(t, tree, upgrade), z=2)
+                if not self.main.screens["game"].my_board.defensive[t].dead:
+                    self.clickbox.append((rectloc[0]+t*SCREEN_WIDTH/4,rectloc[1],rectloc[2],rectloc[3]), what(t, tree, upgrade), z=2)
+            if self.main.screens["game"].my_board.defensive[t].dead:
+                surfs.blit(self.dead_unit, (0,0))
     
     def purchased_effect(self, board, unitnum, upgrade_id):
         upgrade = self.upgrades[0][unitnum][filter(lambda x:self.upgrades[0][unitnum][x]["id"] == upgrade_id, self.upgrades[0][unitnum])[0]]
