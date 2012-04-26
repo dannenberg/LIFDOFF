@@ -184,12 +184,6 @@ class Board:
     
     def generate_gold(self, rand):
         randval = rand.randint(0,9)
-        #print "generate_gold", randval
-        #randthresh = 1
-        #for k,v in self.defensive.items():
-        #    print [i.etype for i in v.effects]
-        #    if Effect.GOLD in [i.etype for i in v.effects]:
-        #        randthresh += 1
         randthresh = 1+len(filter(lambda v:Effect.GOLD in [i.etype for i in v[1].effects], self.defensive.items()))
         print "Gold chance:",randthresh,"/ 9"
         if randval < randthresh:
