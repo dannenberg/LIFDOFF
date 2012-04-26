@@ -371,13 +371,13 @@ class GameScreen(Screen):
     
     def server_unit_special(self, msg):
         pass
-        #self.enemy_boards[self.people_done].units[int(msg)].queue_special()
     
     def server_unit_buy(self, msg):
         pass
     
     def server_unit_upgrade(self, msg):
-        pass
+        unit, upgrade_id = map(lambda x:int(x), msg.split(" "))
+        self.main.screens["upgrade"].purchased_effect(self.enemy_boards[self.people_done], unit, upgrade_id)
     
     def redraw_tabs(self):
         tabsize = (210,40)

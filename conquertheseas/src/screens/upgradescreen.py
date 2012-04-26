@@ -137,16 +137,14 @@ class UpgradeScreen(Screen):
                         
                         def buy(mpos):
                             if self.purchasable(tree, upgrade):
-                                tree[upgrade]["purchased"] = True
+                                self.purchased_effect(self.main.screens["game"].my_board, t, tree[upgrade]["id"])
                                 self.main.screens["game"].my_board.exp -= tree[upgrade]["cost"]
-                                self.main.screens["game"].to_server.append("UPGRADE " + str(tree[upgrade]["id"]))
+                                #self.main.screens["game"].to_server.append("UPGRADE " + str(tree[upgrade]["id"]))
+                                tree[upgrade]["purchased"] = True
                                 self.redraw_right_panel()
                                 text = self.font3.render("Purchase",True,COLORS["gray"])
                                 self.switch_ship(which) # redraw the upgrades
-                                if "effect" in tree[upgrade]:
-                                    self.main.screens["game"].my_board.defensive[t].add_effect(tree[upgrade]["effect"])
-                                    if tree[upgrade]["effect"].etype == Effect.AERODYNAMIC:
-                                        self.main.screens["game"].my_board.defensive[t].moves_remaining += tree[upgrade]["effect"].amount
+                                self.main.screens["game"].add_to_server_list("UPGRADE", t, tree[upgrade]["id"])
                                 
                                 #pygame.draw.rect(self.info_sfc, (0xC0,0xC0,0xC0), (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H))
                                 #pygame.draw.rect(self.info_sfc, COLORS["black"], (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), 2)
@@ -160,9 +158,15 @@ class UpgradeScreen(Screen):
                         self.clickbox.append((UPGRADE_PURCHASE_INDENT+SCREEN_WIDTH*3/4, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), buy) 
                     return onclick
                 self.clickbox.append((rectloc[0]+t*SCREEN_WIDTH/4,rectloc[1],rectloc[2],rectloc[3]), what(t, tree, upgrade), z=2)
-
-                
-        
+    
+    def purchased_effect(self, board, unitnum, upgrade_id):
+        upgrade = self.upgrades[0][unitnum][filter(lambda x:self.upgrades[0][unitnum][x]["id"] == upgrade_id, self.upgrades[0][unitnum])[0]]
+        print "upgrade:",upgrade
+        if "effect" in upgrade:
+            board.defensive[unitnum].add_effect(upgrade["effect"])
+            if upgrade["effect"].etype == Effect.AERODYNAMIC:
+                board.defensive[unitnum].moves_remaining += upgrade["effect"].amount
+    
     def display(self, screen):
         Screen.display(self, screen)
         
