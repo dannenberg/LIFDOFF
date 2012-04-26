@@ -71,8 +71,11 @@ class LobbyScreen(Screen):
                     txt_ip = self.largefont.render(ip, True, COLORS["white"])
                     self.base_panel.blit(txt_ip, (450, 25))
                     def copy_ip(mpos):
-                        pygame.scrap.init()
-                        pygame.scrap.put(pygame.SCRAP_TEXT, ip)
+                        try:
+                            pygame.scrap.init()
+                            pygame.scrap.put(pygame.SCRAP_TEXT, ip)
+                        except:
+                            pass # fixes!
                     self.clickbox.append((476,706,txt_ip.get_width(), txt_ip.get_height()), copy_ip)
                 except (urllib2.URLError, urllib2.HTTPError, IOError):
                     print "Error fetching IP"
