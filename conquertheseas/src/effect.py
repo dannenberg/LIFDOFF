@@ -17,7 +17,7 @@ class Effect:   # like mass effect amirite
         return copy.deepcopy(self)
     
     def apply_effect(self, unit):
-        print "effects.apply_effect: defensiveUnit has an effect", self
+        #print "effects.apply_effect: defensiveUnit has an effect", self
         if self.etype in (Effect.TANGLED, Effect.AERODYNAMIC):
             if self.default is None:
                 self.default = unit._move_speed
