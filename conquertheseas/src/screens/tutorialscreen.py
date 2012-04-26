@@ -2,6 +2,7 @@ import pygame
 from screen import Screen
 
 ARROW_OFFSET = 400
+DOUBLE_ARROW_OFFSET = 300
 class TutorialScreen(Screen):
     def __init__(self, main):
         Screen.__init__(self, main)
@@ -29,11 +30,21 @@ class TutorialScreen(Screen):
                     self.redraw_basedisp()
             return anon
         
+        def endpoint(amt):
+            def anon(mpos):
+                self.index = amt
+                self.redraw_basedisp()
+            return anon
+        
         def back(mpos):
             self.main.change_screen("main")
         
         self.clickbox.append((ARROW_OFFSET, 710, self.arrows.get_width()/4, self.arrows.get_height()), go(-1))
         self.clickbox.append((1280-ARROW_OFFSET-self.arrows.get_width()/4, 710, self.arrows.get_width()/4, self.arrows.get_height()), go(1))
+        
+        self.clickbox.append((DOUBLE_ARROW_OFFSET, 710, (self.arrows.get_width()/4)+20, self.arrows.get_height()), endpoint(0))
+        self.clickbox.append((1280-DOUBLE_ARROW_OFFSET-self.arrows.get_width()/4, 710, (self.arrows.get_width()/4)+20, self.arrows.get_height()), endpoint(len(self.images)-1))
+        
         self.clickbox.append((1185,755,95,45), back)
         
     def redraw_basedisp(self):
@@ -45,11 +56,15 @@ class TutorialScreen(Screen):
         if self.index:  # != 0
             off = 1
         self.basedisp.blit(self.arrows, (ARROW_OFFSET, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
+        self.basedisp.blit(self.arrows, (DOUBLE_ARROW_OFFSET, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
+        self.basedisp.blit(self.arrows, (DOUBLE_ARROW_OFFSET-20, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
         
         off = 2
         if self.index == len(self.images)-1:
             off = 3
         self.basedisp.blit(self.arrows, (1280-ARROW_OFFSET-self.arrows.get_width()/4, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
+        self.basedisp.blit(self.arrows, (1280-DOUBLE_ARROW_OFFSET-self.arrows.get_width()/4, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
+        self.basedisp.blit(self.arrows, (1280-DOUBLE_ARROW_OFFSET-self.arrows.get_width()/4+20, 10), ((self.arrows.get_width()/4)*off,0, self.arrows.get_width()/4, self.arrows.get_height()))
         
     def display(self, screen):
         Screen.display(self, screen)
