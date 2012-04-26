@@ -1,3 +1,4 @@
+import time
 from string import lowercase
 import threading
 import urllib, urllib2
@@ -35,6 +36,8 @@ class LobbyScreen(Screen):
         self.players_panel = pygame.Surface((496,578), pygame.SRCALPHA)
         self.players_panel.fill((0, 0, 0, 128))
         self.players = []
+
+        self.start_timeout = time.time()
         
         self.players.append(["Host",pygame.Surface((474,48), pygame.SRCALPHA), False])
         for _ in xrange(1,10):
@@ -81,7 +84,9 @@ class LobbyScreen(Screen):
         self.button_start.blit(txt_start_game, (30,15))
         self.base_panel.blit(self.button_start, (870,10))
         def start_game(mpos):
-            self.main.client.start_game()
+            if time.time() - self.start_timeout > 3:
+                self.main.client.start_game()
+                self.start_timeout = time.time()
         self.clickbox.append((900, 690, 331, 76), start_game)
         
         self.text_input = ""
