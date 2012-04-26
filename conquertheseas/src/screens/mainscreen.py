@@ -46,10 +46,11 @@ class MainScreen(Screen):
         def click_newgame(mpos):
             self.entering_name = False
             if self.submenu == 1:   # you've already clicked new game
-                return  
-            if self.submenu != 0:   # you've clicked on options (or load)
-                self.overbox.remove((90+self.maxwid, 200))  # remove that submenu's overbox
-                self.clickbox.remove((90+self.maxwid, 250))
+                return
+            self.clickbox.clear(2)
+            #if self.submenu != 0:   # you've clicked on options (or load)
+            #    self.overbox.remove((90+self.maxwid, 200))  # remove that submenu's overbox
+            #    self.clickbox.remove((90+self.maxwid, 250))
             self.submenu = 1
             self.submenuoptions = ["Quick Play", "Join Multiplayer", "Host Multiplayer"]
             self.submaxwid = self.maxwidth(self.submenuoptions)
@@ -69,9 +70,9 @@ class MainScreen(Screen):
                     self.main.player_name = 'Host'
                 self.main.change_screen("lobby")
             
-            self.clickbox.append((90+self.maxwid, 215, self.submaxwid+50, 50), click_singleplayer)
-            self.clickbox.append((90+self.maxwid, 265, self.submaxwid+50, 50), click_joingame)
-            self.clickbox.append((90+self.maxwid, 315, self.submaxwid+50, 50), click_hostgame)
+            self.clickbox.append((90+self.maxwid, 215, self.submaxwid+50, 50), click_singleplayer, z=2)
+            self.clickbox.append((90+self.maxwid, 265, self.submaxwid+50, 50), click_joingame, z=2)
+            self.clickbox.append((90+self.maxwid, 315, self.submaxwid+50, 50), click_hostgame, z=2)
             
         def click_loadgame(mpos):
             self.entering_name = False
@@ -107,7 +108,7 @@ class MainScreen(Screen):
                 #else:
                 #    self.main.player_name = None
                 
-            self.clickbox.append((90+self.maxwid, 250, self.submaxwid+50, 50), click_changename)
+            self.clickbox.append((90+self.maxwid, 250, self.submaxwid+50, 50), click_changename, z=2)
 
         def click_credits(mpos):
             self.entering_name = False
