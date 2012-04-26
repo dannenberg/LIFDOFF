@@ -60,6 +60,7 @@ class Server(threading.Thread):
         self.add_action(int(bnum), "SENT "+uftoken+" "+x+" "+y)#, OFFENSIVE_PLACEMENT_DEPTH - (BOARD_SQUARES_X - int(x)))
         
     def act_dead(self, c, msg):
+        print "its worse than that hes dead jim"
         if msg.split(" "):
             pass
         else:
