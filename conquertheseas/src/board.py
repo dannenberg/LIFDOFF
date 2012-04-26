@@ -105,19 +105,15 @@ class Board:
                         # this is confusing as anything so comments
                         if collided._class == unit._class:
                             if collided.moved or (collided._actions and collided._actions[0].action != Action.MOVE): # he's moved already, or he's not GOING to move
-                                print "in the if"
                                 unit._actions = []  # bunp
                                 return False
                             else:   # if he's gonna move
-                                print "in the else - this unit hasn't moved"
                                 #print "collided._actions is " + str(collided._actions)
                                 #print "collided._actions[0].action == Action.MOVE is " + str(collided._actions[0].action)
                                 if collided._actions and collided._actions[0].action == Action.MOVE:
-                                    print "in the if"
                                     cdest = collided._actions[0].loc
                                     for cx,cy in collided.get_shape():
                                         if (cx+cdest[0], cy+cdest[1]) in nextlocs:    # onoz!
-                                            print "units actually colliding in the if"
                                             unit._actions = []  # bunp
                                             return False
                                 # otherwise he'll resolve the collision on his turn

@@ -102,6 +102,7 @@ class Unit(object):
         self.moves_remaining = self._move_speed
         self.health = 1
         self.level = 0
+        self.moved = False
         
     def __getstate__(self):
         # !!!! CRITICALLY IMPORTANT !!!!

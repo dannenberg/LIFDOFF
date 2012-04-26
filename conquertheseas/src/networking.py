@@ -2,6 +2,7 @@ import socket
 import select
 import threading
 import random
+from unit import UnitFactory
 from Queue import Queue
 from board import Board
 from unit import Unit
@@ -33,7 +34,7 @@ class Server(threading.Thread):
             "READY"  : self.set_ready,
             "START"  : self.start_game,
             "KICK"   : self.kick_player,
-            "MOVE"   : self.act_generic("MOVE"),
+            "MOVE"   : self.act_move,
             "SENT"   : self.act_sent,
             "SHOOT"  : self.act_generic("SHOOT"),
             "SPECIAL": self.act_generic("SPECIAL"),
@@ -42,11 +43,21 @@ class Server(threading.Thread):
             "TURN"   : self.act_turn,
             "DEAD"   : self.act_dead,
             "END"    : self.act_end
-            }
-        
+        }
+    
+    def act_move(self, c, msg):
+        board = self.get_sender(c)
+        _,_,which = msg.split(" ")
+        if which not in "012":
+            print "networking.act_move: invalid move:",msg
+            return
+        self.add_action(board, "MOVE "+msg)
+    
     def act_generic(self, action):
         def anon(c, msg):
             board = self.get_sender(c)
+            if action == "MOVE":
+                print "  -- move:",msg
             self.add_action(board, action+" "+msg)
         return anon
         
@@ -98,7 +109,6 @@ class Server(threading.Thread):
             x["actions"] = []
             toR += ["END "]
         
-        
         for t in toR:
             self.send_to_all(t) # TODO: Actually send the actions to everyone
         # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -108,10 +118,7 @@ class Server(threading.Thread):
     
     def generate_ai_turns(self, s):
         # TODO: AI players should make turns: DIS BENSON'S DOMAIN
-        # Toggle the comments on the next two lines
-        #self.slots[s]["actions"] = []  # FUCKIN NO
         for x in xrange(3):
-            #if self.slots[s]["board"].units[x]._class == Unit.DEFENSE:  # move 'im
             for _ in xrange(3):
                 r = random.randint(0,3)
                 if r < 2:
@@ -121,10 +128,15 @@ class Server(threading.Thread):
                     dx = (r%2)*2 - 1
                     dy = 0
                 self.slots[s]["units"][x] = (max(0,min(33,self.slots[s]["units"][x][0]+dx)), max(0,min(9,self.slots[s]["units"][x][1]+dy)))
+                #print "Please move",x
                 self.slots[s]["actions"].append("MOVE "+str(self.slots[s]["units"][x][0])+" "+str(self.slots[s]["units"][x][1])+" "+str(x))
             if not random.randint(0,3):
                 self.slots[s]["actions"].append("SHOOT "+str(x))
-                
+        for i,x in enumerate(self.slots):
+            if i == s:
+                continue
+            for _ in xrange(random.randint(2,5)):
+                x["actions"].append("SENT "+str(UnitFactory.TADPOLE)+" "+str(BOARD_SQUARES_X-random.randint(1, OFFENSIVE_PLACEMENT_DEPTH))+" "+str(random.randint(0, BOARD_SQUARES_Y-1)))
         self.slots[s]["sent"] = True
         #self.set_sent(s)   # over and over and over and over
     

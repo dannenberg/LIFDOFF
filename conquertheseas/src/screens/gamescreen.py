@@ -363,7 +363,6 @@ class GameScreen(Screen):
     def server_unit_send(self, msg):
         """ uft x y """
         uft,x,y = msg.split(" ")
-        print "gamescreen.server_unit_send: received", uft, x, y
         self.enemy_boards[self.people_done].add_unit(UnitFactory(int(uft), (int(x), int(y))))
     
     def server_unit_shoot(self, msg):
