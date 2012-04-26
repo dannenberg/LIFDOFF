@@ -161,7 +161,7 @@ class UpgradeScreen(Screen):
                 if not self.main.screens["game"].my_board.defensive[t].dead:
                     self.clickbox.append((rectloc[0]+t*SCREEN_WIDTH/4,rectloc[1],rectloc[2],rectloc[3]), what(t, tree, upgrade), z=2)
             if self.main.screens["game"].my_board.defensive[t].dead:
-                surfs.blit(self.dead_unit, (0,0))
+                surfs[t].blit(self.dead_unit, (0,0))
     
     def purchased_effect(self, board, unitnum, upgrade_id):
         upgrade = self.upgrades[0][unitnum][filter(lambda x:self.upgrades[0][unitnum][x]["id"] == upgrade_id, self.upgrades[0][unitnum])[0]]
@@ -212,9 +212,8 @@ class UpgradeScreen(Screen):
             exp = self.font3.render("xp:" + str(self.main.screens["game"].my_board.exp), True, COLORS["black"])
             self.info_sfc.blit(dollars, (0 + 10, SCREEN_HEIGHT*2/3 + 45))
             self.info_sfc.blit(exp, (0 + 10, SCREEN_HEIGHT*2/3 + 85))
-
             
-            if self.current_upgrade is not None:    
+            if self.current_upgrade is not None:
                 # sets color of purchase button text
                 
                 text = self.font3.render("Purchase"+("d" if self.current_tree[self.current_upgrade]["purchased"] else ""),True,COLORS["black" if self.purchasable() else "gray"])
@@ -224,7 +223,7 @@ class UpgradeScreen(Screen):
                 pygame.draw.rect(self.info_sfc, COLORS["black"], (UPGRADE_PURCHASE_INDENT, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10, SCREEN_WIDTH/4-2*UPGRADE_PURCHASE_INDENT, SHOP_PURCH_H), 2)
                 self.info_sfc.blit(text, (UPGRADE_PURCHASE_INDENT+70, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10+7))
                 # put clickbox on purchase button
-   
+                
                 # prepares name, cost for current upgrade    
                 upgrade_name = self.font2.render(self.current_upgrade, True, COLORS["black"])
                 upgrade_cost = self.font2.render("Cost: " + str(self.current_tree[self.current_upgrade]["cost"]) + " xp", True, COLORS["black"])
@@ -264,5 +263,11 @@ class UpgradeScreen(Screen):
         self.clickbox.append((SCREEN_WIDTH*11/12, SCREEN_HEIGHT*11/12, SCREEN_WIDTH/12, SCREEN_HEIGHT/12), click_ship(2))"""    # TODO: if you ever decide to resurrect this code (god help you) uncomment these
         
     def on_switch_in(self):
+        self.current_upgrade = None
+        self.current_tree = None
+        try:
+            self.clickbox.remove((UPGRADE_PURCHASE_INDENT+SCREEN_WIDTH*3/4, SCREEN_HEIGHT*2/3-SHOP_PURCH_H-10))
+        except IndexError:
+            pass
         self.redraw_right_panel()
         self.switch_ship()
