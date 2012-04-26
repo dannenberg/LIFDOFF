@@ -83,7 +83,7 @@ class Server(threading.Thread):
     def set_sent(self, sender):
         print "networking.set_sent: Player",sender,"set sent"
         self.slots[sender]["sent"] = True
-        if not filter(lambda x:not x["sent"] and not x["dead"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
+        if not filter(lambda x:not x["sent"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
             print "networking.set_sent: Generate the AI's turn"
             for i,x in enumerate(self.slots):
                 if x["type"] == Server.AI:
@@ -104,7 +104,7 @@ class Server(threading.Thread):
         # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         # work out all the turns and stuff
         for x in self.slots:    # next turns
-            x["sent"] = False
+            x["sent"] = x["dead"]
     
     def generate_ai_turns(self, s):
         # TODO: AI players should make turns: DIS BENSON'S DOMAIN
