@@ -199,7 +199,7 @@ class Unit(object):
             elif sOpposed._class == Unit.BULLET:
                 sOpposed.take_damage(board)
             elif sOpposed._class == Unit.OFFENSE:
-                print sSelf.effects
+                #print sSelf.effects
                 armor = filter(lambda x:Effect.ARMORED == x.etype, sSelf.effects)
                 if armor:
                     sSelf.effects.remove(armor[0])
@@ -223,7 +223,7 @@ class Unit(object):
         elif sSelf._class == Unit.TERRAIN:
             if sOpposed._class == Unit.GOLD:
                 sOpposed.take_damage(board)
-        return True       
+        return True
         #opposed.take_damage(board, 5)   # TODO: 5?
         #self.take_damage(board)
         #return 5
