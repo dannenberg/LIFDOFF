@@ -199,13 +199,21 @@ class Unit(object):
                 sSelf.take_damage(board, sOpposed.damage);
                 sOpposed.take_damage(board, sSelf.damage);
                 sSelf.effects += [effect.clone() for effect in sOpposed.effects]
-        if sSelf._class == Unit.OFFENSE:
+        elif sSelf._class == Unit.OFFENSE:
             if sOpposed._class == Unit.TERRAIN:
                 sSelf.take_damage(board)
             elif sOpposed._class == Unit.BULLET:
                 sSelf.take_damage(board)
             elif sOpposed._class == Unit.GOLD:
                 return False
+        elif sSelf._class == Unit.BULLET:
+            if sOpposed._class == Unit.GOLD:
+                sOpposed.take_damage(board)
+            elif sOpposed._class == Unit.TERRAIN:
+                sSelf.take_damage(board)
+        elif sSelf._class == Unit.TERRAIN:
+            if sOpposed._class == Unit.GOLD:
+                sOpposed.take_damage(board)
         return True       
         #opposed.take_damage(board, 5)   # TODO: 5?
         #self.take_damage(board)
