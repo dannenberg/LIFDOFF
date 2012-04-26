@@ -15,26 +15,27 @@ class UpgradeScreen(Screen):
         self.ship = 0
         self.current_upgrade = None
         self.current_tree = None
-        self.upgrades = [[{"Aerodynamic":{"row":0, "order":0, "next":["Doubleshot"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2)},
-                           "Gold":{"row":0, "order":1, "next":["Doubleshot","Armor"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn.", "effect":Effect(Effect.GOLD, -1, 1)},
-                           "Luck":{"row":0, "order":2, "next":["Armor"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2)},
-                           "Doubleshot":{"row":1, "order":0, "next":["Grand Windfall"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2)},
-                           "Armor":{"row":1, "order":1, "next":["Grand Windfall"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1)},
-                           "Grand Windfall":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!"}},
-                          {"Aerodynamic":{"row":1, "order":1, "next":["Powershot"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2)},
-                           "Gold":{"row":1, "order":0, "next":["Grand Windfall","Powershot"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn.","effect":Effect(Effect.GOLD, -1, 1)},
-                           "Luck":{"row":0, "order":1, "next":["Aerodynamic"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2)},
-                           "Doubleshot":{"row":0, "order":2, "next":["Aerodynamic"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2)},
-                           "Armor":{"row":0, "order":0, "next":["Gold"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1)},
-                           "Grand Windfall":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!"},
-                           "Powershot":{"row":2, "order":1, "next":[], "cost":500, "desc":"A much more powerful shot: it explodes on impact!"}},
-                          {"Aerodynamic":{"row":1, "order":0, "next":["Grand Windfall"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2)},
-                           "Gold":{"row":0, "order":1, "next":["Aerodynamic"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn.","effect":Effect(Effect.GOLD, -1, 1)},
-                           "Luck":{"row":0, "order":0, "next":["Aerodynamic"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2)},
-                           "Doubleshot":{"row":1, "order":1, "next":["Grand Windfall","Tripleshot"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2)},
-                           "Armor":{"row":0, "order":2, "next":["Doubleshot"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1)},
-                           "Grand Windfall":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!"},
-                           "Tripleshot":{"row":2, "order":1, "next":[], "cost":1000, "desc":"How do you even intend to fit that many guns on that tiny ship? Buy it and find out!"}},
+        self.img = pygame.image.load("../img/upgrade_imgs.png")
+        self.upgrades = [[{"Aerodynamic":{"row":0, "order":0, "next":["Doubleshot"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2), "image":0},
+                           "Gold":{"row":0, "order":1, "next":["Doubleshot","Armor"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn.", "effect":Effect(Effect.GOLD, -1, 1), "image":1},
+                           "Luck":{"row":0, "order":2, "next":["Armor"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2), "image":2},
+                           "Doubleshot":{"row":1, "order":0, "next":["Grand Windfall"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2), "image":3},
+                           "Armor":{"row":1, "order":1, "next":["Grand Windfall"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1), "image":4},
+                           "Grand Windfall":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!", "image":5}},
+                          {"Aerodynamic":{"row":1, "order":1, "next":["Powershot"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2), "image":0},
+                           "Gold":{"row":1, "order":0, "next":["Grand Windfall","Powershot"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn.","effect":Effect(Effect.GOLD, -1, 1), "image":1},
+                           "Luck":{"row":0, "order":1, "next":["Aerodynamic"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2), "image":2},
+                           "Doubleshot":{"row":0, "order":2, "next":["Aerodynamic"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2), "image":3},
+                           "Armor":{"row":0, "order":0, "next":["Gold"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1), "image":4},
+                           "Grand Windfall":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!", "image":5},
+                           "Powershot":{"row":2, "order":1, "next":[], "cost":500, "desc":"A much more powerful shot: it explodes on impact!", "image":6}},
+                          {"Aerodynamic":{"row":1, "order":0, "next":["Grand Windfall"], "cost":5, "desc":"With a sleeker propeller your ship will be able to move much farther in a turn than normal.", "effect":Effect(Effect.AERODYNAMIC, -1, 2), "image":0},
+                           "Gold":{"row":0, "order":1, "next":["Aerodynamic"], "cost":5, "desc":"Makes your ship slightly magnetic, increasing the amount of gold that will spawn.","effect":Effect(Effect.GOLD, -1, 1), "image":1},
+                           "Luck":{"row":0, "order":0, "next":["Aerodynamic"], "cost":5, "desc":"Without at least a little of this you're REALLY sunk.", "effect":Effect(Effect.LUCKY, -1, 2), "image":2},
+                           "Doubleshot":{"row":1, "order":1, "next":["Grand Windfall","Tripleshot"], "cost":10, "desc":"What's better than mounting a giant cannon on the top of your submarine? How about mounting ANOTHER cannon on the BOTTOM of your submarine?", "effect":Effect(Effect.DOUBLESHOT, -1, 2), "image":3},
+                           "Armor":{"row":0, "order":2, "next":["Doubleshot"], "cost":10, "desc":"Thicker armor makes your ship harder to break: it will now be able to take an extra hit before being destroyed.", "effect":Effect(Effect.ARMORED, -1, 1), "image":4},
+                           "Grand Windfall":{"row":2, "order":0, "next":[], "cost":500, "desc":"The Ultimate Ability: a guaranteed gamechanger!", "image":5},
+                           "Tripleshot":{"row":2, "order":1, "next":[], "cost":1000, "desc":"How do you even intend to fit that many guns on that tiny ship? Buy it and find out!", "image":7}},
                            ],[{},{},{}],[{},{},{}]]
         self.init_upgrades()
         
@@ -127,6 +128,7 @@ class UpgradeScreen(Screen):
                 rectloc = (tree[upgrade]["x"]-UPGRADE_ICON_SIZE/2, tree[upgrade]["y"]-UPGRADE_ICON_SIZE/2, UPGRADE_ICON_SIZE, UPGRADE_ICON_SIZE)
                 color = (COLORS["upg_unav"], COLORS["upg_av"], COLORS["upg_purc"])[max(self.purchasable(tree, upgrade), tree[upgrade]["purchased"]*2)]
                 pygame.draw.rect(surfs[t], color, rectloc)
+                surfs[t].blit(self.img, rectloc, ((UPGRADE_ICON_SIZE*tree[upgrade]["image"], 0), (UPGRADE_ICON_SIZE, UPGRADE_ICON_SIZE)))
                 pygame.draw.rect(surfs[t], (0xFF if tree==self.current_tree and upgrade==self.current_upgrade else 0,0,0), rectloc, 2)
                 def what(t,tree, upgrade):
                     def onclick(mpos):
