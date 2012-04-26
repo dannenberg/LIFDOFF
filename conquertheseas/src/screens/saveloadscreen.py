@@ -33,7 +33,7 @@ class SaveLoadScreen(Screen):
             if self.return_to is not None:
                 self.main.change_screen(self.return_to)
             else:
-                #print "I got nowhere to go to."
+                print "I got nowhere to go to."
         self.clickbox.append((40, 740, 110, 50), go_back)
         self.redraw_files()
         

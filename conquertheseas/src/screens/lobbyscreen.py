@@ -78,7 +78,7 @@ class LobbyScreen(Screen):
                             pass # fixes!
                     self.clickbox.append((476,706,txt_ip.get_width(), txt_ip.get_height()), copy_ip)
                 except (urllib2.URLError, urllib2.HTTPError, IOError):
-                    #print "Error fetching IP"
+                    print "Error fetching IP"
             threading.Thread(target=get_ip).start()
         
         self.button_start = pygame.Surface((331,76), pygame.SRCALPHA)
@@ -103,7 +103,7 @@ class LobbyScreen(Screen):
                 if i == self.my_index:
                     self.main.client.set_ready(int(not self.players[i][2]))
                 else:
-                    #print "ready button clicked!!"
+                    print "ready button clicked!!"
             return anon
         for x in xrange(10):
             self.clickbox.append((37, 75+54*x, 48, 48), ready_button_click(x))

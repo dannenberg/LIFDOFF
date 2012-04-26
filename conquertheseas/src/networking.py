@@ -147,7 +147,7 @@ class Server(threading.Thread):
             # blocks until someone connects or a client sends a message
             ready, _, _ = select.select(inputs, [], [], 0.5)
             if ready:
-                #print "ready: %s" % (ready,)
+                print "ready: %s" % (ready,)
             for c in ready:
                 #print "processing message"
                 if c == self.server:
@@ -203,7 +203,7 @@ class Server(threading.Thread):
                         if cmd in self.commands:
                             self.commands[cmd](c, args)
                         else:
-                            #print cmd,"is not a command i'm aware of"
+                            print cmd,"is not a command i'm aware of"
                         
                         
                         go = bool(self.slots[sender]["buffer"].find(RS)+1)  # loop if there's more messages :D :D :D

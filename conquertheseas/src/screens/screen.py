@@ -33,7 +33,7 @@ class Screen(object):
             #print "screen.click: "+str(mpos) + " " + str((mpos[0] - result["left"], mpos[1] - result["top"]))
             result["on"]((mpos[0] - result["left"], mpos[1] - result["top"]))
         else:
-            #print "screen.click: "+str(mpos)+": No item found"
+            print "screen.click: "+str(mpos)+": No item found"
     
     def over(self, mpos):
         """handles mouseover events"""

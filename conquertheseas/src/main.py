@@ -147,7 +147,7 @@ class Main():
         f = open(floc, "r")
         v, boards = pickle.load(f)
         if v != VERSION:    # whuh oh
-            #print "OLD SAVE FILE: incompatible with current version (",v,") vs (",VERSION,")"
+            print "OLD SAVE FILE: incompatible with current version (",v,") vs (",VERSION,")"
         self.reset_screen("game", boards)
         self.change_screen("game")
     
