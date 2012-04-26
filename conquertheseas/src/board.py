@@ -212,5 +212,6 @@ class Board:
         return False
     
     def remove_unit(self, unit):
-        self.units.remove(unit)
+        if unit in self.units:
+            self.units.remove(unit)
         self.lift_unit(unit)
