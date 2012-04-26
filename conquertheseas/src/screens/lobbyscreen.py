@@ -44,8 +44,8 @@ class LobbyScreen(Screen):
         self.chat_panel.fill((0,0,0,128))
         send_button = pygame.Surface((67,30), pygame.SRCALPHA)
         send_button.fill((0,0,0,64))
-        txt = self.font.render(u"\u21B5", True, COLORS["white"])    # TODO: nope
-        send_button.blit(txt, (10,3))
+        txt = self.font.render("Send", True, (0xCC,)*3)    # TODO: nope
+        send_button.blit(txt, (10,7))
         self.chat_panel.blit(send_button, (20+582+5,577-38))
         self.textbox = pygame.Surface((1820,30), pygame.SRCALPHA)
         self.textbox.fill((0,0,0,64))
@@ -146,6 +146,13 @@ class LobbyScreen(Screen):
             return anon
         for x in xrange(10):
             self.clickbox.append((95, 75+54*x, 415, 48), player_panel_click(x))
+        
+        def wrapper(mpos):
+            self.message()
+            self.textbox.fill((0,0,0,64))
+            txt = self.font.render(self.text_input, True, COLORS["white"])
+            self.textbox.blit(txt, (5,5))
+        self.clickbox.append((1154, 580, 64, 25), wrapper)
         
     def redraw_players(self):
         self.players_panel.fill((0, 0, 0, 128))

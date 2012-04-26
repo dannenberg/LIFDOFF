@@ -45,7 +45,7 @@ class Main():
         self.done=False
         clock = pygame.time.Clock()
         self.player_name = None
-        self.mainscreen = self.screens["main"]
+        self.mainscreen = self.screens["intro"]
 
         pygame.key.set_repeat(500,20)   # half second delay, 20 second interval
         self.keys = set()
