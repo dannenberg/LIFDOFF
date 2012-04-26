@@ -69,6 +69,21 @@ class JoinScreen(Screen):
         elif inkey.key == pygame.K_RETURN or inkey.key == pygame.K_KP_ENTER:
             self.connect_ip(self)
             return
+        elif pygame.key.get_mods()&pygame.KMOD_CTRL:
+            if inkey.key == pygame.K_v:
+                pygame.scrap.init()
+                word = str(pygame.scrap.get(pygame.SCRAP_TEXT)).rstrip(u"\x00")
+                try:
+                    test = map(int, word.split("."))
+                    if len(test) != 4 or filter(lambda x:not (0<=x<256), test):
+                        self.redraw_textbox(True)
+                        return
+                except ValueError:
+                    self.redraw_textbox(True)
+                    return
+                self.ip = word
+            else:
+                return
         elif inkey.unicode:
             try:
                 if inkey.unicode != ".":
