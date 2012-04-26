@@ -64,7 +64,9 @@ class Server(threading.Thread):
         if msg.split(" "):
             pass
         else:
-            self.slots[self.get_sender(c)]["dead"] = True
+            dead_man = self.get_sender(c)
+            self.slots[dead_man]["dead"] = True
+            self.slots[dead_man]["sent"] = True
 
     def act_turn(self, c, msg):
         return  # TODO: stop
