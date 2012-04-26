@@ -418,6 +418,7 @@ class GameScreen(Screen):
                 def toMenu(mpos):
                     self.main.change_screen("main")
                 self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
+                self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
                 return
             self.new_turn()
     
