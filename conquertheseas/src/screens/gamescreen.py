@@ -435,13 +435,14 @@ class GameScreen(Screen):
         self.to_server.append(str(action)+" "+(" ".join([str(x) for x in args])))
     
     def handle_gameover(self):
-        lose =     not any(u._class==Unit.DEFENSE for u in self.my_board.units)
-        win  = all([not any(u._class==Unit.DEFENSE for u in b.units) for b in self.enemy_boards if b is not self.my_board])
+        lose = all(u.dead for _,u in self.my_board.defensive.items())
+        win  = all([all(u.dead for _,u in b.defensive.items()) for b in self.enemy_boards if b is not self.my_board])
         if win or lose:
             self.set_mode(GameScreen.GAMEOVER)
             self.clickbox.clear()
             self.overbox.clear()
-            self.main.change_screen("main")
+            def toMenu(mpos):
+                self.main.change_screen("main")
             self.clickbox.append((544,512,210,61), toMenu)  # SO MAGICAL
             self.victoryimg = pygame.image.load("../img/"+("","defeat","victory","tie")[win*2 + lose]+".png")
     

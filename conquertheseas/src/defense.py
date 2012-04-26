@@ -17,6 +17,7 @@ class DefensiveUnit(Unit):
         self.addons = []
         self.effects = []
         self.purple = purple
+        self.dead = False
     
     def __setstate__(self, data):
         self.__dict__.update(data)
