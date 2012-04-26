@@ -173,7 +173,7 @@ class Unit(object):
 
     def take_damage(self, board, dmg=None):
         """ Returns remaining health """
-        print "unit.take_damage: Taking",dmg,"damage"
+        #print "unit.take_damage: Taking",dmg,"damage"
         if dmg is None or self.health-dmg <= 0:
             board.gold+=self.cash_value
             board.exp+=self.exp_value
@@ -194,7 +194,7 @@ class Unit(object):
                 sOpposed.take_damage(board)
                 board.gold += 5
             elif sOpposed._class == Unit.TERRAIN:
-                print "unit is hitting terrain...die"
+                #print "unit is hitting terrain...die"
                 sSelf.take_damage(board)
             elif sOpposed._class == Unit.BULLET:
                 sOpposed.take_damage(board)
@@ -237,13 +237,13 @@ class Unit(object):
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
                     randval = rand.randint(-1,1)
-                    print "SQUIDDLE", randval
+                    #print "SQUIDDLE", randval
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, max(0, min(10, randval+self._loc[1])))))
             elif self.idd == UnitFactory.MINE:      # mine move AI
                 for i in xrange(self._move_speed):
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1, self._loc[1])))
                     randval = rand.randint(0,1)
-                    print "MINE", randval
+                    #print "MINE", randval
                     self._actions.append(Action(Action.MOVE, (self._loc[0] - i - 1,  min(9, randval+self._loc[1]))))
             else:
                 for i in xrange(self._move_speed):

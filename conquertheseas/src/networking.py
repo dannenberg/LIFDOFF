@@ -49,7 +49,7 @@ class Server(threading.Thread):
         board = self.get_sender(c)
         _,_,which = msg.split(" ")
         if which not in "012":
-            print "networking.act_move: invalid move:",msg
+            #print "networking.act_move: invalid move:",msg
             return
         self.add_action(board, "MOVE "+msg)
     
@@ -65,24 +65,24 @@ class Server(threading.Thread):
         """ Deployed a unit on an enemy board """
         bnum, uftoken, x, y = msg.split(" ")
         # TODO: x will tell us the turn to come in. Queue it to the correct board, then later sort it onto the correct turn
-        print "server says: Deployed unit",uftoken,"at (",x,",",y,"), on board",bnum
+        #print "server says: Deployed unit",uftoken,"at (",x,",",y,"), on board",bnum
         self.add_action(int(bnum), "SENT "+uftoken+" "+x+" "+y)#, OFFENSIVE_PLACEMENT_DEPTH - (BOARD_SQUARES_X - int(x)))
         
     def act_dead(self, c, msg):
-        print "its worse than that hes dead jim"
+        #print "its worse than that hes dead jim"
         dead_man = self.get_sender(c)
         self.slots[dead_man]["dead"] = True
         self.set_sent(dead_man)
 
     def act_turn(self, c, msg):
         return  # TODO: stop
-        print "server says: New Turn!"
+        #print "server says: New Turn!"
         self.slots[self.get_sender(c)]["index"] += 1
         
     def act_end(self, c, msg):
         """ End transmission of moves """
         sender = self.get_sender(c)
-        print self.slots[sender]["name"],"has sent all their moves"
+        #print self.slots[sender]["name"],"has sent all their moves"
         self.set_sent(sender)
     
     def add_action(self, board, msg):
@@ -90,10 +90,10 @@ class Server(threading.Thread):
         self.slots[board]["actions"].append(msg)
     
     def set_sent(self, sender):
-        print "networking.set_sent: Player",sender,"set sent"
+        #print "networking.set_sent: Player",sender,"set sent"
         self.slots[sender]["sent"] = True
         if not filter(lambda x:not x["sent"] and x["type"]==Server.PLAYER, self.slots):  # if all humans has sent TODO: someday might want to drop the x["type"]==Player part
-            print "networking.set_sent: Generate the AI's turn"
+            #print "networking.set_sent: Generate the AI's turn"
             for i,x in enumerate(self.slots):
                 if x["type"] == Server.AI:
                     self.generate_ai_turns(i)
@@ -139,7 +139,7 @@ class Server(threading.Thread):
         #self.set_sent(s)   # over and over and over and over
     
     def run(self):
-        print "listening"
+        #print "listening"
         self.server.listen(10)
         while not self.done:
             # list of socket objects from clients, plus the server socket
@@ -147,16 +147,16 @@ class Server(threading.Thread):
             # blocks until someone connects or a client sends a message
             ready, _, _ = select.select(inputs, [], [], 0.5)
             if ready:
-                print "ready: %s" % (ready,)
+                #print "ready: %s" % (ready,)
             for c in ready:
-                print "processing message"
+                #print "processing message"
                 if c == self.server:
                     if self.host == None:
                         conn, _ = c.accept()
                         self.host = conn
                         self.slots[0] = {"type":Server.PLAYER, "name":"Host", "ready":False, "conn":conn, "buffer":''}
                         conn.send(self.get_server_data(0) + RS)
-                        print "it's a new connection!"
+                        #print "it's a new connection!"
                     else:
                     # check slots
                         x = self.find_free_slot()
@@ -164,15 +164,15 @@ class Server(threading.Thread):
                             conn, _ = c.accept()
                             self.slots[x] = {"type":Server.PLAYER, "name":"Player " + str(x), "ready":False, "conn":conn, "buffer":''}
                             conn.send(self.get_server_data(x) + RS)
-                            print "it's a new connection!"
+                            #print "it's a new connection!"
                             self.send_to_all("JOIN " + str(x) + " Player " + str(x))
                         else:
                             conn, _ = c.accept()
                             conn.send("DIE There were no available slots in the game you attempted to join!" + RS)  # little harsh but alright
-                            print "a player couldn't join due to lack of slots"
+                            #print "a player couldn't join due to lack of slots"
                             conn.close()
                 else:
-                    print "Message from a client"
+                    #print "Message from a client"
                     # blocks on c (but select has told us that there's a
                     # message waiting, so there's no real blocking)
                     sender = self.get_sender(c)
@@ -183,7 +183,7 @@ class Server(threading.Thread):
                             if not message:
                                 # an empty string indicates that the client has
                                 # closed their connection
-                                print "closed connection"
+                                #print "closed connection"
                                 for i,x in enumerate(self.slots):
                                     if x.has_key("conn"):
                                         if x["conn"] == c:
@@ -203,7 +203,7 @@ class Server(threading.Thread):
                         if cmd in self.commands:
                             self.commands[cmd](c, args)
                         else:
-                            print cmd,"is not a command i'm aware of"
+                            #print cmd,"is not a command i'm aware of"
                         
                         
                         go = bool(self.slots[sender]["buffer"].find(RS)+1)  # loop if there's more messages :D :D :D
@@ -310,7 +310,7 @@ class Server(threading.Thread):
                         ai_num += 1
                     self.game_slots[-1]["data"] = self.generate_board_data(self.game_slots[-1]["name"])
             self.slots = self.game_slots
-            print "number of slots", len(self.slots)
+            #print "number of slots", len(self.slots)
             self.send_to_all("START "+str(random.randint(0,2**32-1))+" "+('\t'.join([x["name"] for x in self.slots])))
                     
     def generate_board_data(self, name):
@@ -353,7 +353,7 @@ class Client(threading.Thread):
                 if not message:
                     # an empty string indicates that the client has
                     # closed their connection
-                    print "closed connection"
+                    #print "closed connection"
                     self.done = True
                     self.sock.close()
                     break

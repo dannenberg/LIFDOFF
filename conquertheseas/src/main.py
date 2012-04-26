@@ -112,7 +112,7 @@ class Main():
         def bad_thing(msg):
             self.client = None
             self.race_cond = 2
-            print msg
+            #print msg
 
         actions = {"MSG":self.screens["lobby"].message, "NICK":self.screens["lobby"].recv_nick_change,
                    "JOIN":self.screens["lobby"].recv_nick_change, "DATA":self.screens["lobby"].reload_server_data,
@@ -125,13 +125,13 @@ class Main():
         msg = msg.split(" ")
         cmd,msg = msg[0],' '.join(msg[1:])  # first word of the message is the action
         if cmd not in actions:
-            print "Unknown action",cmd,msg
+            #print "Unknown action",cmd,msg
             return
         actions[cmd](msg)
     
     def host_dead(self, msg):
         """ host d/c'd """
-        print "host is gone"
+        #print "host is gone"
         self.change_screen("main")
 
     def change_screen(self, screen):
@@ -147,7 +147,7 @@ class Main():
         f = open(floc, "r")
         v, boards = pickle.load(f)
         if v != VERSION:    # whuh oh
-            print "OLD SAVE FILE: incompatible with current version (",v,") vs (",VERSION,")"
+            #print "OLD SAVE FILE: incompatible with current version (",v,") vs (",VERSION,")"
         self.reset_screen("game", boards)
         self.change_screen("game")
     

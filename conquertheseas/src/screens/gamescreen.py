@@ -38,7 +38,7 @@ class GameScreen(Screen):
     PAUSE_MENU = 6
     def __init__(self, main, num_players=2, local=True):
         Screen.__init__(self, main)
-        print "local: ", local, "player numbers: ", num_players
+        #print "local: ", local, "player numbers: ", num_players
         
         if isinstance(num_players, int):
             boards = None
@@ -114,13 +114,13 @@ class GameScreen(Screen):
         def enemy_boardclick(mpos):
             gpos = (BOARD_SQUARES_X - 1 - mpos[0]//SQUARE_SIZE, mpos[1]//SQUARE_SIZE)
             curunit = self.enemy_board.get_cell_content(gpos)   # grab the unit @ this pos
-            print "gamescreen.enemy_boardclick (gpos)"+str(gpos)
+            #print "gamescreen.enemy_boardclick (gpos)"+str(gpos)
             
             if self.mode == GameScreen.DEPLOYING:
                 #if not isinstance(self.held, Unit):
-                print "gamescreen.boardclick: add-pole!"
+                #print "gamescreen.boardclick: add-pole!"
                 if BOARD_SQUARES_X-OFFENSIVE_PLACEMENT_DEPTH > gpos[0] or not self.enemy_board.add_unit(UnitFactory(self.held, gpos)):
-                    print "gamescreen.boardclick: can't drop here!"
+                    #print "gamescreen.boardclick: can't drop here!"
                     return
                 self.add_to_server_list("SENT",self.enemy_board_index,self.held,*gpos)
                 if pygame.K_LSHIFT not in self.main.keys:
@@ -139,14 +139,14 @@ class GameScreen(Screen):
                 self.set_mode(GameScreen.NO_MODE)
                 curunit = clicked_unit
                 
-            print "gamescreen.my_boardclick (gpos) "+str(gpos)
+            #print "gamescreen.my_boardclick (gpos) "+str(gpos)
             
             self.held = curunit
             if self.mode == GameScreen.MOVING:
                 if gpos in self.movement_locs:
                     self.held.queue_movements(x[:2] for x in self.arrow_locs)   # queue his movements based on the arrows
                     self.my_board.move_unit(self.held, self.arrow_locs.get_loc())
-                    print "gamescreen.my_boardclick (the gentleman's actions) "+str(self.held._actions)
+                    #print "gamescreen.my_boardclick (the gentleman's actions) "+str(self.held._actions)
                     self.set_mode(GameScreen.NO_MODE)
             
             elif curunit != None: # clicked on a unit: do as he wants
@@ -205,7 +205,7 @@ class GameScreen(Screen):
                         #print "gamescreen.action_button: TURN"
                         self.add_to_server_list("TURN")
                 self.add_to_server_list("END")
-                print self.to_server
+                #print self.to_server
                 self.set_mode(GameScreen.WAITING)
                 self.clickbox.append((0,0,SCREEN_WIDTH,SCREEN_HEIGHT), lambda x:None, z=17)
                 for msg in self.to_server:
@@ -225,7 +225,7 @@ class GameScreen(Screen):
                 self.set_mode(GameScreen.MOVING)
                 self.held = curunit
                 self.arrow_locs = Arrows(self.held._loc, self.held.moves_remaining)
-                print "gamescreen.ui_action: Created a new arrows of length",self.held._move_speed
+                #print "gamescreen.ui_action: Created a new arrows of length",self.held._move_speed
             elif token == Action.SHOOT:
                 curunit.queue_shoot()
                 self.set_mode(GameScreen.NO_MODE)
@@ -420,7 +420,7 @@ class GameScreen(Screen):
         self.enemy_boards[self.people_done].take_turn(self.main.rand)
         self.enemy_boards[self.people_done].initialize_turn(self.main.rand)
         self.people_done += 1
-        print "people done", self.people_done
+        #print "people done", self.people_done
         if self.people_done == self.num_players:
             lose = all(u.dead for _,u in self.my_board.defensive.items())
             win  = all([all(u.dead for _,u in b.defensive.items()) for b in self.enemy_boards if b is not self.my_board])
@@ -444,7 +444,7 @@ class GameScreen(Screen):
             else:   # actual boards
                 self.enemy_boards = x
             my_index = [i for i,j in enumerate(x) if j == self.main.player_name][0]
-            print "my index", my_index
+            #print "my index", my_index
             self.my_board = self.enemy_boards[my_index]
             if my_index == 0:
                 self.enemy_board_index = 1

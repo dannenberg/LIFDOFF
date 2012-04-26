@@ -43,7 +43,7 @@ class ShopScreen(Screen):
                 if self.index is None:
                     return
                 x = self.prices_and_values[self.index]
-                print len(x["prices"]), x["rank"]
+                #print len(x["prices"]), x["rank"]
                 if len(x["prices"]) <= x["rank"]:
                     return
             except ValueError:

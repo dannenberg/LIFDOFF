@@ -33,7 +33,7 @@ class SaveLoadScreen(Screen):
             if self.return_to is not None:
                 self.main.change_screen(self.return_to)
             else:
-                print "I got nowhere to go to."
+                #print "I got nowhere to go to."
         self.clickbox.append((40, 740, 110, 50), go_back)
         self.redraw_files()
         
@@ -93,12 +93,12 @@ class SaveLoadScreen(Screen):
         
     def save_load(self, mpos=None):
         if not self.text_input:
-            print "Invalid filename"
+            #print "Invalid filename"
             return False
         f = self.text_input+".sav"
         if self.save_notload:
             if self.text_input in self.files:
-                print "Hot damn are you sure you want to overwrite that file?"
+                #print "Hot damn are you sure you want to overwrite that file?"
                 return False
             if self.return_to is not None:
                 self.main.change_screen(self.return_to)
@@ -106,7 +106,7 @@ class SaveLoadScreen(Screen):
             self.main.change_screen("saveload")
         else:   # load
             if self.text_input not in self.files:
-                print "File does not exist"
+                #print "File does not exist"
                 return False
             self.main.load("../saves/"+f)
         

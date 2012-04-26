@@ -78,7 +78,7 @@ class LobbyScreen(Screen):
                             pass # fixes!
                     self.clickbox.append((476,706,txt_ip.get_width(), txt_ip.get_height()), copy_ip)
                 except (urllib2.URLError, urllib2.HTTPError, IOError):
-                    print "Error fetching IP"
+                    #print "Error fetching IP"
             threading.Thread(target=get_ip).start()
         
         self.button_start = pygame.Surface((331,76), pygame.SRCALPHA)
@@ -103,7 +103,7 @@ class LobbyScreen(Screen):
                 if i == self.my_index:
                     self.main.client.set_ready(int(not self.players[i][2]))
                 else:
-                    print "ready button clicked!!"
+                    #print "ready button clicked!!"
             return anon
         for x in xrange(10):
             self.clickbox.append((37, 75+54*x, 48, 48), ready_button_click(x))
@@ -202,7 +202,7 @@ class LobbyScreen(Screen):
             index, msg = int(data[0]), ' '.join(data[1:])
         if msg: # needs to like... say something.
             if isinstance(self.players[index][0], int):
-                print "Why is",self.players[index][0],"trying to talk?"
+                #print "Why is",self.players[index][0],"trying to talk?"
                 return
             if index == self.my_index:
                 self.text_input = ""
@@ -227,7 +227,7 @@ class LobbyScreen(Screen):
         self.main.race_cond = True
         self.my_index = int(data[0])    # what slot should you get
         data = data.split("\n")[1:]     # split on newlines (ignore the first slot)
-        print data
+        #print data
         for i,d in enumerate(data):     # 
             num = int(d[0])             # are you a player or a certain value
             if num:                     # if not a human
@@ -241,7 +241,7 @@ class LobbyScreen(Screen):
         self.redraw_players()           # redraw that board
     
     def ready_up(self, data):
-        print data
+        #print data
         index, ready  = int(data[0]), bool(int(data[2]))
         self.players[index][2] = ready
         self.redraw_players()
@@ -275,7 +275,7 @@ class LobbyScreen(Screen):
         self.redraw_players()
         
     def recv_start_game(self, players):
-        print "game starting!!"
+        #print "game starting!!"
         seed, _, players = players.partition(" ")
         self.main.rand.seed(int(seed))
         players = players.split("\t")

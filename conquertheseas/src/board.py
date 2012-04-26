@@ -162,7 +162,7 @@ class Board:
     def generate_terrain(self, rand):
         temp = self.next_terrain
         randval = rand.randint(0,3)
-        print "generate_terrain", randval
+        #print "generate_terrain", randval
         if randval == 0:
             temp -= 1
         elif randval == 1:
@@ -185,7 +185,7 @@ class Board:
     def generate_gold(self, rand):
         randval = rand.randint(0,9)
         randthresh = 1+len(filter(lambda v:Effect.GOLD in [i.etype for i in v[1].effects], self.defensive.items()))
-        print "Gold chance:",randthresh,"/ 9"
+        #print "Gold chance:",randthresh,"/ 9"
         if randval < randthresh:
             randY = rand.randint(0,8)
             self.add_unit(UnitFactory(UnitFactory.GOLD, (BOARD_SQUARES_X-1, randY)))
