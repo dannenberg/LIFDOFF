@@ -274,6 +274,8 @@ class Server(threading.Thread):
         
     def start_game(self, c, message):
         if self.slots[0]["conn"] == c:
+            if len([s for s in self.slots if s["type"]==Server.PLAYER or s["type"]==Server.AI]) < 2:
+                return
             for x in self.slots:
                 if x.has_key("ready"):
                     if not x["ready"]:
