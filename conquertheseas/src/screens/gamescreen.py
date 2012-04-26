@@ -175,19 +175,17 @@ class GameScreen(Screen):
                 self.enemy_board.remove_staging()
                 for unit in self.my_board.units:
                     self.my_board.move_unit(unit, unit._unaltered_loc)
-                # TODO removed staged units from enemy board
-                if self.last_turn == True:
-                    self.enemy_board.take_turn(self.main.rand)
-                    self.my_board.take_turn(self.main.rand)
-                    self.enemy_board.initialize_turn(self.main.rand)
-                    self.my_board.initialize_turn(self.main.rand)
-                    self.handle_gameover()
-                    
-                self.last_turn = not self.last_turn
-                self.my_board, self.enemy_board = self.enemy_board, self.my_board #flip em
                 
-                self.local_shop, self.main.screens["shop"] = self.main.screens["shop"], self.local_shop
-                self.local_opanel, self.offense_panel = self.offense_panel, self.local_opanel
+                self.generate_ai_turns()
+                self.my_board.remove_staging()
+                for unit in self.enemy_board.units:
+                    self.enemy_board.move_unit(unit, unit._unaltered_loc)
+                self.enemy_board.take_turn(self.main.rand)
+                self.my_board.take_turn(self.main.rand)
+                self.enemy_board.initialize_turn(self.main.rand)
+                self.my_board.initialize_turn(self.main.rand)
+                self.handle_gameover()
+                    
             else:
                 # send everything to server
                 # server does take_turn
@@ -397,7 +395,25 @@ class GameScreen(Screen):
             else:
                 self.tabs.blit(tabshape, ((tabsize[0]-10)*(i+off), 20))
             self.tabs.blit(self.font.render(x.name, True, (0xFF,)*3), ((tabsize[0]-10)*(i+off)+10, 30))
-    
+ 
+    def generate_ai_turns(self):
+        for x in xrange(3):
+            for _ in xrange(3):
+                r = self.main.rand.randint(0,3)
+                if r < 2:
+                    dx = 0
+                    dy = (r%2)*2 - 1
+                else:
+                    dx = (r%2)*2 - 1
+                    dy = 0
+                self.enemy_boards[1].defensive[x]._loc = (max(0,min(33,self.enemy_boards[1].defensive[x]._loc[0]+dx)), max(0,min(9,self.enemy_boards[1].defensive[x]._loc[1]+dy)))
+                self.enemy_boards[1].defensive[x].queue_movements([(self.enemy_boards[1].defensive[x]._loc)])
+                 #print "Please move",x
+            if not self.main.rand.randint(0,3):
+                self.enemy_boards[1].defensive[x].queue_shoot()
+        for _ in xrange(self.main.rand.randint(2,5)):
+            self.my_board.add_unit(UnitFactory(UnitFactory.TADPOLE, (BOARD_SQUARES_X-self.main.rand.randint(1, OFFENSIVE_PLACEMENT_DEPTH), self.main.rand.randint(0, BOARD_SQUARES_Y-1))))
+     
     def resolve_turn(self, msg):
         """ ??? """
         self.enemy_boards[self.people_done].remove_staging()
