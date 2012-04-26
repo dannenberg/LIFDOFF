@@ -121,6 +121,8 @@ class Unit(object):
     def add_effect(self, effect):
         self.effects.append(effect.clone())
         effect.apply_effect(self)
+        if effect.etype == Effect.ARMORED:
+            self.level |= 4
         if effect.etype == Effect.DOUBLESHOT:
             self.level |= 2
         if effect.etype == Effect.AERODYNAMIC:
@@ -197,8 +199,14 @@ class Unit(object):
             elif sOpposed._class == Unit.BULLET:
                 sOpposed.take_damage(board)
             elif sOpposed._class == Unit.OFFENSE:
-                sSelf.take_damage(board, sOpposed.damage);
-                sOpposed.take_damage(board, sSelf.damage);
+                print sSelf.effects
+                armor = filter(lambda x:Effect.ARMORED == x.etype, sSelf.effects)
+                if armor:
+                    sSelf.effects.remove(armor[0])
+                    sSelf.level &= ~4
+                else:
+                    sSelf.take_damage(board, sOpposed.damage)
+                sOpposed.take_damage(board, sSelf.damage)
                 sSelf.effects += [effect.clone() for effect in sOpposed.effects]
         elif sSelf._class == Unit.OFFENSE:
             if sOpposed._class == Unit.TERRAIN:
