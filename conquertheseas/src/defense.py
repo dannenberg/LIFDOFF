@@ -2,31 +2,32 @@ from unit import *
 from action import Action
 from constants import *
 
+
 class DefensiveUnit(Unit):
     def __init__(self, idd, purple=False):
         #self.upgrades = ()[idd]()
-        (x,y) = ((0,1),(5,5),(0,9))[idd]
+        (x, y) = ((0, 1), (5, 5), (0, 9))[idd]
         if purple:
-            super(DefensiveUnit, self).__init__(UnitFactory.PURPLE_SUB, (x,y), Unit.DEFENSE)
+            super(DefensiveUnit, self).__init__(UnitFactory.PURPLE_SUB, (x, y), Unit.DEFENSE)
         else:
-            super(DefensiveUnit, self).__init__(UnitFactory.YELLOW_SUB, (x,y), Unit.DEFENSE)
+            super(DefensiveUnit, self).__init__(UnitFactory.YELLOW_SUB, (x, y), Unit.DEFENSE)
         self._move_speed = 5
-        self.idd = idd #TODO wrong
+        self.idd = idd  # TODO wrong
         self.moves_remaining = self._move_speed
         self._abilities = [Action.MOVE, Action.SHOOT]
         self.addons = []
         self.effects = []
         self.purple = purple
         self.dead = False
-    
+
     def __setstate__(self, data):
         self.__dict__.update(data)
         self._tileset = pygame.image.load(UnitFactory.img[UnitFactory.PURPLE_SUB if self.purple else UnitFactory.YELLOW_SUB])
-    
-    def draw_sprite(self, destsurface, loc = None):
+
+    def draw_sprite(self, destsurface, loc=None):
         self.advance_sprite()
-        if loc != None:             # determine correct relative positioning for addons and recursion
-            loc = tuple(map(sum,zip(self._loc, loc))) #sum the tuples
+        if loc is not None:             # determine correct relative positioning for addons and recursion
+            loc = tuple(map(sum, zip(self._loc, loc)))  # sum the tuples
         else:
             loc = self._loc
         for x in self.addons:           # drawing subpieces
