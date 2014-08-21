@@ -10,7 +10,7 @@ class Action:
         self.action = action
         self.loc = loc
         self.extra = extra
-        
+
     def __str__(self):
         if self.action == Action.MOVE:
             return "MOVE "+str(self.loc[0])+" "+str(self.loc[1])
